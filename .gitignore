@@ -40,4 +40,6 @@ Thumbs.db
 ###############
 bin
 build
-
+.gradle
+.settings
+src/main/xtend-gen
