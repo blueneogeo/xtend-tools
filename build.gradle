@@ -1,0 +1,18 @@
+apply plugin:'java'
+apply plugin:'eclipse'
+apply from: "gradle/xtend.gradle"
+apply from: "../kii-gradle/apply.groovy"
+
+repositories{
+    mavenCentral() // Use 'maven central' for resolving your thirdparty dependencies.
+                   // you can declare any maven/ivy/file repository to resolve your thirdparty dependencies
+}
+
+dependencies{
+    compile 'com.netflix.rxjava:rxjava-core:0.14.2'
+	compile 'commons-lang:commons-lang:2.6'
+	compile "org.slf4j:slf4j-api:1.7.+"
+    compile "junit:junit:4.11"
+
+    testCompile "junit:junit:4.11"
+}
