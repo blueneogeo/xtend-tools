@@ -2,7 +2,7 @@
 
 Some nice tools and Xtend extensions that make life with Xtend better
 
-# Getting Started
+## Getting Started
 
 If you use maven or gradle, the dependency is the following:
 
@@ -43,6 +43,8 @@ The delta/function will only be called if necessary, which helps performance.
 
 A problem in Java is catching NullPointerExceptions. You end up with a lot of NullPointerException checks, or with code that bombs. Languages like Scala use the idea of an Option to solve this.
 
+### Opt, Some, None, Err
+
 An Opt<T> can be a Some<T>, None<T> or Err<T>. If it is a Some, you can use the value method to get the value. The option extensions let you create an option from a value really easily. For example:
 
 	import static extension nl.kii.util.OptExtensions.*
@@ -52,6 +54,8 @@ An Opt<T> can be a Some<T>, None<T> or Err<T>. If it is a Some, you can use the 
 
 	some(12).value == 12 // extension shortcut
 	12.option.value == 12 // extension shortcut
+
+### .option and .or Extensions
 
 The .option extension also works on null values. All this becomes useful when you use it as the result of a function:
 
@@ -69,21 +73,27 @@ These can also be chained:
 		.or [ findUser(defaultUserId) ]
 		.orThrow [ new Exception('help!') ]
 
+### Attempt
+
 You can also catch errors this way, in case findUser were to throw an exception if there was no user found:
 
 	val Opt<User> user = attempt [ findUser(id) ]
 
-And perform conditional processing:
+### Conditional Processing
+
+To perform conditional processing (user is an Opt<User>):
 
 	ifSome(user) [ ..do something with the user.. ]
 
-And mapping on a value that may not exist:
+### Optional Mapping
+
+To map a value that may not exist:
 
 	val Opt<Integer> age = user.mapOpt [ it.age ] // user is an  Opt<User>
 
-For more extensions, check the source of OptExtensions.xtend
+This is just a selection. For more extensions, check the source of OptExtensions.xtend
 
-# List Operations
+## List Operations
 
 Lists have been augmented with Opt and attempt operations as well: (silly example!)
 
@@ -101,13 +111,13 @@ Lists have been augmented with Opt and attempt operations as well: (silly exampl
 
 See for more operations IteratorExtensions.xtend
 
-# Streams
+## Streams
 
 RXJava allows for streams of data, much like Java 8 has introduced with the StreamAPI. RxExtensions.xtend contains helper extensions to make working with streams in Xtend very user-friendly.
 
 A stream is like a list that keeps on filling. That makes a list 'pull' and a stream is 'push'. You never know when a new item is being pushed onto the stream. That is why you subscribe a closure to a stream to handle an incoming result. Streams are a very nice way of reasoning about asynchronous data, and for making your code non-blocking. For more information, check the RXJava documentation.
 
-## defining a new stream
+### defining a new stream
 
 You can define a new stream like this:
 
@@ -119,11 +129,11 @@ You can also create a stream directly out of values:
 
 	val stream = #[1, 5, 2, 6].stream
 
-## Pushing something onto a stream
+### Pushing something onto a stream
 
 	stream.apply(12)
 
-## Responding to values being pushed onto the stream
+### Responding to values being pushed onto the stream
 
 	stream.each [ println('got value ' + it) ]
 
@@ -139,7 +149,7 @@ As you see this looks very much like the List methods. You can apply mappings, f
 
 	printer.each [ println(it) ]
 
-## Closing a Stream
+### Closing a Stream
 
 To complete a stream, call the complete method:
 
@@ -156,3 +166,5 @@ A stream of just 1 value is a promise. Once apply is called on a promise, it is 
 	Future<User> future = loadUserFromNetwork()
 	val promise = future.promise
 	promise.each [ println('got user ' + it) ]
+
+There are many more operations. See RxExtensions.xtend for more.
