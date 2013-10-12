@@ -14,12 +14,12 @@ sourceSets {
 dependencies {
 	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.4.3'
   	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.4.3'
-  	
-    // compile "io.vertx:vertx-core:$vertxVersion"
-    // compile "io.vertx:vertx-platform:$vertxVersion"  	
 }
 
-/*
+/* 
+ * Does not work with all libraries (such as Vert.x), and really since we
+ * edit using Eclipse anyway, there is no real reason to compile the xtend
+ * code into Java ourselves. Instead, just use the generated java code.
 
 eclipse {
   project {
