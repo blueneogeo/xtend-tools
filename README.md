@@ -2,7 +2,11 @@
 
 Some nice tools and Xtend extensions that make life with Xtend better
 
-## Logging
+# Getting Started
+
+If you use maven or gradle, the dependency is the following:
+
+	nl.kii.util:xtend-tools:2.1-SNAPSHOT
 
 To use, add the following import statements at the top of your Xtend source file:
 
@@ -12,6 +16,10 @@ To use, add the following import statements at the top of your Xtend source file
 	import static extension nl.kii.util.ObjectExtensions.*
 	import static extension nl.kii.util.OptExtensions.*
 	import static extension nl.kii.util.RxExtensions.*
+
+Not all are necessary, but you can optimise the imports in Eclipse afterwards.
+
+## Logging
 
 To use the logging wrapper, at the top of your class file, do the following:
 
