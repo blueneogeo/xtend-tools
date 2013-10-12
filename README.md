@@ -1,9 +1,8 @@
 # xtend-tools
-# ===========
 
 Some nice tools and Xtend extensions that make life with Xtend better
 
-# Logging
+## Logging
 
 To use, add the following import statements at the top of your Xtend source file:
 
