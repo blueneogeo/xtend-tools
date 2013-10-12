@@ -1,15 +1,7 @@
 package nl.kii.util
 
-import static extension nl.kii.util.XtendTools.*;
 
 abstract class Opt<T> implements Iterable<T> {
-	def static <T> Opt<T> option(T value) { if(value.defined) some(value) else none }
-	def static <T> Opt<T> of(T value) { value.option } // for Java
-	def static <T> Some<T> some(T value) { new Some<T>(value) }
-	def static <T> None<T> none() { new None<T> }
-	def static <T> Err<T> error() { new Err<T> }
-	def static <T> Err<T> error(Throwable t) { new Err<T>(t) }
-
 	def T value() throws NoneException
 	def boolean hasSome()
 	def boolean hasNone()
