@@ -317,6 +317,29 @@ Putting all these things together, you can be very succinct in defining stream h
 
 	// push in your own tweet for testing
 	tweetSteam << test1 << test2 << none
+
+## Code Pattern: Event Streams
+
+In most languages with closures, you pass a closure to a class so it can call this closure when there is a result. For example, if you load some code in the background, you pass a closure when you have the result. However if for example you have an interface and want to listen for results, you can have many listeners. Instead of providing listener interfaces to solve this, you can also use public streams. An example tells more:
+
+	// create some class that can have events thrown:
+	class SomeButton {
+		val id = 1234
+		public val onKeydown = Integer.stream
+		public val onKeyup = Integer.stream
+			
+		new(String title) { … etc … }
+		… implementation … 
+		// somewhere in the code, do this:
+	  // onKeydown << id
+	}
+
+	// then to use this elsewhere:
+	val btw = new SomeButton('press me') => [
+		// assign actions to listeners
+		onKeydown >> [ …perform action… ]
+		onKeyup >> [ …perform action… ]
+	]
 	
 ## Code Pattern: Stream Methods
 
