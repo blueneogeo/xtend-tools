@@ -339,9 +339,9 @@ Something we found valuable during stream programming is defining streams like m
 		}
 
 		val onNewTweet = Tweet.stream => [
-			.filter [ language == 'EN' ]
-			map [ message ]
-			each [ println('got tweet with message: ' + it) ]
+			filter [ language == 'EN' ]
+			.map [ message ]
+			.each [ println('got tweet with message: ' + it) ]
 		]
 
 	}
