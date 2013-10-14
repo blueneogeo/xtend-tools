@@ -83,11 +83,14 @@ class RxExtensions {
 		stream
 	}
 
-//	def static<T> apply(PublishSubject<T> stream, T value) {
-//		stream.onNext(value)
-//		stream
-//	}
-//	
+	def static <T> apply(Observer<T> subject, Opt<T> opt) {
+		switch(opt) {
+			Some<T>: subject.apply(opt.value)
+			None<T>: subject.onCompleted
+			Err<T>: subject.onError(opt.exception)
+		}
+	}
+
 	def static<T> complete(PublishSubject<T> subject) {
 		subject.onCompleted
 	}
@@ -105,6 +108,14 @@ class RxExtensions {
 		subject
 	}
 	
+	def static <T> apply(AsyncSubject<T> subject, Opt<T> opt) {
+		switch(opt) {
+			Some<T>: subject.apply(opt.value)
+			None<T>: subject.onCompleted
+			Err<T>: subject.onError(opt.exception)
+		}
+	}
+
 	// Collecting results
 	
 	def static <T> each(Observable<T> stream, (T)=>void handler) {
@@ -127,6 +138,70 @@ class RxExtensions {
 		stream
 	}
 	
+	// Collector helper class overloading
+	
+	def static <T> Collector<T> collector(Class<T> cls) {
+		new Collector<T>
+	}
+	
+	def static Countdown countdown() {
+		new Countdown
+	}
+
+	// Operator overloading
+	
+	def static <T> Observable<T> operator_doubleGreaterThan(T item, Observer<T> observer) {
+		item.promise(observer)
+	}
+	
+	def static <T> Iterable<? extends T> operator_doubleGreaterThan(Iterable<? extends T> iterable, Observer<T> observer) {
+		iterable.each(observer)
+	}	
+
+	def static <T> operator_doubleGreaterThan(Observable<T> stream, (T)=>void handler) {
+		stream.each(handler)
+	}
+
+	def static <T> operator_doubleGreaterThan(Observable<T> stream, Observer<T> observer) {
+		stream.each(observer)
+	}
+	
+	def static <T, R> operator_multiply(Observable<T> stream, (T)=>R fn) {
+		stream.map(fn)
+	}
+	
+	def static <T> operator_divide(Observable<T> stream, (T)=>boolean fn) {
+		stream.filter(fn)
+	}
+	
+	def static <T> operator_doubleLessThan(AsyncSubject<T> subject, T value) {
+		subject.apply(value)
+	}
+
+	def static <T> operator_doubleLessThan(AsyncSubject<T> subject, Opt<T> opt) {
+		subject.apply(opt)
+	}
+
+	def static <T> operator_doubleLessThan(Observer<T> stream, T value) {
+		stream.apply(value)
+	}
+	
+	def static <T> operator_doubleLessThan(Observer<T> stream, Opt<T> opt) {
+		stream.apply(opt)
+	}
+
+	def static<T> operator_not(PublishSubject<T> subject) {
+		subject.onCompleted
+	}	
+	
+	def static<T> operator_upTo(Observable<T> stream, (Object)=>void handler) {
+		stream.onFinish(handler)
+	}
+	
+	def static <T> operator_elvis(Observable<T> stream, (Throwable)=>void handler) {
+		stream.onError(handler)
+	}
+
 }
 
 class ObserverHelper<T> implements Observer<T> {

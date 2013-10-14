@@ -5,14 +5,20 @@ import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import nl.kii.util.Collector;
 import nl.kii.util.Countdown;
+import nl.kii.util.Err;
+import nl.kii.util.None;
+import nl.kii.util.OptExtensions;
 import nl.kii.util.RxExtensions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
+import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Test;
 import rx.Observable;
+import rx.Observer;
+import rx.observables.ConnectableObservable;
 import rx.subjects.AsyncSubject;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Func1;
@@ -188,22 +194,22 @@ public class TestRXExtensions {
   @Test
   public void testConnectables() {
     final PublishSubject<Integer> stream = RxExtensions.<Integer>stream(Integer.class);
-    PublishSubject<PublishSubject<Integer>> _stream = RxExtensions.<PublishSubject<Integer>>stream(stream);
-    final Procedure1<PublishSubject<Integer>> _function = new Procedure1<PublishSubject<Integer>>() {
-        public void apply(final PublishSubject<Integer> it) {
+    ConnectableObservable<Integer> _split = RxExtensions.<Integer>split(stream);
+    final Procedure1<Integer> _function = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
           String _plus = ("a: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    RxExtensions.<PublishSubject<Integer>>each(_stream, _function);
-    PublishSubject<PublishSubject<Integer>> _stream_1 = RxExtensions.<PublishSubject<Integer>>stream(stream);
-    final Func1<PublishSubject<Integer>,String> _function_1 = new Func1<PublishSubject<Integer>,String>() {
-        public String call(final PublishSubject<Integer> it) {
+    RxExtensions.<Integer>each(_split, _function);
+    ConnectableObservable<Integer> _split_1 = RxExtensions.<Integer>split(stream);
+    final Func1<Integer,String> _function_1 = new Func1<Integer,String>() {
+        public String call(final Integer it) {
           String _plus = ("got value " + it);
           return _plus;
         }
       };
-    Observable<String> _map = _stream_1.<String>map(_function_1);
+    Observable<String> _map = _split_1.<String>map(_function_1);
     final Procedure1<String> _function_2 = new Procedure1<String>() {
         public void apply(final String it) {
           String _plus = ("b: " + it);
@@ -212,5 +218,88 @@ public class TestRXExtensions {
       };
     RxExtensions.<String>each(_map, _function_2);
     RxExtensions.<Integer>apply(stream, Integer.valueOf(2));
+  }
+  
+  @Test
+  public void testOperators() {
+    final PublishSubject<Integer> stream = RxExtensions.<Integer>stream(Integer.class);
+    final Procedure1<Integer> _function = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          String _plus = ("a: " + it);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    RxExtensions.<Integer>operator_doubleGreaterThan(stream, _function);
+    ConnectableObservable<Integer> _split = RxExtensions.<Integer>split(stream);
+    final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          String _plus = ("a: " + it);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    RxExtensions.<Integer>operator_doubleGreaterThan(_split, _function_1);
+    ConnectableObservable<Integer> _split_1 = RxExtensions.<Integer>split(stream);
+    final Function1<Integer,String> _function_2 = new Function1<Integer,String>() {
+        public String apply(final Integer it) {
+          String _plus = ("got value " + it);
+          return _plus;
+        }
+      };
+    Observable<String> _multiply = RxExtensions.<Integer, String>operator_multiply(_split_1, _function_2);
+    final Procedure1<String> _function_3 = new Procedure1<String>() {
+        public void apply(final String it) {
+          String _plus = ("b: " + it);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    RxExtensions.<String>operator_doubleGreaterThan(_multiply, _function_3);
+    RxExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(2));
+  }
+  
+  @Test
+  public void testOperators2() {
+    final PublishSubject<Integer> stream = RxExtensions.<Integer>stream(Integer.class);
+    final Function1<Integer,Boolean> _function = new Function1<Integer,Boolean>() {
+        public Boolean apply(final Integer it) {
+          boolean _greaterThan = ((it).intValue() > 2);
+          return Boolean.valueOf(_greaterThan);
+        }
+      };
+    Observable<Integer> _divide = RxExtensions.<Integer>operator_divide(stream, _function);
+    final Function1<Integer,String> _function_1 = new Function1<Integer,String>() {
+        public String apply(final Integer it) {
+          String _plus = ("got number " + it);
+          return _plus;
+        }
+      };
+    Observable<String> _multiply = RxExtensions.<Integer, String>operator_multiply(_divide, _function_1);
+    final Procedure1<String> _function_2 = new Procedure1<String>() {
+        public void apply(final String it) {
+          String _plus = ("got " + it);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    Observable<String> _doubleGreaterThan = RxExtensions.<String>operator_doubleGreaterThan(_multiply, _function_2);
+    final Procedure1<Object> _function_3 = new Procedure1<Object>() {
+        public void apply(final Object it) {
+          InputOutput.<String>println("we are done");
+        }
+      };
+    Observable<String> _upTo = RxExtensions.<String>operator_upTo(_doubleGreaterThan, _function_3);
+    final Procedure1<Throwable> _function_4 = new Procedure1<Throwable>() {
+        public void apply(final Throwable it) {
+          String _message = it.getMessage();
+          String _plus = ("caught " + _message);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    RxExtensions.<String>operator_elvis(_upTo, _function_4);
+    Observer<Integer> _doubleLessThan = RxExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(2));
+    Observer<Integer> _doubleLessThan_1 = RxExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(5));
+    Observer<Integer> _doubleLessThan_2 = RxExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(3));
+    None<Integer> _none = OptExtensions.<Integer>none();
+    Observer<Integer> _doubleLessThan_3 = RxExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, _none);
+    Err<Integer> _error = OptExtensions.<Integer>error();
+    RxExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, _error);
   }
 }

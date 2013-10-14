@@ -45,7 +45,7 @@ class IterableExtensions {
 
 	// ADDING (immutable) /////////////////////////////////////////////////////
 	
-	def static <T> addSafe(List<T> list, T value) {
+	def static <T> addSafe(Iterable<T> list, T value) {
 		ImmutableList.builder.addAll(list).add(value).build
 	}
 	
@@ -187,5 +187,21 @@ class IterableExtensions {
 	def static <T> boolean in(T instance, Object... objects) {
 		if(instance.defined && objects.defined) objects.contains(instance) else false
 	}
-		
+	
+	// OPERATORS //////////////////////////////////////////////////////////////
+	
+	def static <T> Iterable<T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
+		iterable.forEach(fn)
+		iterable
+	}
+
+	def static <T> List<T> operator_doubleLessThan(List<T> list, T value) {
+		if(list instanceof ImmutableList<?>) {
+			list.addSafe(value)
+		} else {
+			list.add(value)
+			list
+		}
+	}
+			
 }

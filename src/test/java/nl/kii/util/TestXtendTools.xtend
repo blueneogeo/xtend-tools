@@ -8,7 +8,10 @@ import static nl.kii.util.CloseableExtensions.*
 
 import static extension nl.kii.util.IterableExtensions.*
 import static extension nl.kii.util.OptExtensions.*
+import static extension nl.kii.util.RxExtensions.*
 import static extension org.junit.Assert.*
+import java.util.LinkedList
+import java.util.List
 
 interface Greeter {
     def void sayGreeting(String name)
@@ -146,6 +149,17 @@ class TestXtendTools {
 
 	@Test def void testAvg() {
 		#[1, 2, 3, 4].average.assertEquals(2.5, 0)
+	}
+	
+	@Test def void testOperators() {
+		// create a collecting stream to gather results in and check them
+		val collector = Integer.stream
+		collector.toList >> [ length.assertEquals(6) ]
+		// now use the operators to stream an immutable and mutable list into the collector
+		Integer.list << 3 << 6 << 12 >> [ collector.apply(it) ]
+		new LinkedList<Integer> << 3 << 6 << 12 >> [ collector.apply(it) ]
+		// tell the stream we're done
+		collector.complete
 	}
 	
 }

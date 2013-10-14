@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply from: 'gradle/xtend.gradle'
  
 repositories{
@@ -16,4 +17,19 @@ dependencies{
     compile "junit:junit:4.11"
     
     testCompile "junit:junit:4.11"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+        credentials {
+            username = blueneogeo
+            password = blue2424
+        }
+    }
 }

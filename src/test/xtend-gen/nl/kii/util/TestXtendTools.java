@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +14,7 @@ import nl.kii.util.None;
 import nl.kii.util.Opt;
 import nl.kii.util.OptExtensions;
 import nl.kii.util.Readable;
+import nl.kii.util.RxExtensions;
 import nl.kii.util.Some;
 import nl.kii.util.User;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -24,6 +26,8 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Assert;
 import org.junit.Test;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 @SuppressWarnings("all")
 public class TestXtendTools {
@@ -330,5 +334,39 @@ public class TestXtendTools {
   public void testAvg() {
     double _average = IterableExtensions.<Integer>average(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3, 4)));
     Assert.assertEquals(_average, 2.5, 0);
+  }
+  
+  @Test
+  public void testOperators() {
+    final PublishSubject<Integer> collector = RxExtensions.<Integer>stream(Integer.class);
+    Observable<List<Integer>> _list = collector.toList();
+    final Procedure1<List<Integer>> _function = new Procedure1<List<Integer>>() {
+        public void apply(final List<Integer> it) {
+          int _length = ((Object[])Conversions.unwrapArray(it, Object.class)).length;
+          Assert.assertEquals(_length, 6);
+        }
+      };
+    RxExtensions.<List<Integer>>operator_doubleGreaterThan(_list, _function);
+    List<Integer> _list_1 = IterableExtensions.<Integer>list(Integer.class);
+    List<Integer> _doubleLessThan = IterableExtensions.<Integer>operator_doubleLessThan(_list_1, Integer.valueOf(3));
+    List<Integer> _doubleLessThan_1 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(6));
+    List<Integer> _doubleLessThan_2 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(12));
+    final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          RxExtensions.<Integer>apply(collector, it);
+        }
+      };
+    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleLessThan_2, _function_1);
+    LinkedList<Integer> _linkedList = new LinkedList<Integer>();
+    List<Integer> _doubleLessThan_3 = IterableExtensions.<Integer>operator_doubleLessThan(_linkedList, Integer.valueOf(3));
+    List<Integer> _doubleLessThan_4 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(6));
+    List<Integer> _doubleLessThan_5 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, Integer.valueOf(12));
+    final Procedure1<Integer> _function_2 = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          RxExtensions.<Integer>apply(collector, it);
+        }
+      };
+    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleLessThan_5, _function_2);
+    RxExtensions.<Integer>complete(collector);
   }
 }

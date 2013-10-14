@@ -2,6 +2,8 @@ package nl.kii.util
 
 import org.junit.Test
 
+import static nl.kii.util.OptExtensions.*
+
 import static extension nl.kii.util.RxExtensions.*
 
 class TestRXExtensions {
@@ -88,9 +90,31 @@ class TestRXExtensions {
 	@Test
 	def void testConnectables() {
 		val stream = Integer.stream
-		stream.stream.each [ println('a: ' + it) ]
-		stream.stream.map [ 'got value ' + it ].each [ println('b: ' + it) ]
+		stream.split.each [ println('a: ' + it) ]
+		stream.split.map [ 'got value ' + it ].each [ println('b: ' + it) ]
 		stream.apply(2)
+	}
+	
+	@Test
+	def void testOperators() {
+		// test connectables example
+		val stream = Integer.stream
+		stream >> [ println('a: ' + it) ]
+		stream.split >> [ println('a: ' + it) ]
+		stream.split * [ 'got value ' + it ] >> [ println('b: ' + it) ]
+		stream << 2
+	}
+	
+	@Test
+	def void testOperators2() {
+		val stream = Integer.stream
+		stream 
+			/ [ it > 2 ] 
+			* ['got number ' + it] 
+			>> [ println('got ' + it)] .. [ println('we are done') ] 
+			?: [ println('caught ' + message) ]
+
+		stream << 2 << 5 << 3 << none << error
 	}
 	
 }
