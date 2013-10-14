@@ -8,6 +8,8 @@ If you use maven or gradle, the dependency is the following:
 
 	nl.kii.util:xtend-tools:2.1-SNAPSHOT
 
+Note: currently this library is not yet on MavenCentral.
+
 To use, add the following import statements at the top of your Xtend source file:
 
 	import static extension nl.kii.util.CloseableExtensions.*
@@ -49,6 +51,10 @@ When you do this, this message will be put in front of every log statement made 
 ## Optional Programming
 
 A problem in Java is catching NullPointerExceptions. You end up with a lot of NullPointerException checks, or with code that throws one while your program runs. Languages like Scala use the idea of an Option to solve this. It forces you to catch these errors at compile time. By marking something an Opt<T> instead of a T, you are saying that the result is optional, and that the programmer should handle the case of no result.
+
+The interface of Opt<T> is very simple:
+
+https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/Opt.xtend
 
 ### Opt, Some, None, Err
 
@@ -111,7 +117,10 @@ To map a value that may not exist:
 
 	val Opt<Integer> age = user.mapOpt [ it.age ] // user is an  Opt<User>
 
-This is just a selection. For more extensions, check the source of OptExtensions.xtend
+This is just a selection. For more extensions, check the source of OptExtensions.xtend:
+
+https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/OptExtensions.xtend
+
 
 ## List Operations
 
@@ -131,7 +140,9 @@ Lists have been augmented with Opt and attempt operations as well: (silly exampl
 
 As you can see, the difference between the standard List.forEach in Xtend and List.each here is that you can chain it.
 
-See for more operations IteratorExtensions.xtend
+See for more operations IterableExtensions.xtend:
+
+https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/IterableExtensions.xtend
 
 ### List Operator Overloading
 
@@ -239,7 +250,7 @@ You can also listen for a stream to complete:
 
 	stream.onComplete [ … ]
 
-## Error Handling
+### Error Handling
 
 A normal problem in async programming is that if you have an error, this can be thrown in a different thread than your UI, and you have no way of normally catching it. RX will catch and carry the error forward through the stream, much like the closing of the stream, and you can listen for the error at the end:
 
@@ -272,7 +283,9 @@ You can also directly convert any Future<T> into a promise. For example:
 	val promise = future.promise
 	promise.each [ println('got user ' + it) ]
 
-There are many more operations. See RxExtensions.xtend for more.
+There are many more operations. See RxExtensions.xtend for more:
+
+https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/RxExtensions.xtend
 
 ### Combining with Opt
 
@@ -282,9 +295,7 @@ If you apply an Opt<T> on a stream (or promise), this has the following effect:
 - if it is a None<T>, it will complete the stream
 - if it is an Err<T>, it will tell the stream there was an error
 
-The value of this is that you can make lists of Opt<T> which will fully represent the stream of data.
+This allows you to create lists of Opt<T> which will fully represent a stream of data. It also makes for nice short code:
 
-	val stream = Long.stream << 4 << 2 << 5 << none // end the stream
-	stream >> printUserStream // throw the result into another stream for async processing
-
+	val stream = Long.stream << 4 << 2 << 5 << none // end the stream, no need to call stream.complete
 
