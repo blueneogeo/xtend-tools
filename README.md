@@ -318,3 +318,34 @@ Putting all these things together, you can be very succinct in defining stream h
 	// push in your own tweet for testing
 	tweetSteam << test1 << test2 << none
 	
+## Code Pattern: Stream Methods
+
+Something we found valuable during stream programming is defining streams like methods in our code. An example says more:
+
+	class TweetListener {
+
+		val Observable<Tweet> stream
+
+		new(Observable<Tweet> stream) {
+			this.stream = stream
+		}
+
+		def startListening() {
+			stream >> onNewTweet
+		}
+
+		def stopListening() {
+			onNewTweet.complete
+		}
+
+		val onNewTweet = Tweet.stream => [
+			.filter [ language == 'EN' ]
+			map [ message ]
+			each [ println('got tweet with message: ' + it) ]
+		]
+
+	}
+
+Here onNewTweet acts almost like a method. You can apply values to it like a method, and it is a member of the class. This pattern allows you to abstract away complex processing into a method like structure instead of having everything integrated directly into one clump of code.
+
+There is one gotcha to keep in mind though. onNewTweet will only exist AFTER the class has been created. Also, it is created in order, and that means that if you have two of these 'stream methods', you cannot have the first one call the second one, since at creation, it does not yet exist. The solution is to reverse their place in your source code.
