@@ -126,10 +126,33 @@ Lists have been augmented with Opt and attempt operations as well: (silly exampl
 		.toPairs // back to List<Pair<String, Int>>
 		.each [ println('name:' + key) ]
 		.each [ println('occurrence:' + value) ]
-		.map(value) // getting just the occurrences
+		.map [ value ] // getting just the occurrences
 		.avg // average the occurrences
 
+As you can see, the difference between the standard List.forEach in Xtend and List.each here is that you can chain it.
+
 See for more operations IteratorExtensions.xtend
+
+### List Operator Overloading
+
+You can perform each with an overload:
+
+	users.each [ … ]
+	users >> [ … ] // same thing
+
+You can also add to a list with an overload:
+
+	list.add(3)
+	list.add(5)
+	list << 3 << 5 // almost the same thing
+
+What is different is that the overload either calls List.add or IteratorExtensions.safeAdd, depending on whether the list is immutable. If it is immutable, it will perform an immutable add.
+
+This means that if your list is immutable, you have to catch the result:
+
+	// Integer.string creates an immutable list
+	val list = Integer.string
+	val list2 = list << 2 << 5 // catch result in list2
 
 ## Streams
 
