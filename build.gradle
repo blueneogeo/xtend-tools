@@ -28,8 +28,8 @@ publishing {
     repositories {
         url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
         credentials {
-            username = blueneogeo
-            password = blue2424
+            username = sona_username
+            password = sona_password
         }
     }
 }

@@ -93,6 +93,12 @@ class RxExtensions {
 
 	def static<T> complete(PublishSubject<T> subject) {
 		subject.onCompleted
+		subject
+	}
+	
+	def static<T> error(PublishSubject<T> subject, Throwable t) {
+		subject.onError(t)
+		subject
 	}
 	
 	def static <T> Iterable<? extends T> each(Iterable<? extends T> iterable, Observer<T> observer) {
