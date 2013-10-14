@@ -37,7 +37,7 @@ To use the logging wrapper, at the top of your class file, do the following:
 		}
 	}
 
-The delta/function will only be called if necessary, which helps performance.
+The lambda expression/function will only be called if necessary, which helps performance.
 
 ## Optional Programming
 
