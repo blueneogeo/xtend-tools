@@ -175,7 +175,7 @@ Streams are a very nice way of reasoning about asynchronous data, and for making
 
 https://github.com/Netflix/RxJava/wiki
 
-### defining a new stream
+### Defining a new stream
 
 You can define a new stream like this:
 
@@ -240,21 +240,26 @@ Use the stream.split command to create a new stream from an existing one. For ex
 	tweetStream.split
 		.filter [ userId != userAPI.isKnownUser(it) ]
 		.map [ userId -> message ]
-		.each [ analyser.process(it) ]### Closing a Stream
+		.each [ analyser.process(it) ]
 
-To complete a stream, call the complete method:
+### Completing a Stream
+
+To complete a stream indicates that a batch of data has finished. To do so, you call the complete method:
 
 	stream.complete
+	stream << none // same thing, see below
 
 You can also listen for a stream to complete:
 
 	stream.onComplete [ … ]
+	stream .. [ … ] // same thing, see below
 
 ### Error Handling
 
 A normal problem in async programming is that if you have an error, this can be thrown in a different thread than your UI, and you have no way of normally catching it. RX will catch and carry the error forward through the stream, much like the closing of the stream, and you can listen for the error at the end:
 
 	stream.onError [ … do error handling … ]
+	stream ?: [ …do error handling… ] // same thing
 
 You can also manually send an error to a stream:
 
@@ -287,7 +292,7 @@ There are many more operations. See RxExtensions.xtend for more:
 
 https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/RxExtensions.xtend
 
-### Combining with Opt
+### Combining with Opt and operator overloading
 
 If you apply an Opt<T> on a stream (or promise), this has the following effect:
 
@@ -295,7 +300,21 @@ If you apply an Opt<T> on a stream (or promise), this has the following effect:
 - if it is a None<T>, it will complete the stream
 - if it is an Err<T>, it will tell the stream there was an error
 
-This allows you to create lists of Opt<T> which will fully represent a stream of data. It also makes for nice short code:
+This allows you to create lists of Opt<T> which will fully represent a stream of data.
+
+	Long.stream.apply(4).apply(2).apply(5).apply(none) // none creates a None<Long>
+
+In combination with the operator overloading, it also makes for nice short code:
 
 	val stream = Long.stream << 4 << 2 << 5 << none // end the stream, no need to call stream.complete
 
+Putting all these things together, you can be very succinct in defining stream handling. For example, to create a stream, an error handler and a complete handler:
+
+	// listen to twitter for tweets using async api
+	val tweetStream = twitterAPI.getTweets(userId)
+	// handle incoming tweets
+	tweetStream >> [ processTweet ] .. [ closeConnection ] ?: [ reportError ]
+
+	// push in your own tweet for testing
+	tweetSteam << test1 << test2 << none
+	
