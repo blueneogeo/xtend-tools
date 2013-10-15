@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import nl.kii.util.CloseableExtensions;
 import nl.kii.util.IterableExtensions;
+import nl.kii.util.Log;
 import nl.kii.util.LogExtensions;
 import nl.kii.util.None;
 import nl.kii.util.Opt;
@@ -21,17 +22,31 @@ import nl.kii.util.User;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.Extension;
+import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
 @SuppressWarnings("all")
 public class TestXtendTools {
+  @Extension
+  private Log logger = new Function0<Log>() {
+    public Log apply() {
+      Class<? extends TestXtendTools> _class = TestXtendTools.this.getClass();
+      Logger _logger = LoggerFactory.getLogger(_class);
+      Log _wrapper = LogExtensions.wrapper(_logger);
+      return _wrapper;
+    }
+  }.apply();
+  
   public void loadUser(final long userId, final Procedure1<? super String> onLoad) {
     try {
       Thread.sleep(3000);
@@ -379,9 +394,10 @@ public class TestXtendTools {
     final List<Integer> list = Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3));
     Procedure1<? super Integer> _printEach = LogExtensions.<Integer>printEach();
     IterableExtensions.<Integer>operator_doubleGreaterThan(list, _printEach);
-    Procedure1<? super Integer> _printEach_1 = LogExtensions.<Integer>printEach("got list:");
+    Procedure1<? super Integer> _printEach_1 = LogExtensions.<Integer>printEach("entry:");
     IterableExtensions.<Integer>operator_doubleGreaterThan(list, _printEach_1);
     LogExtensions.<Integer>printEach(list);
     LogExtensions.<Integer>printEach(list, "got list:");
+    LogExtensions.<Integer>info(list, this.logger);
   }
 }

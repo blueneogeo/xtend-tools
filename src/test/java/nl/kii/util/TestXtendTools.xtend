@@ -12,12 +12,16 @@ import static extension nl.kii.util.IterableExtensions.*
 import static extension nl.kii.util.OptExtensions.*
 import static extension nl.kii.util.RxExtensions.*
 import static extension org.junit.Assert.*
-
+import static extension org.slf4j.LoggerFactory.*
+import nl.kii.util.Log
+	
 interface Greeter {
     def void sayGreeting(String name)
 }
 
 class TestXtendTools {
+	
+	extension Log logger = class.logger.wrapper
 	
 	def loadUser(long userId, (String)=>void onLoad) {
 		Thread.sleep(3000)
@@ -168,9 +172,10 @@ class TestXtendTools {
 	@Test def void testLogging() {
 		val list = #[1, 2, 3]
 		list >> printEach // print each
-		list >> printEach('got list:') // print each
+		list >> printEach('entry:') // print each
 		list.printEach
 		list.printEach('got list:')
+		list.info(logger)
 	}
 	
 }

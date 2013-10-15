@@ -53,39 +53,41 @@ class LogExtensions {
 	
 	def static <T> printEach(Iterable<T> list, String msg) {
 		if(msg.defined) println(msg)
-		list >> [ println(it.toString) ]
+		list >> [ println(logEntry) ]
 	}
 
-	def static <T> trace(Log log, Iterable<T> list, String msg) { 
+	def static <T> trace(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.trace(msg)
-		list >> [ log.logger.trace(toString) ]
+		list >> [ log.logger.trace(logEntry) ]
 	}
 	
-	def static <T> debug(Log log, Iterable<T> list, String msg) { 
+	def static <T> debug(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.debug(msg)
-		list >> [ log.logger.debug(toString) ]
+		list >> [ log.logger.debug(logEntry) ]
 	}
 	
-	def static <T> info(Log log, Iterable<T> list, String msg) { 
+	def static <T> info(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.info(msg)
-		list >> [ log.logger.info(toString) ]
+		list >> [ log.logger.info(logEntry) ]
 	}
 	
-	def static <T> warn(Log log, Iterable<T> list, String msg) { 
+	def static <T> warn(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.warn(msg)
-		list >> [ log.logger.warn(toString) ]
+		list >> [ log.logger.warn(logEntry) ]
 	}
 	
-	def static <T> error(Log log, Iterable<T> list, String msg) { 
+	def static <T> error(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.error(msg)
-		list >> [ log.logger.error(toString) ]
+		list >> [ log.logger.error(logEntry) ]
 	}
+	
+	def protected static getLogEntry(Object o) { ' - ' + o.toString }
 	
 	def static <T> printEach(Iterable<T> list) { printEach(list, null) }
-	def static <T> trace(Log log, Iterable<T> list) { trace(log, list, null) }
-	def static <T> debug(Log log, Iterable<T> list) { debug(log, list, null) }
-	def static <T> info(Log log, Iterable<T> list) { info(log, list, null) }
-	def static <T> warn(Log log, Iterable<T> list) { warn(log, list, null) }
-	def static <T> error(Log log, Iterable<T> list) { error(log, list, null) }
+	def static <T> trace(Iterable<T> list, Log log) { trace(list, null, log) }
+	def static <T> debug(Iterable<T> list, Log log) { debug(list, null, log) }
+	def static <T> info(Iterable<T> list, Log log) { info(list, null, log) }
+	def static <T> warn(Iterable<T> list, Log log) { warn(list, null, log) }
+	def static <T> error(Iterable<T> list, Log log) { error(list, null, log) }
 	
 }

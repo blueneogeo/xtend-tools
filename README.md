@@ -36,7 +36,7 @@ Not all are necessary, but you can optimise the imports in Eclipse afterwards.
 To use the logging wrapper, at the top of your class file, do the following:
 
 	import static extension nl.kii.util.LogExtensions.*
-	import static extension org.slf4j.Logger.*
+	import static extension org.slf4j.LoggerFactory.*
 	import nl.kii.util.Log
 
 	class MyClass {
@@ -84,15 +84,13 @@ This pollutes your code with side effects (logging). A better alternative would 
 Since this is a common pattern, here is a shortcut:
 
 	api.getUsers(condition)
-		.info
+		.info(logger)
 		.each [ .. perform more code .. ]
 
 Optionally, you can also pass a logging message:
 	api.getUsers(condition)
-		.info('found users:')
+		.info('found users:', logger)
 		.each [ .. perform more code .. ]
-
-Note: the logger functions only work if you have the "extension Log logger = class.logger.wrapper" line in your class.
 
 #### Logger Functions
 
