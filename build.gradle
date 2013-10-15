@@ -6,8 +6,7 @@ apply from: 'gradle/xtend.gradle'
  
 repositories{
 	mavenLocal()
-    mavenCentral() // Use 'maven central' for resolving your thirdparty dependencies.
-                   // you can declare any maven/ivy/file repository to resolve your thirdparty dependencies
+    mavenCentral()
 }
 
 dependencies{
@@ -25,6 +24,7 @@ publishing {
             from components.java
         }
     }
+    /*
     repositories {
         url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
         credentials {
@@ -32,4 +32,5 @@ publishing {
             password = sona_password
         }
     }
+    */
 }

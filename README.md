@@ -6,7 +6,7 @@ Some nice tools and Xtend extensions that make life with Xtend better
 
 If you use maven or gradle, the dependency is the following:
 
-	nl.kii.util:xtend-tools:2.1-SNAPSHOT
+	com.kimengi.util:xtend-tools:2.2-SNAPSHOT
 
 Note: currently this library is not yet on MavenCentral.
 
