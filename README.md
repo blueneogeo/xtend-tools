@@ -1,12 +1,22 @@
 # xtend-tools
 
-Some nice tools and Xtend extensions that make life with Xtend better
+Some tools and Xtend extensions that make life with the Xtend programming language better:
+
+- SL4J Logging wrapper: allows more efficient and compact logging
+- Options: helps avoid NullpointerExceptions
+- RXJava Streams: easy asynchronous programming with Xtend
+- List and Stream operators: reason about lists and streams with the same syntax, and convert between them easily (without blocking)
+- Promises: reason about Futures as with a stream
+- Stream methods and Events code pattern 
+
+For more information about the Xtend language:
+http://www.eclipse.org/xtend/
 
 ## Getting Started
 
 If you use maven or gradle, the dependency is the following:
 
-	com.kimengi.util:xtend-tools:2.4-SNAPSHOT
+	com.kimengi.util:xtend-tools:2.5-SNAPSHOT
 
 Note: currently this library is not yet on MavenCentral.
 
