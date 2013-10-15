@@ -52,7 +52,7 @@ To use the logging wrapper, at the top of your class file, do the following:
 
 The lambda expression/function will only be called if necessary, which helps performance.
 
-### Logger Naming
+#### Logger Naming
 
 You can also add a name to the logger when you create it:
 
@@ -60,7 +60,7 @@ You can also add a name to the logger when you create it:
 
 When you do this, this message will be put in front of every log statement made by this logger. This can be handy when you want to distinguish easily between types of messages in your log.
 
-### Logging List Results
+#### Logging List Results
 
 Sometimes you have a list of things that you want to log. A common pattern is to do something like:
 
@@ -94,7 +94,7 @@ Optionally, you can also pass a logging message:
 
 Note: the logger functions only work if you have the "extension Log logger = class.logger.wrapper" line in your class.
 
-### Logger Functions
+#### Logger Functions
 
 You can also log like this:
 
@@ -114,7 +114,7 @@ Note that in this case, the message is put in front of every user.
 
 Note: the logger functions only work if you have the "extension Log logger = class.logger.wrapper" line in your class.
 
-### Printing
+#### Printing
 
 If you don't want to log but just want to print, You can perform the same thing as above with printEach, which just prints all in the list, and returns the list, so you can keep processing the flow.
 
@@ -140,7 +140,7 @@ The interface of Opt<T> is very simple:
 
 https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/Opt.xtend
 
-### Opt, Some, None, Err
+#### Opt, Some, None, Err
 
 An Opt<T> can be a Some<T>, None<T> or Err<T>. If it is a Some, you can use the value method to get the value. The option extensions let you create an option from a value really easily. For example:
 
@@ -152,7 +152,7 @@ An Opt<T> can be a Some<T>, None<T> or Err<T>. If it is a Some, you can use the 
 	some(12).value == 12 // extension shortcut
 	12.option.value == 12 // extension shortcut
 
-### .option and .or Extensions
+#### .option and .or Extensions
 
 The .option extension also works on null values. This allows you to wrap calls that can return null into options. For example, say that you have a method:
 
@@ -183,19 +183,19 @@ These can also be chained:
 		.or [ findUser(defaultUserId) ]
 		.orThrow [ new Exception('help!') ]
 
-### Attempt
+#### Attempt
 
 You can also catch errors this way, in case findUser were to throw an exception if there was no user found:
 
 	val Opt<User> user = attempt [ findUser(id) ]
 
-### Conditional Processing
+#### Conditional Processing
 
 To perform conditional processing (user is an Opt<User>):
 
 	ifSome(user) [ ..do something with the user.. ]
 
-### Optional Mapping
+#### Optional Mapping
 
 To map a value that may not exist:
 
@@ -228,7 +228,7 @@ See for more operations IterableExtensions.xtend:
 
 https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/IterableExtensions.xtend
 
-### List Operator Overloading
+#### List Operator Overloading
 
 You can perform each with an overload:
 
@@ -267,7 +267,7 @@ Streams are a very nice way of reasoning about asynchronous data, and for making
 
 https://github.com/Netflix/RxJava/wiki
 
-### Defining a new stream
+#### Defining a new stream
 
 You can define a new stream like this:
 
@@ -279,14 +279,14 @@ You can also create a stream directly out of values:
 
 	val stream = #[1, 5, 2, 6].stream
 
-### Pushing something onto a stream
+#### Pushing something onto a stream
 
 Pushing into a stream is like calling a function:
 
 	stream.apply(12)
 	stream <<< 12 // same thing
 
-### Responding to values being pushed onto the stream
+#### Responding to values being pushed onto the stream
 
 When a new value is pushed onto a stream, you can react to it like this:
 
@@ -296,7 +296,7 @@ There is an operator overload as well:
 
 	stream >>> [ println('got value ' + it) ]
 
-### Stream Operations
+#### Stream Operations
 
 As you see this looks very much like the List methods. You can apply mappings, filtering, and more, much like with a list. Much of the strength of stream programming comes from the fact that you can apply many of these transformation functions on data that has not yet arrived, and as needed. This makes streams really well suited for any asynchronous programming. For example:
 
@@ -314,7 +314,7 @@ These mimic the List/Iterable API. What I call a stream is actually a RXJava Sub
 
 http://netflix.github.io/RxJava/javadoc/rx/Observable.html
 
-### Splitting Streams
+#### Splitting Streams
 
 Use the stream.split command to create a new stream from an existing one. For example, say you want to listen for tweets coming in in realtime, but do something different depending on if they are known users:
 
@@ -334,7 +334,7 @@ Use the stream.split command to create a new stream from an existing one. For ex
 		.map [ userId -> message ]
 		.each [ analyser.process(it) ]
 
-### Completing a Stream
+#### Completing a Stream
 
 To complete a stream indicates that a batch of data has finished. To do so, you call the complete method:
 
@@ -346,7 +346,7 @@ You can also listen for a stream to complete:
 	stream.onComplete [ … ]
 	stream .. [ … ] // same thing, see below
 
-### Error Handling
+#### Error Handling
 
 A normal problem in async programming is that if you have an error, this can be thrown in a different thread than your UI, and you have no way of normally catching it. RX will catch and carry the error forward through the stream, much like the closing of the stream, and you can listen for the error at the end:
 
@@ -384,7 +384,7 @@ There are many more operations. See RxExtensions.xtend for more:
 
 https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/RxExtensions.xtend
 
-### Combining with Opt and operator overloading
+#### Combining with Opt and operator overloading
 
 If you apply an Opt<T> on a stream (or promise), this has the following effect:
 
