@@ -156,19 +156,19 @@ class RxExtensions {
 
 	// Operator overloading
 	
-	def static <T> Observable<T> operator_doubleGreaterThan(T item, Observer<T> observer) {
+	def static <T> Observable<T> operator_tripleGreaterThan(T item, Observer<T> observer) {
 		item.promise(observer)
 	}
 	
-	def static <T> Iterable<? extends T> operator_doubleGreaterThan(Iterable<? extends T> iterable, Observer<T> observer) {
+	def static <T> Iterable<? extends T> operator_tripleGreaterThan(Iterable<? extends T> iterable, Observer<T> observer) {
 		iterable.each(observer)
 	}	
 
-	def static <T> operator_doubleGreaterThan(Observable<T> stream, (T)=>void handler) {
+	def static <T> operator_tripleGreaterThan(Observable<T> stream, (T)=>void handler) {
 		stream.each(handler)
 	}
 
-	def static <T> operator_doubleGreaterThan(Observable<T> stream, Observer<T> observer) {
+	def static <T> operator_tripleGreaterThan(Observable<T> stream, Observer<T> observer) {
 		stream.each(observer)
 	}
 	
@@ -180,19 +180,35 @@ class RxExtensions {
 		stream.filter(fn)
 	}
 	
-	def static <T> operator_doubleLessThan(AsyncSubject<T> subject, T value) {
+	def static <T> operator_tripleLessThan(AsyncSubject<T> subject, T value) {
 		subject.apply(value)
 	}
 
-	def static <T> operator_doubleLessThan(AsyncSubject<T> subject, Opt<T> opt) {
+	def static <T> operator_tripleLessThan(AsyncSubject<T> subject, Opt<T> opt) {
 		subject.apply(opt)
 	}
 
-	def static <T> operator_doubleLessThan(Observer<T> stream, T value) {
+	def static <T> operator_tripleGreaterThan(AsyncSubject<T> subject, T value) {
+		subject.apply(value)
+	}
+
+	def static <T> operator_tripleGreaterThan(AsyncSubject<T> subject, Opt<T> opt) {
+		subject.apply(opt)
+	}
+
+	def static <T> operator_tripleLessThan(Observer<T> stream, T value) {
 		stream.apply(value)
 	}
 	
-	def static <T> operator_doubleLessThan(Observer<T> stream, Opt<T> opt) {
+	def static <T> operator_tripleLessThan(Observer<T> stream, Opt<T> opt) {
+		stream.apply(opt)
+	}
+
+	def static <T> operator_tripleGreaterThan(Observer<T> stream, T value) {
+		stream.apply(value)
+	}
+	
+	def static <T> operator_tripleGreaterThan(Observer<T> stream, Opt<T> opt) {
 		stream.apply(opt)
 	}
 

@@ -229,7 +229,7 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    RxExtensions.<Integer>operator_doubleGreaterThan(stream, _function);
+    RxExtensions.<Integer>operator_tripleGreaterThan(stream, _function);
     ConnectableObservable<Integer> _split = RxExtensions.<Integer>split(stream);
     final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
         public void apply(final Integer it) {
@@ -237,7 +237,7 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    RxExtensions.<Integer>operator_doubleGreaterThan(_split, _function_1);
+    RxExtensions.<Integer>operator_tripleGreaterThan(_split, _function_1);
     ConnectableObservable<Integer> _split_1 = RxExtensions.<Integer>split(stream);
     final Function1<Integer,String> _function_2 = new Function1<Integer,String>() {
         public String apply(final Integer it) {
@@ -252,8 +252,8 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    RxExtensions.<String>operator_doubleGreaterThan(_multiply, _function_3);
-    RxExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(2));
+    RxExtensions.<String>operator_tripleGreaterThan(_multiply, _function_3);
+    RxExtensions.<Integer>operator_tripleLessThan(stream, Integer.valueOf(2));
   }
   
   @Test
@@ -279,13 +279,13 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    Observable<String> _doubleGreaterThan = RxExtensions.<String>operator_doubleGreaterThan(_multiply, _function_2);
+    Observable<String> _tripleGreaterThan = RxExtensions.<String>operator_tripleGreaterThan(_multiply, _function_2);
     final Procedure1<Object> _function_3 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("we are done");
         }
       };
-    Observable<String> _upTo = RxExtensions.<String>operator_upTo(_doubleGreaterThan, _function_3);
+    Observable<String> _upTo = RxExtensions.<String>operator_upTo(_tripleGreaterThan, _function_3);
     final Procedure1<Throwable> _function_4 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _message = it.getMessage();
@@ -294,12 +294,12 @@ public class TestRXExtensions {
         }
       };
     RxExtensions.<String>operator_elvis(_upTo, _function_4);
-    Observer<Integer> _doubleLessThan = RxExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(2));
-    Observer<Integer> _doubleLessThan_1 = RxExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(5));
-    Observer<Integer> _doubleLessThan_2 = RxExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(3));
+    Observer<Integer> _tripleLessThan = RxExtensions.<Integer>operator_tripleLessThan(stream, Integer.valueOf(2));
+    Observer<Integer> _tripleLessThan_1 = RxExtensions.<Integer>operator_tripleLessThan(_tripleLessThan, Integer.valueOf(5));
+    Observer<Integer> _tripleLessThan_2 = RxExtensions.<Integer>operator_tripleLessThan(_tripleLessThan_1, Integer.valueOf(3));
     None<Integer> _none = OptExtensions.<Integer>none();
-    Observer<Integer> _doubleLessThan_3 = RxExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, _none);
+    Observer<Integer> _tripleLessThan_3 = RxExtensions.<Integer>operator_tripleLessThan(_tripleLessThan_2, _none);
     Err<Integer> _error = OptExtensions.<Integer>error();
-    RxExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, _error);
+    RxExtensions.<Integer>operator_tripleLessThan(_tripleLessThan_3, _error);
   }
 }

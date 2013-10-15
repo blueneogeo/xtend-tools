@@ -2,16 +2,16 @@ package nl.kii.util
 
 import java.io.Closeable
 import java.io.IOException
+import java.util.LinkedList
 import org.junit.Test
 
 import static nl.kii.util.CloseableExtensions.*
+import static extension nl.kii.util.LogExtensions.*
 
 import static extension nl.kii.util.IterableExtensions.*
 import static extension nl.kii.util.OptExtensions.*
 import static extension nl.kii.util.RxExtensions.*
 import static extension org.junit.Assert.*
-import java.util.LinkedList
-import java.util.List
 
 interface Greeter {
     def void sayGreeting(String name)
@@ -154,12 +154,23 @@ class TestXtendTools {
 	@Test def void testOperators() {
 		// create a collecting stream to gather results in and check them
 		val collector = Integer.stream
-		collector.toList >> [ length.assertEquals(6) ]
+		collector.toList >>> [ length.assertEquals(12) ]
 		// now use the operators to stream an immutable and mutable list into the collector
-		Integer.list << 3 << 6 << 12 >> [ collector.apply(it) ]
-		new LinkedList<Integer> << 3 << 6 << 12 >> [ collector.apply(it) ]
+		val (int)=>void collect = [ collector.apply(it) ]
+		Integer.list >> 3 >> 6 >> 12 >> collect // immutable
+		Integer.list << 3 << 6 << 12 >> collect // same
+		new LinkedList<Integer> << 3 << 6 << 12 >> collect // mutable
+		#[3, 6, 12] >> collect // best, above is just for testing
 		// tell the stream we're done
 		collector.complete
+	}
+	
+	@Test def void testLogging() {
+		val list = #[1, 2, 3]
+		list >> printEach // print each
+		list >> printEach('got list:') // print each
+		list.printEach
+		list.printEach('got list:')
 	}
 	
 }

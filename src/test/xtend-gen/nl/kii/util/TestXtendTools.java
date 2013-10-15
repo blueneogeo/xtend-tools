@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import nl.kii.util.CloseableExtensions;
 import nl.kii.util.IterableExtensions;
+import nl.kii.util.LogExtensions;
 import nl.kii.util.None;
 import nl.kii.util.Opt;
 import nl.kii.util.OptExtensions;
@@ -343,30 +344,44 @@ public class TestXtendTools {
     final Procedure1<List<Integer>> _function = new Procedure1<List<Integer>>() {
         public void apply(final List<Integer> it) {
           int _length = ((Object[])Conversions.unwrapArray(it, Object.class)).length;
-          Assert.assertEquals(_length, 6);
+          Assert.assertEquals(_length, 12);
         }
       };
-    RxExtensions.<List<Integer>>operator_doubleGreaterThan(_list, _function);
-    List<Integer> _list_1 = IterableExtensions.<Integer>list(Integer.class);
-    List<Integer> _doubleLessThan = IterableExtensions.<Integer>operator_doubleLessThan(_list_1, Integer.valueOf(3));
-    List<Integer> _doubleLessThan_1 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(6));
-    List<Integer> _doubleLessThan_2 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(12));
+    RxExtensions.<List<Integer>>operator_tripleGreaterThan(_list, _function);
     final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
         public void apply(final Integer it) {
           RxExtensions.<Integer>apply(collector, it);
         }
       };
-    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleLessThan_2, _function_1);
+    final Procedure1<? super Integer> collect = _function_1;
+    List<Integer> _list_1 = IterableExtensions.<Integer>list(Integer.class);
+    List<Integer> _doubleGreaterThan = IterableExtensions.<Integer>operator_doubleGreaterThan(_list_1, Integer.valueOf(3));
+    List<Integer> _doubleGreaterThan_1 = IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleGreaterThan, Integer.valueOf(6));
+    List<Integer> _doubleGreaterThan_2 = IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleGreaterThan_1, Integer.valueOf(12));
+    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleGreaterThan_2, collect);
+    List<Integer> _list_2 = IterableExtensions.<Integer>list(Integer.class);
+    List<Integer> _doubleLessThan = IterableExtensions.<Integer>operator_doubleLessThan(_list_2, Integer.valueOf(3));
+    List<Integer> _doubleLessThan_1 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(6));
+    List<Integer> _doubleLessThan_2 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(12));
+    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleLessThan_2, collect);
     LinkedList<Integer> _linkedList = new LinkedList<Integer>();
     List<Integer> _doubleLessThan_3 = IterableExtensions.<Integer>operator_doubleLessThan(_linkedList, Integer.valueOf(3));
     List<Integer> _doubleLessThan_4 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(6));
     List<Integer> _doubleLessThan_5 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, Integer.valueOf(12));
-    final Procedure1<Integer> _function_2 = new Procedure1<Integer>() {
-        public void apply(final Integer it) {
-          RxExtensions.<Integer>apply(collector, it);
-        }
-      };
-    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleLessThan_5, _function_2);
+    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleLessThan_5, collect);
+    IterableExtensions.<Integer>operator_doubleGreaterThan(
+      Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(3, 6, 12)), collect);
     RxExtensions.<Integer>complete(collector);
+  }
+  
+  @Test
+  public void testLogging() {
+    final List<Integer> list = Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3));
+    Procedure1<? super Integer> _printEach = LogExtensions.<Integer>printEach();
+    IterableExtensions.<Integer>operator_doubleGreaterThan(list, _printEach);
+    Procedure1<? super Integer> _printEach_1 = LogExtensions.<Integer>printEach("got list:");
+    IterableExtensions.<Integer>operator_doubleGreaterThan(list, _printEach_1);
+    LogExtensions.<Integer>printEach(list);
+    LogExtensions.<Integer>printEach(list, "got list:");
   }
 }

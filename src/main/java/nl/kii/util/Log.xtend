@@ -13,8 +13,10 @@ import org.slf4j.Logger
  */
 @Data class Log {
 
-	Logger logger
-	String name
+	protected Logger logger
+	protected String name
+	
+	// deferred logging functions
 	
 	def trace((Object)=>String message) {
 		if(logger.traceEnabled) logger.trace(message.entry)
@@ -36,9 +38,23 @@ import org.slf4j.Logger
 		if(logger.errorEnabled) logger.error(message.entry)
 	}
 	
+	// logging function functions
+	
+	def <T> (T)=>void trace() { [ logger.trace(toString) ] }
+	
+	def <T> (T)=>void debug() { [ logger.debug(toString) ] }
+
+	def <T> (T)=>void info() { [ logger.info(toString) ] }
+	
+	def <T> (T)=>void warn() { [ logger.warn(toString) ] }
+	
+	def <T> (T)=>void error() { [ logger.error(toString) ] }
+
+	// protected helper methods
+
 	def protected getEntry((Object)=>String message) {
 		if(name != null) '''«name»: «message.apply(null)»'''.toString
 		else message.apply(null)
-	}	
-
+	}
+	
 }

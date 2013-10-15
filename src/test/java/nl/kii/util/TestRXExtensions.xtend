@@ -99,10 +99,10 @@ class TestRXExtensions {
 	def void testOperators() {
 		// test connectables example
 		val stream = Integer.stream
-		stream >> [ println('a: ' + it) ]
-		stream.split >> [ println('a: ' + it) ]
-		stream.split * [ 'got value ' + it ] >> [ println('b: ' + it) ]
-		stream << 2
+		stream >>> [ println('a: ' + it) ]
+		stream.split >>> [ println('a: ' + it) ]
+		stream.split * [ 'got value ' + it ] >>> [ println('b: ' + it) ]
+		stream <<< 2
 	}
 	
 	@Test
@@ -111,10 +111,10 @@ class TestRXExtensions {
 		stream 
 			/ [ it > 2 ] 
 			* ['got number ' + it] 
-			>> [ println('got ' + it)] .. [ println('we are done') ] 
+			>>> [ println('got ' + it)] .. [ println('we are done') ] 
 			?: [ println('caught ' + message) ]
 
-		stream << 2 << 5 << 3 << none << error
+		stream <<< 2 <<< 5 <<< 3 <<< none <<< error
 	}
 	
 }

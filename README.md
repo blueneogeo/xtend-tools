@@ -6,7 +6,7 @@ Some nice tools and Xtend extensions that make life with Xtend better
 
 If you use maven or gradle, the dependency is the following:
 
-	com.kimengi.util:xtend-tools:2.2-SNAPSHOT
+	com.kimengi.util:xtend-tools:2.4-SNAPSHOT
 
 Note: currently this library is not yet on MavenCentral.
 
@@ -26,7 +26,7 @@ Not all are necessary, but you can optimise the imports in Eclipse afterwards.
 To use the logging wrapper, at the top of your class file, do the following:
 
 	import static extension nl.kii.util.LogExtensions.*
-	import static extension org.slf4j.Logger
+	import static extension org.slf4j.Logger.*
 	import nl.kii.util.Log
 
 	class MyClass {
@@ -42,11 +42,85 @@ To use the logging wrapper, at the top of your class file, do the following:
 
 The lambda expression/function will only be called if necessary, which helps performance.
 
+### Logger Naming
+
 You can also add a name to the logger when you create it:
 
 	extension Log logger = class.logger.wrapper('somename')
 
 When you do this, this message will be put in front of every log statement made by this logger. This can be handy when you want to distinguish easily between types of messages in your log.
+
+### Logging List Results
+
+Sometimes you have a list of things that you want to log. A common pattern is to do something like:
+
+	api.getUsers(condition).each [
+		val user = it
+		info ['found user ' + user ]
+		.. perform more code ..
+	]
+
+This pollutes your code with side effects (logging). A better alternative would be:
+
+	api.getUsers(condition)
+		.each [
+			val user = it
+			info ['found user ' + user ]
+		]
+		.each [
+			.. perform more code ..
+		]
+
+Since this is a common pattern, here is a shortcut:
+
+	api.getUsers(condition)
+		.info
+		.each [ .. perform more code .. ]
+
+Optionally, you can also pass a logging message:
+	api.getUsers(condition)
+		.info('found users:')
+		.each [ .. perform more code .. ]
+
+Note: the logger functions only work if you have the "extension Log logger = class.logger.wrapper" line in your class.
+
+### Logger Functions
+
+You can also log like this:
+
+	api.getUsers(condition)
+		.each(info)
+		.each [ .. perform some code .. ]
+
+Here, info actually is a function that produces a function that gets called by each. It looks cleaner with the operators described below:
+
+	api.getUsers(condition) >> info >> [ .. perform some code .. ]
+
+Here too, you can add a message:
+
+	api.getUsers(condition) >> info('found user:') >> [ .. perform some code .. ]	
+
+Note that in this case, the message is put in front of every user.
+
+Note: the logger functions only work if you have the "extension Log logger = class.logger.wrapper" line in your class.
+
+### Printing
+
+If you don't want to log but just want to print, You can perform the same thing as above with printEach, which just prints all in the list, and returns the list, so you can keep processing the flow.
+
+	// via list extension method
+	#['Jane', 'Mark'].printEach
+	#['Jane', 'Mark'].printEach('celebrities:')
+
+	// via printEach lambda
+	#['Jane', 'Mark'] >> printEach
+	#['Jane', 'Mark'] >> printEach('celebrities:')
+
+	// chaining example
+	#[1, 2, 3] 
+	>> printEach('inputs')
+	>> [ it * 2 ]
+	>> printEach('doubled')
 
 ## Optional Programming
 
@@ -165,6 +239,14 @@ This means that if your list is immutable, you have to catch the result:
 	val list = Integer.string
 	val list2 = list << 2 << 5 // catch result in list2
 
+Often you can also reverse the direction. For example, this has the same result:
+
+	2 >> list // results in a longer list
+	list << 2 // same
+	
+	list >> [ println(it) ] // print each item in the list
+	[ println(it) ] << list // same
+
 ## Streams
 
 RXJava is a library written by NetFlix that allows for streams of data, much like Java 8 has introduced with the StreamAPI. RxExtensions.xtend contains helper extensions to make working with streams in Xtend very user-friendly.
@@ -192,7 +274,7 @@ You can also create a stream directly out of values:
 Pushing into a stream is like calling a function:
 
 	stream.apply(12)
-	stream << 12 // same thing
+	stream <<< 12 // same thing
 
 ### Responding to values being pushed onto the stream
 
@@ -202,7 +284,7 @@ When a new value is pushed onto a stream, you can react to it like this:
 
 There is an operator overload as well:
 
-	stream >> [ println('got value ' + it) ]
+	stream >>> [ println('got value ' + it) ]
 
 ### Stream Operations
 
@@ -247,7 +329,7 @@ Use the stream.split command to create a new stream from an existing one. For ex
 To complete a stream indicates that a batch of data has finished. To do so, you call the complete method:
 
 	stream.complete
-	stream << none // same thing, see below
+	stream <<< none // same thing, see below
 
 You can also listen for a stream to complete:
 
@@ -280,7 +362,7 @@ To respond to it, you can use any normal stream operator:
 Then to put something into it:
 
 	p.apply(4) // this also completes the promise
-	p << 4 // same thing
+	p <<< 4 // same thing
 
 You can also directly convert any Future<T> into a promise. For example:
 
@@ -306,17 +388,17 @@ This allows you to create lists of Opt<T> which will fully represent a stream of
 
 In combination with the operator overloading, it also makes for nice short code:
 
-	val stream = Long.stream << 4 << 2 << 5 << none // end the stream, no need to call stream.complete
+	val stream = Long.stream <<< 4 <<< 2 <<< 5 <<< none // end the stream, no need to call stream.complete
 
 Putting all these things together, you can be very succinct in defining stream handling. For example, to create a stream, an error handler and a complete handler:
 
 	// listen to twitter for tweets using async api
 	val tweetStream = twitterAPI.getTweets(userId)
 	// handle incoming tweets
-	tweetStream >> [ processTweet ] .. [ closeConnection ] ?: [ reportError ]
+	tweetStream >>> [ processTweet ] .. [ closeConnection ] ?: [ reportError ]
 
 	// push in your own tweet for testing
-	tweetSteam << test1 << test2 << none
+	tweetSteam <<< test1 <<< test2 <<< none
 
 ## Code Pattern: Event Streams
 
@@ -331,14 +413,14 @@ In most languages with closures, you pass a closure to a class so it can call th
 		new(String title) { … etc … }
 		… implementation … 
 		// somewhere in the code, do this:
-	  // onKeydown << id
+	  // onKeydown <<< id
 	}
 
 	// then to use this elsewhere:
 	val btw = new SomeButton('press me') => [
 		// assign actions to listeners
-		onKeydown >> [ …perform action… ]
-		onKeyup >> [ …perform action… ]
+		onKeydown >>> [ …perform action… ]
+		onKeyup >>> [ …perform action… ]
 	]
 	
 ## Code Pattern: Stream Methods
@@ -354,7 +436,7 @@ Something we found valuable during stream programming is defining streams like m
 		}
 
 		def startListening() {
-			stream >> onNewTweet
+			stream >>> onNewTweet
 		}
 
 		def stopListening() {

@@ -49,8 +49,16 @@ class IterableExtensions {
 		ImmutableList.builder.addAll(list).add(value).build
 	}
 	
+	def static <T> addSafe(T value, Iterable<T> list) {
+		ImmutableList.builder.add(value).addAll(list).build
+	}
+
 	def static <T> addSafe(Set<T> set, T value) {
 		ImmutableSet.builder.addAll(set).add(value).build
+	}
+
+	def static <T> addSafe(T value, Set<T> set) {
+		ImmutableSet.builder.add(value).addAll(set).build
 	}
 
 	// SIDEEFFECTS ////////////////////////////////////////////////////////////
@@ -190,11 +198,6 @@ class IterableExtensions {
 	
 	// OPERATORS //////////////////////////////////////////////////////////////
 	
-	def static <T> Iterable<T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
-		iterable.forEach(fn)
-		iterable
-	}
-
 	def static <T> List<T> operator_doubleLessThan(List<T> list, T value) {
 		if(list instanceof ImmutableList<?>) {
 			list.addSafe(value)
@@ -204,4 +207,18 @@ class IterableExtensions {
 		}
 	}
 			
+	def static <T> List<T> operator_doubleGreaterThan(List<T> list, T value) {
+		operator_doubleLessThan(list, value)
+	}
+
+	def static <T> Iterable<T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
+		iterable.forEach(fn)
+		iterable
+	}
+
+	def static <T> Iterable<T> operator_doubleLessThan(Iterable<T> iterable, (T)=>void fn) {
+		iterable.forEach(fn)
+		iterable
+	}
+
 }
