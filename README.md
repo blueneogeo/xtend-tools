@@ -2,12 +2,12 @@
 
 Some tools and Xtend extensions that make life with the Xtend programming language better:
 
-- SL4J Logging wrapper: allows more efficient and compact logging
 - Options: helps avoid NullpointerExceptions
 - RXJava Streams: easy asynchronous programming with Xtend
 - List and Stream operators: reason about lists and streams with the same syntax, and convert between them easily (without blocking)
 - Promises: reason about Futures as with a stream
 - Stream methods and Events code pattern 
+- SL4J Logging wrapper: allows more efficient and compact logging
 
 For more information about the Xtend language:
 http://www.eclipse.org/xtend/
@@ -16,7 +16,7 @@ http://www.eclipse.org/xtend/
 
 If you use maven or gradle, the dependency is the following:
 
-	com.kimengi.util:xtend-tools:2.5-SNAPSHOT
+	com.kimengi.util:xtend-tools:2.6-SNAPSHOT
 
 Note: currently this library is not yet on MavenCentral.
 
@@ -30,105 +30,6 @@ To use, add the following import statements at the top of your Xtend source file
 	import static extension nl.kii.util.RxExtensions.*
 
 Not all are necessary, but you can optimise the imports in Eclipse afterwards.
-
-## Logging
-
-To use the logging wrapper, at the top of your class file, do the following:
-
-	import static extension nl.kii.util.LogExtensions.*
-	import static extension org.slf4j.LoggerFactory.*
-	import nl.kii.util.Log
-
-	class MyClass {
-		extension Log logger = class.logger.wrapper
-
-		def someFunction() {
-			debug['minor implementation detail']
-			info['something happened!']
-			warn['watch out!']
-			error['crashed!']
-		}
-	}
-
-The lambda expression/function will only be called if necessary, which helps performance.
-
-#### Logger Naming
-
-You can also add a name to the logger when you create it:
-
-	extension Log logger = class.logger.wrapper('somename')
-
-When you do this, this message will be put in front of every log statement made by this logger. This can be handy when you want to distinguish easily between types of messages in your log.
-
-#### Logging List Results
-
-Sometimes you have a list of things that you want to log. A common pattern is to do something like:
-
-	api.getUsers(condition).each [
-		val user = it
-		info ['found user ' + user ]
-		.. perform more code ..
-	]
-
-This pollutes your code with side effects (logging). A better alternative would be:
-
-	api.getUsers(condition)
-		.each [
-			val user = it
-			info ['found user ' + user ]
-		]
-		.each [
-			.. perform more code ..
-		]
-
-Since this is a common pattern, here is a shortcut:
-
-	api.getUsers(condition)
-		.info(logger)
-		.each [ .. perform more code .. ]
-
-Optionally, you can also pass a logging message:
-	api.getUsers(condition)
-		.info('found users:', logger)
-		.each [ .. perform more code .. ]
-
-#### Logger Functions
-
-You can also log like this:
-
-	api.getUsers(condition)
-		.each(info)
-		.each [ .. perform some code .. ]
-
-Here, info actually is a function that produces a function that gets called by each. It looks cleaner with the operators described below:
-
-	api.getUsers(condition) >> info >> [ .. perform some code .. ]
-
-Here too, you can add a message:
-
-	api.getUsers(condition) >> info('found user:') >> [ .. perform some code .. ]	
-
-Note that in this case, the message is put in front of every user.
-
-Note: the logger functions only work if you have the "extension Log logger = class.logger.wrapper" line in your class.
-
-#### Printing
-
-If you don't want to log but just want to print, You can perform the same thing as above with printEach, which just prints all in the list, and returns the list, so you can keep processing the flow.
-
-	// via list extension method
-	#['Jane', 'Mark'].printEach
-	#['Jane', 'Mark'].printEach('celebrities:')
-
-	// via printEach lambda
-	#['Jane', 'Mark'] >> printEach
-	#['Jane', 'Mark'] >> printEach('celebrities:')
-
-	// chaining example
-	#[1, 2, 3] 
-	>> printEach('inputs')
-	>> [ it * 2 ]
-	>> printEach('doubled')
 
 ## Optional Programming
 
@@ -408,7 +309,24 @@ Putting all these things together, you can be very succinct in defining stream h
 	// push in your own tweet for testing
 	tweetSteam <<< test1 <<< test2 <<< none
 
-## Code Pattern: Event Streams
+#### Listening to a Stream of Opts
+
+In the background, the stream.each extension transforms a stream of T into a stream of Opt<T>. The reason this happens is that it allows reasoning about a stream in a single kind of message, requiring only a single handler: (Opt<T>)=>void.
+
+To transform a normal stream (Observable<T>) into an option stream (Observable<Opt<T>>), you can call .options:
+
+	val optStream = stream.options
+
+You can then listen to the event of a some, none and err being passed through the stream like this: 
+
+	stream.options
+		.onSome [ println('got a value: ' + it) ]
+		.onNone [ println('the stream is completed!') ]
+		.onErr [ println('there was an error processing:' + message) ]
+
+When you call .each on a stream, it actually internally creates an option stream from it, performs onSome on it, and returns the option stream. onFinish and onError are aliases of onNone and onErr, and just allow for a more stream-like syntax.
+
+### Code Pattern: Event Streams
 
 In most languages with closures, you pass a closure to a class so it can call this closure when there is a result. For example, if you load some code in the background, you pass a closure when you have the result. However if for example you have an interface and want to listen for results, you can have many listeners. Instead of providing listener interfaces to solve this, you can also use public streams. An example tells more:
 
@@ -431,7 +349,7 @@ In most languages with closures, you pass a closure to a class so it can call th
 		onKeyup >>> [ …perform action… ]
 	]
 	
-## Code Pattern: Stream Methods
+### Code Pattern: Stream Methods
 
 Something we found valuable during stream programming is defining streams like methods in our code. An example says more:
 
@@ -462,3 +380,102 @@ Something we found valuable during stream programming is defining streams like m
 Here onNewTweet acts almost like a method. You can apply values to it like a method, and it is a member of the class. This pattern allows you to abstract away complex processing into a method like structure instead of having everything integrated directly into one clump of code.
 
 There is one gotcha to keep in mind though. onNewTweet will only exist AFTER the class has been created. Also, it is created in order, and that means that if you have two of these 'stream methods', you cannot have the first one call the second one, since at creation, it does not yet exist. The solution is to reverse their place in your source code.
+
+## Logging
+
+To use the logging wrapper, at the top of your class file, do the following:
+
+	import static extension nl.kii.util.LogExtensions.*
+	import static extension org.slf4j.LoggerFactory.*
+	import nl.kii.util.Log
+
+	class MyClass {
+		extension Log logger = class.logger.wrapper
+
+		def someFunction() {
+			debug['minor implementation detail']
+			info['something happened!']
+			warn['watch out!']
+			error['crashed!']
+		}
+	}
+
+The lambda expression/function will only be called if necessary, which helps performance.
+
+#### Logger Naming
+
+You can also add a name to the logger when you create it:
+
+	extension Log logger = class.logger.wrapper('somename')
+
+When you do this, this message will be put in front of every log statement made by this logger. This can be handy when you want to distinguish easily between types of messages in your log.
+
+#### Logging List Results
+
+Sometimes you have a list of things that you want to log. A common pattern is to do something like:
+
+	api.getUsers(condition).each [
+		val user = it
+		info ['found user ' + user ]
+		.. perform more code ..
+	]
+
+This pollutes your code with side effects (logging). A better alternative would be:
+
+	api.getUsers(condition)
+		.each [
+			val user = it
+			info ['found user ' + user ]
+		]
+		.each [
+			.. perform more code ..
+		]
+
+Since this is a common pattern, here is a shortcut:
+
+	api.getUsers(condition)
+		.info(logger)
+		.each [ .. perform more code .. ]
+
+Optionally, you can also pass a logging message:
+	api.getUsers(condition)
+		.info('found users:', logger)
+		.each [ .. perform more code .. ]
+
+#### Logger Functions
+
+You can also log like this:
+
+	api.getUsers(condition)
+		.each(info)
+		.each [ .. perform some code .. ]
+
+Here, info actually is a function that produces a function that gets called by each. It looks cleaner with the operators described below:
+
+	api.getUsers(condition) >> info >> [ .. perform some code .. ]
+
+Here too, you can add a message:
+
+	api.getUsers(condition) >> info('found user:') >> [ .. perform some code .. ]	
+
+Note that in this case, the message is put in front of every user.
+
+Note: the logger functions only work if you have the "extension Log logger = class.logger.wrapper" line in your class.
+
+#### Printing
+
+If you don't want to log but just want to print, You can perform the same thing as above with printEach, which just prints all in the list, and returns the list, so you can keep processing the flow.
+
+	// via list extension method
+	#['Jane', 'Mark'].printEach
+	#['Jane', 'Mark'].printEach('celebrities:')
+
+	// via printEach lambda
+	#['Jane', 'Mark'] >> printEach
+	#['Jane', 'Mark'] >> printEach('celebrities:')
+
+	// chaining example
+	#[1, 2, 3] 
+	>> printEach('inputs')
+	>> [ it * 2 ]
+	>> printEach('doubled')

@@ -6,15 +6,13 @@ import java.util.LinkedList
 import org.junit.Test
 
 import static nl.kii.util.CloseableExtensions.*
-import static extension nl.kii.util.LogExtensions.*
 
 import static extension nl.kii.util.IterableExtensions.*
+import static extension nl.kii.util.LogExtensions.*
 import static extension nl.kii.util.OptExtensions.*
-import static extension nl.kii.util.RxExtensions.*
 import static extension org.junit.Assert.*
 import static extension org.slf4j.LoggerFactory.*
-import nl.kii.util.Log
-	
+
 interface Greeter {
     def void sayGreeting(String name)
 }
@@ -156,17 +154,22 @@ class TestXtendTools {
 	}
 	
 	@Test def void testOperators() {
-		// create a collecting stream to gather results in and check them
-		val collector = Integer.stream
-		collector.toList >>> [ length.assertEquals(12) ]
-		// now use the operators to stream an immutable and mutable list into the collector
-		val (int)=>void collect = [ collector.apply(it) ]
-		Integer.list >> 3 >> 6 >> 12 >> collect // immutable
-		Integer.list << 3 << 6 << 12 >> collect // same
-		new LinkedList<Integer> << 3 << 6 << 12 >> collect // mutable
-		#[3, 6, 12] >> collect // best, above is just for testing
-		// tell the stream we're done
-		collector.complete
+
+		val immutable = Integer.list << 3 << 6 << 12
+		immutable.length.assertEquals(3)
+		
+		val mutable = new LinkedList<Integer> << 3 << 6 << 12
+		mutable.length.assertEquals(3)
+		
+		val chain = #[3, 6, 2, 9, 16] 
+			+ [ it > 2 ] // positive filter
+			- ![ it > 5 ] // negative filter
+			-> [ 'number ' + it ] // map
+		chain.length.assertEquals(3)
+	}
+
+	@Test def void testOperators2() {
+		
 	}
 	
 	@Test def void testLogging() {

@@ -7,6 +7,7 @@ import java.util.HashSet
 import java.util.List
 import java.util.Map
 import java.util.Set
+import org.eclipse.xtext.xbase.lib.Functions.Function1
 import org.eclipse.xtext.xbase.lib.Pair
 
 import static extension nl.kii.util.OptExtensions.*
@@ -198,7 +199,9 @@ class IterableExtensions {
 	
 	// OPERATORS //////////////////////////////////////////////////////////////
 	
-	def static <T> List<T> operator_doubleLessThan(List<T> list, T value) {
+	// adding items to a list using >>
+	
+	def static <T> operator_doubleLessThan(List<T> list, T value) {
 		if(list instanceof ImmutableList<?>) {
 			list.addSafe(value)
 		} else {
@@ -207,18 +210,37 @@ class IterableExtensions {
 		}
 	}
 			
-	def static <T> List<T> operator_doubleGreaterThan(List<T> list, T value) {
-		operator_doubleLessThan(list, value)
-	}
+//	def static <T> operator_doubleGreaterThan(List<T> list, T value) {
+//		operator_doubleLessThan(list, value)
+//	}
 
-	def static <T> Iterable<T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
+	// iterating through items using >> closure
+
+	def static <T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
 		iterable.forEach(fn)
 		iterable
 	}
 
-	def static <T> Iterable<T> operator_doubleLessThan(Iterable<T> iterable, (T)=>void fn) {
-		iterable.forEach(fn)
-		iterable
+	// mapping, filtering
+
+	// map with ->
+	def static <T, R> operator_mappedTo(Iterable<T> original, Function1<? super T, ? extends R> transformation) {
+		original.map(transformation)
+	}
+	
+	// filter with +
+	def static <T> operator_plus(Iterable<T> unfiltered, Function1<? super T, Boolean> predicate) {
+		unfiltered.filter(predicate)
+	}
+	
+	// remove with -
+	def static <T> operator_minus(Iterable<T> unfiltered, Function1<? super T, Boolean> predicate) {
+		unfiltered.filter(!predicate)
+	}
+
+	// negating a filter with !
+	def static <T> Function1<? super T, Boolean> operator_not(Function1<? super T, Boolean> predicate) {
+		[ !predicate.apply(it) ]
 	}
 
 }

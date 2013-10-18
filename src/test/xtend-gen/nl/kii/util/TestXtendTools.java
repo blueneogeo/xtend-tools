@@ -16,7 +16,6 @@ import nl.kii.util.None;
 import nl.kii.util.Opt;
 import nl.kii.util.OptExtensions;
 import nl.kii.util.Readable;
-import nl.kii.util.RxExtensions;
 import nl.kii.util.Some;
 import nl.kii.util.User;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -32,8 +31,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 
 @SuppressWarnings("all")
 public class TestXtendTools {
@@ -354,39 +351,46 @@ public class TestXtendTools {
   
   @Test
   public void testOperators() {
-    final PublishSubject<Integer> collector = RxExtensions.<Integer>stream(Integer.class);
-    Observable<List<Integer>> _list = collector.toList();
-    final Procedure1<List<Integer>> _function = new Procedure1<List<Integer>>() {
-        public void apply(final List<Integer> it) {
-          int _length = ((Object[])Conversions.unwrapArray(it, Object.class)).length;
-          Assert.assertEquals(_length, 12);
-        }
-      };
-    RxExtensions.<List<Integer>>operator_tripleGreaterThan(_list, _function);
-    final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
-        public void apply(final Integer it) {
-          RxExtensions.<Integer>apply(collector, it);
-        }
-      };
-    final Procedure1<? super Integer> collect = _function_1;
-    List<Integer> _list_1 = IterableExtensions.<Integer>list(Integer.class);
-    List<Integer> _doubleGreaterThan = IterableExtensions.<Integer>operator_doubleGreaterThan(_list_1, Integer.valueOf(3));
-    List<Integer> _doubleGreaterThan_1 = IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleGreaterThan, Integer.valueOf(6));
-    List<Integer> _doubleGreaterThan_2 = IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleGreaterThan_1, Integer.valueOf(12));
-    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleGreaterThan_2, collect);
-    List<Integer> _list_2 = IterableExtensions.<Integer>list(Integer.class);
-    List<Integer> _doubleLessThan = IterableExtensions.<Integer>operator_doubleLessThan(_list_2, Integer.valueOf(3));
+    List<Integer> _list = IterableExtensions.<Integer>list(Integer.class);
+    List<Integer> _doubleLessThan = IterableExtensions.<Integer>operator_doubleLessThan(_list, Integer.valueOf(3));
     List<Integer> _doubleLessThan_1 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(6));
-    List<Integer> _doubleLessThan_2 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(12));
-    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleLessThan_2, collect);
+    final List<Integer> immutable = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(12));
+    int _length = ((Object[])Conversions.unwrapArray(immutable, Object.class)).length;
+    Assert.assertEquals(_length, 3);
     LinkedList<Integer> _linkedList = new LinkedList<Integer>();
-    List<Integer> _doubleLessThan_3 = IterableExtensions.<Integer>operator_doubleLessThan(_linkedList, Integer.valueOf(3));
-    List<Integer> _doubleLessThan_4 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(6));
-    List<Integer> _doubleLessThan_5 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, Integer.valueOf(12));
-    IterableExtensions.<Integer>operator_doubleGreaterThan(_doubleLessThan_5, collect);
-    IterableExtensions.<Integer>operator_doubleGreaterThan(
-      Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(3, 6, 12)), collect);
-    RxExtensions.<Integer>complete(collector);
+    List<Integer> _doubleLessThan_2 = IterableExtensions.<Integer>operator_doubleLessThan(_linkedList, Integer.valueOf(3));
+    List<Integer> _doubleLessThan_3 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, Integer.valueOf(6));
+    final List<Integer> mutable = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(12));
+    int _length_1 = ((Object[])Conversions.unwrapArray(mutable, Object.class)).length;
+    Assert.assertEquals(_length_1, 3);
+    final Function1<Integer,Boolean> _function = new Function1<Integer,Boolean>() {
+        public Boolean apply(final Integer it) {
+          boolean _greaterThan = ((it).intValue() > 2);
+          return Boolean.valueOf(_greaterThan);
+        }
+      };
+    Iterable<Integer> _plus = IterableExtensions.<Integer>operator_plus(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(3, 6, 2, 9, 16)), _function);
+    final Function1<Comparable<? super Integer>,Boolean> _function_1 = new Function1<Comparable<? super Integer>,Boolean>() {
+        public Boolean apply(final Comparable<? super Integer> it) {
+          boolean _greaterThan = (it.compareTo(Integer.valueOf(5)) > 0);
+          return _greaterThan;
+        }
+      };
+    Function1<? super Integer,Boolean> _not = IterableExtensions.<Integer>operator_not(_function_1);
+    Iterable<Integer> _minus = IterableExtensions.<Integer>operator_minus(_plus, _not);
+    final Function1<Integer,String> _function_2 = new Function1<Integer,String>() {
+        public String apply(final Integer it) {
+          String _plus = ("number " + it);
+          return _plus;
+        }
+      };
+    final Iterable<String> chain = IterableExtensions.<Integer, String>operator_mappedTo(_minus, _function_2);
+    int _length_2 = ((Object[])Conversions.unwrapArray(chain, Object.class)).length;
+    Assert.assertEquals(_length_2, 3);
+  }
+  
+  @Test
+  public void testOperators2() {
   }
   
   @Test

@@ -2,6 +2,7 @@ package nl.kii.util
 
 import org.junit.Test
 
+import static nl.kii.util.LogExtensions.*
 import static nl.kii.util.OptExtensions.*
 
 import static extension nl.kii.util.RxExtensions.*
@@ -61,7 +62,9 @@ class TestRXExtensions {
 		val c1 = countdown.await
 		val c2 = countdown.await
 		val c3 = countdown.await
-		countdown.stream.onFinish [ println('countdown done. success:' + countdown.success) ]
+		countdown.stream
+			.each [ println('counting...') ]
+			.onFinish [ println('countdown done. success:' + countdown.success) ]
 		c2.apply(true)
 		c1.apply(true)
 		c3.apply(true)
@@ -74,13 +77,14 @@ class TestRXExtensions {
 		val cname = collector.await('name')
 		val cage = collector.await('age')
 		
-		collector.stream.each [ println('got ' + it.key + ' has value ' + it.value)]
-		collector.stream.onFinish [
-			val it = collector.result
-			println('found user ' + get('user'))
-			println('found name ' + get('name'))
-			println('found age ' + get('age'))
-		]
+		collector.stream
+			.each [ println('got ' + it.key + ' has value ' + it.value)]
+			.onFinish [
+				val it = collector.result
+				println('found user ' + get('user'))
+				println('found name ' + get('name'))
+				println('found age ' + get('age'))
+			]
 
 		cage.apply('12')
 		cname.apply('John')
@@ -90,7 +94,7 @@ class TestRXExtensions {
 	@Test
 	def void testConnectables() {
 		val stream = Integer.stream
-		stream.split.each [ println('a: ' + it) ]
+		stream.split.each [ println('a: ' + it) ].connect
 		stream.split.map [ 'got value ' + it ].each [ println('b: ' + it) ]
 		stream.apply(2)
 	}
@@ -101,7 +105,7 @@ class TestRXExtensions {
 		val stream = Integer.stream
 		stream >>> [ println('a: ' + it) ]
 		stream.split >>> [ println('a: ' + it) ]
-		stream.split * [ 'got value ' + it ] >>> [ println('b: ' + it) ]
+		stream.split -> [ 'got value ' + it ] >>> [ println('b: ' + it) ]
 		stream <<< 2
 	}
 	
@@ -109,12 +113,33 @@ class TestRXExtensions {
 	def void testOperators2() {
 		val stream = Integer.stream
 		stream 
-			/ [ it > 2 ] 
-			* ['got number ' + it] 
+			+ [ it > 2 ]
+			- [ it > 9 ]
+			-> ['got number ' + it] 
 			>>> [ println('got ' + it)] .. [ println('we are done') ] 
 			?: [ println('caught ' + message) ]
 
-		stream <<< 2 <<< 5 <<< 3 <<< none <<< error
+		stream <<< 2 <<< 5 <<< 12 <<< 3 <<< none
+	}
+	
+	@Test
+	def void testErrorHandling() {
+		val stream = Integer.stream
+		stream >>> printEach ?: [ println('got error!')	]
+		// stream >>> onSome['do something' ].onNone[ ].onErr[ ] // operator(stream, (Opt<T>)=>void)
+
+		stream <<< 1 <<< 2 <<< error
+	}
+	
+	@Test
+	def void testOptStream() {
+		val stream = String.stream
+		stream.options
+			.onSome [ println('got ' + it) ]
+			.onNone [ println('none') ]
+			.onErr [ println('error') ]
+		stream <<< 'hey' <<< 'hi' <<< error
+		
 	}
 	
 }
