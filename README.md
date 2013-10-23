@@ -283,7 +283,69 @@ There are many more operations. See RxExtensions.xtend for more:
 
 https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/RxExtensions.xtend
 
-#### Combining with Opt and operator overloading
+## Observable Values
+
+Observable values let you monitor state. For example, a simple counter:
+
+	var counter = 0
+	...
+	counter = counter + 1 // statefull update
+
+Often when this happens, you want some other part of your code to respond, for example, update the counter on screen. However, you also still want to be able to access the counter in a normal fashion.
+
+Normally, this means that you have to create a stream, and push changes onto that stream:
+
+	var counter = 0
+	// have a stream ready so we can have code respond
+	val stream = Integer.stream
+	stream >>> [ window.showCount(it) ]
+	...
+	// later we update
+	counter = counter + 1
+	stream <<< counter // let other code respond
+
+The downside of this approach is that when counter changes, you have to remember to also push the count onto the stream. Also, this means having a reference to the stream, and extra code.
+
+Observing a value combines the above code into a single, simple concept:
+
+	val counter = 0.observe // creates an observable value, which starts at 0 in this case
+	counter >>> [ window.showCount(it) ] // if it changes, do something
+	...
+	// later we update with a single call:
+	counter <<< counter.apply + 1 // same as: counter.apply(counter.apply + 1)
+
+As you see, we no longer need to explicitly create a stream. Creating an observable value will create both the value and the stream. Later we can update the value using apply(newValue) and get the existing contained value using apply().
+
+Observable values are of type ValueSubject, which in turns extends BehaviorSubject.
+
+A rule with an observable value (and any behaviorsubject) is that is must always start with a value. You can simply later change this value, and get it. It is also thread safe, as the actual wrapped value is contained in an AtomicReference.
+
+### Computed Observable Values
+
+A computed observable value will update itself using a function whenever its dependencies change. An example says more here:
+
+	val first = 'Hello'.observe
+	val second = 'World'.observe
+	val hello = [ first.apply + ' ' + second.apply ].observe(first, second)
+
+Here, hello gets automatically calculated from first and second, and it will immediately have a value:
+
+	println(hello.apply) // prints 'Hello World'
+
+If you change first or second, hello will also change:
+
+	second <<< 'John'
+	println(hello.apply) // prints 'Hello John'
+
+So far, it acts much like a function. And it is. However it is also observable:
+
+	hello >>> [ println('got message: ' + it) ] // prints both messages, and new ones as first and second change.
+
+Also, unlike a function, you can put in your own values, as it is an observable value (ValueSubject):
+
+	hello <<< 'test' // prints 'got message test'
+
+## Streaming with Opt and operator overloading
 
 If you apply an Opt<T> on a stream (or promise), this has the following effect:
 
@@ -326,7 +388,7 @@ You can then listen to the event of a some, none and err being passed through th
 
 When you call .each on a stream, it actually internally creates an option stream from it, performs onSome on it, and returns the option stream. onFinish and onError are aliases of onNone and onErr, and just allow for a more stream-like syntax.
 
-### Code Pattern: Event Streams
+## Code Pattern: Event Streams
 
 In most languages with closures, you pass a closure to a class so it can call this closure when there is a result. For example, if you load some code in the background, you pass a closure when you have the result. However if for example you have an interface and want to listen for results, you can have many listeners. Instead of providing listener interfaces to solve this, you can also use public streams. An example tells more:
 
@@ -349,7 +411,7 @@ In most languages with closures, you pass a closure to a class so it can call th
 		onKeyup >>> [ …perform action… ]
 	]
 	
-### Code Pattern: Stream Methods
+## Code Pattern: Stream Methods
 
 Something we found valuable during stream programming is defining streams like methods in our code. An example says more:
 

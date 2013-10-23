@@ -1,18 +1,18 @@
 package nl.kii.util
 
-import static extension nl.kii.util.OptExtensions.*
-
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import org.eclipse.xtext.xbase.lib.Functions.Function1
 import rx.Observable
 import rx.Observer
 import rx.Scheduler
+import rx.observables.ConnectableObservable
 import rx.subjects.AsyncSubject
 import rx.subjects.PublishSubject
-import rx.subjects.Subject
-import rx.observables.ConnectableObservable
 import rx.subjects.ReplaySubject
+import rx.subjects.Subject
+
+import static extension nl.kii.util.OptExtensions.*
 
 class RxExtensions {
 
@@ -77,6 +77,46 @@ class RxExtensions {
 	def static <T> Observable<T> promise(Future<? extends T> future, long timeout, TimeUnit timeUnit) {
 		Observable.from(future, timeout, timeUnit)
 	}
+	
+	// CREATING AN OBSERVABLE /////////////////////////////////////////////////
+	
+	/**
+	 * Create a variable that acts like an AtomicReference, but that is also a
+	 * Subject. It allows you to have a threadsafe variable that can be observed
+	 * for changes.
+	 * <pre>
+	 * 	val x = 10.observe // create the observable value
+	 *  x <<< 20 // change the value to 20
+	 *  println(x.apply) // prints the new value, 20
+	 *  x >>> [ println('x was changed to ' + it) ] // tells you changed to 20
+	 * </pre>
+	 */
+	def static <T> ValueSubject<T> observe(T value) {
+		ValueSubject.createWithDefaultValue(value)
+	}
+	
+	// CREATING A COMPUTED OBSERVABLE /////////////////////////////////////////
+	
+	/**
+	 * Lets you listen to observables, and if any has an update, execute the passed function.
+	 * <pre>
+	 * val x = 'hello'.observe
+	 * val y = 'world'.observe
+	 * val z = [ x.apply + ' ' + y.apply ].observe(x, y)
+	 * println(z.apply) // prints 'hello world'
+	 * y <<< 'John' // prints 'hello John'
+	 * </pre>
+	 */
+	def static <T> ValueSubject<T> observe(=>T fn, Observable<?> ... observables) {
+		// initial value is made from executing the function
+		val ValueSubject<T> observalue = fn.apply.observe
+		// every change in any of the observables causes an update on o
+		val (Object)=>void handler = [ observalue.apply(fn.apply) ]
+		observables.forEach [ it >>> handler]
+		observalue
+	}
+	
+	// TODO: all, any etc??
 	
 	// SEND DATA TO A STREAM //////////////////////////////////////////////////
 
@@ -327,30 +367,3 @@ class RxExtensions {
 
 }
 
-class ObserverHelper<T> implements Observer<T> {
-	
-	var (T)=>void onNext
-	var (Throwable)=>void onError
-	var ()=>void onCompleted
-	
-	new() { }
-	
-	new((T)=>void onNext, (Throwable)=>void onError, ()=>void onCompleted) {
-		this.onNext = onNext
-		this.onError = onError
-		this.onCompleted = onCompleted
-	}
-	
-	override onCompleted() {
-		onCompleted.apply
-	}
-	
-	override onError(Throwable e) {
-		onError.apply(e)
-	}
-	
-	override onNext(T v) {
-		onNext.apply(v)
-	}
-	
-}

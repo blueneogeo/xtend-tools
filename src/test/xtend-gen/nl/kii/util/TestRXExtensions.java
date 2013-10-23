@@ -11,12 +11,14 @@ import nl.kii.util.None;
 import nl.kii.util.Opt;
 import nl.kii.util.OptExtensions;
 import nl.kii.util.RxExtensions;
+import nl.kii.util.ValueSubject;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
+import org.junit.Assert;
 import org.junit.Test;
 import rx.Observable;
 import rx.observables.ConnectableObservable;
@@ -361,5 +363,51 @@ public class TestRXExtensions {
     Subject<String,String> _tripleLessThan_1 = RxExtensions.<String>operator_tripleLessThan(_tripleLessThan, "hi");
     Err<String> _error = OptExtensions.<String>error();
     RxExtensions.<String>operator_tripleLessThan(_tripleLessThan_1, _error);
+  }
+  
+  @Test
+  public void testObservable() {
+    final ValueSubject<Integer> counter = RxExtensions.<Integer>observe(Integer.valueOf(0));
+    Integer _apply = counter.apply();
+    Assert.assertEquals((_apply).intValue(), 0);
+    final Procedure1<Integer> _function = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          InputOutput.<String>println("counter was changed! << will be called twice");
+        }
+      };
+    RxExtensions.<Integer>operator_tripleGreaterThan(counter, _function);
+    RxExtensions.<Integer>operator_tripleLessThan(counter, Integer.valueOf(5));
+    Integer _apply_1 = counter.apply();
+    Assert.assertEquals((_apply_1).intValue(), 5);
+  }
+  
+  @Test
+  public void testComputedObservable() {
+    final ValueSubject<Integer> v1 = RxExtensions.<Integer>observe(Integer.valueOf(10));
+    final ValueSubject<Integer> v2 = RxExtensions.<Integer>observe(Integer.valueOf(40));
+    final Function0<Integer> _function = new Function0<Integer>() {
+        public Integer apply() {
+          Integer _apply = v1.apply();
+          Integer _apply_1 = v2.apply();
+          int _plus = ((_apply).intValue() + (_apply_1).intValue());
+          return _plus;
+        }
+      };
+    final ValueSubject<Integer> v3 = RxExtensions.<Integer>observe(_function, v1, v2);
+    RxExtensions.<Integer>apply(v1, Integer.valueOf(30));
+    Integer _apply = v3.apply();
+    int _plus = (30 + 40);
+    Assert.assertEquals((_apply).intValue(), _plus);
+    final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          String _plus = ("v3 changed to " + it);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    RxExtensions.<Integer>operator_tripleGreaterThan(v3, _function_1);
+    RxExtensions.<Integer>operator_tripleLessThan(v2, Integer.valueOf(90));
+    Integer _apply_1 = v3.apply();
+    int _plus_1 = (30 + 90);
+    Assert.assertEquals((_apply_1).intValue(), _plus_1);
   }
 }
