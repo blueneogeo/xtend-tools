@@ -13,6 +13,7 @@ import rx.subjects.ReplaySubject
 import rx.subjects.Subject
 
 import static extension nl.kii.util.OptExtensions.*
+import static extension nl.kii.util.FunctionExtensions.*
 
 class RxExtensions {
 
@@ -93,6 +94,26 @@ class RxExtensions {
 	 */
 	def static <T> ValueSubject<T> observe(T value) {
 		ValueSubject.createWithDefaultValue(value)
+	}
+	
+	/**
+	 * Create an observable value with the startvalue, that listenes to the passed
+	 * observable.
+	 */
+	def static <T> ValueSubject<T> observe(Observable<T> observable, T startValue) {
+		startValue.observe => [
+			observable >>> it
+		]
+	}
+
+	/**
+	 * Create an observable optional value that starts with none, that listenes to the passed
+	 * observable.
+	 */
+	def static <T> ValueSubject<? extends Opt<T>> observe(Observable<? extends Opt<T>> observable) {
+		none.observe => [
+			observable >>> it
+		]
 	}
 	
 	// CREATING A COMPUTED OBSERVABLE /////////////////////////////////////////
@@ -304,6 +325,10 @@ class RxExtensions {
 	def static <T> operator_tripleGreaterThan(Observable<T> stream, Observer<T> observer) {
 		stream.each(observer)
 	}
+
+	def static <T> operator_tripleGreaterThan(Observable<T> stream, T startValue) {
+		stream.observe(startValue)
+	}
 	
 	def static <T, R> operator_mappedTo(Observable<T> stream, (T)=>R fn) {
 		stream.map(fn)
@@ -326,7 +351,7 @@ class RxExtensions {
 	}
 
 	def static<T> operator_not(PublishSubject<T> subject) {
-		subject.onCompleted
+		subject.complete
 	}	
 	
 	def static<T> operator_upTo(Observable<Opt<T>> stream, (Object)=>void handler) {
@@ -335,10 +360,6 @@ class RxExtensions {
 	
 	def static <T> operator_elvis(Observable<Opt<T>> stream, (Throwable)=>void handler) {
 		stream.onError(handler)
-	}
-	
-	def static <T> operator_not(ConnectableObservable<T> stream) {
-		stream.connect
 	}
 	
 	// reverse direction for apply, probably not a good idea, too confusing

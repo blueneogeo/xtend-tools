@@ -410,4 +410,44 @@ public class TestRXExtensions {
     int _plus_1 = (30 + 90);
     Assert.assertEquals((_apply_1).intValue(), _plus_1);
   }
+  
+  @Test
+  public void test() {
+    final ValueSubject<String> a = RxExtensions.<String>observe("Frank");
+    final ValueSubject<String> b = RxExtensions.<String>observe("Selhorst");
+    final Function1<String,String> _function = new Function1<String,String>() {
+        public String apply(final String it) {
+          String _lowerCase = it.toLowerCase();
+          return _lowerCase;
+        }
+      };
+    Observable<String> _mappedTo = RxExtensions.<String, String>operator_mappedTo(a, _function);
+    final ValueSubject<String> c = RxExtensions.<String>operator_tripleGreaterThan(_mappedTo, "test");
+    final Function0<String> _function_1 = new Function0<String>() {
+        public String apply() {
+          String _apply = c.apply();
+          String _plus = (_apply + " ");
+          String _apply_1 = b.apply();
+          String _plus_1 = (_plus + _apply_1);
+          return _plus_1;
+        }
+      };
+    final ValueSubject<String> x = RxExtensions.<String>observe(_function_1, c, b);
+    final Function1<String,String> _function_2 = new Function1<String,String>() {
+        public String apply(final String it) {
+          String _plus = (it + "!");
+          return _plus;
+        }
+      };
+    Observable<String> _mappedTo_1 = RxExtensions.<String, String>operator_mappedTo(x, _function_2);
+    final Procedure1<String> _function_3 = new Procedure1<String>() {
+        public void apply(final String it) {
+          InputOutput.<String>println(it);
+        }
+      };
+    RxExtensions.<String>operator_tripleGreaterThan(_mappedTo_1, _function_3);
+    RxExtensions.<String>operator_tripleLessThan(b, "Vogel");
+    RxExtensions.<String>operator_tripleLessThan(a, "Christian");
+    RxExtensions.<String>operator_tripleLessThan(x, "Direct input");
+  }
 }

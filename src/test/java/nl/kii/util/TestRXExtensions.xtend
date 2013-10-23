@@ -172,4 +172,22 @@ class TestRXExtensions {
 		v3.apply.assertEquals(30 + 90)
 	}
 	
+	@Test
+	def void test() {
+		
+		val a = 'Frank'.observe
+		val b = 'Selhorst'.observe
+		val c = a -> [ toLowerCase ] >>> 'test'
+
+		val x = [| c.apply + ' ' + b.apply ].observe(c, b)
+		
+		x -> [ it + '!' ] >>> [ println(it) ]
+		
+		b <<< 'Vogel'
+		a <<< 'Christian'
+		x <<< 'Direct input'
+		
+
+	}
+	
 }

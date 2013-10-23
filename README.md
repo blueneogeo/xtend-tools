@@ -133,7 +133,6 @@ https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/
 You can perform each with an overload:
 
 	users.each [ … ]
-	users >> [ … ] // same thing
 
 You can also add to a list with an overload:
 
@@ -317,11 +316,11 @@ Observing a value combines the above code into a single, simple concept:
 
 As you see, we no longer need to explicitly create a stream. Creating an observable value will create both the value and the stream. Later we can update the value using apply(newValue) and get the existing contained value using apply().
 
-Observable values are of type ValueSubject, which in turns extends BehaviorSubject.
+Observable values are of type ValueSubject, which in turns extends rx.BehaviorSubject.
 
 A rule with an observable value (and any behaviorsubject) is that is must always start with a value. You can simply later change this value, and get it. It is also thread safe, as the actual wrapped value is contained in an AtomicReference.
 
-### Computed Observable Values
+#### Computed Observable Values
 
 A computed observable value will update itself using a function whenever its dependencies change. An example says more here:
 
@@ -345,6 +344,78 @@ So far, it acts much like a function. And it is. However it is also observable:
 Also, unlike a function, you can put in your own values, as it is an observable value (ValueSubject):
 
 	hello <<< 'test' // prints 'got message test'
+
+#### Transforming a Stream into an Observable Value
+
+If you have an observable value, and you apply transformations on it, you will get a stream, and cannot reason about it as a variable anymore:
+
+	val x = 12.observe // x is a ValueSubject<Integer>
+	val y = x.filter[it > 6] // y is an Observable<Integer>
+	y <<< 4 // does not work
+
+However you can transform the stream into a new ValueSubject as follows:
+
+	val z = y.observe(0) // 0 is the start value
+
+Or, via operators:
+	
+	val z = y >>> 0 // 0 is the start value
+
+A tip: if you have an Opt<T> stream, you can also start with a None as starting value:
+
+	val latest = someStream.options >>> none
+
+Now latest.apply will return a None at first.
+
+## List and Stream Operators
+
+As you may have noticed, stream and list have many of the same basic functions for filtering, mapping and side effects. This is on purpose, so you can reason about them in the same way. Streams are then simply a 'push' version of lists, which are the 'pull' variant.
+
+Since many of these operations are so common, and Xtend has nice operator overloading, this library has some operator overloading for these basic functions. 
+
+#### Operators that work for both streams and lists:
+
+	![..] // negate the result of the boolean fn
+
+	a +[..] // a.filter[..] - allow only where fn returns true
+
+	a -[..] // a.filter(![..]) - allow only where fn returns false
+
+	a -> [..] // a.map[..] - transform items via fn
+
+#### Specific for lists:
+
+	a >> [..] // a.each [..] - execute the fn for each item in the list
+
+	a << b // a.add(b) - add value b to the list
+
+#### Specific for streams:
+
+	a >>> [..] // a.each [..] - execute the fn for each item from the stream
+
+	a >>> b // a.each(b) - connect the out of stream a to the in of stream b
+
+	val o = a >>> x // a.observe(x) - create an observable
+
+	a <<< b // a.apply(b) - put value b into the stream
+
+	!a // a.complete - mark the stream as complete
+
+	a .. [..] // a.onFinish [..] // apply the fn when the stream completes
+
+	a ?: [..] // a.onError [..] // apply the fn when the stream has an error
+
+There is a trick to the >>> stream operator. Instead of just subscribing the passed function to the stream, it first converts the Observable<T> to an Observable<Opt<T>> and it will return that observable. This allows you to chain it with .. and ?: like this:
+
+	val userIds = Long.stream
+	userIds
+		-> [ userAPI.getUser(it) ] // can throw exception
+			+ [ isLoggedIn ] // only process logged in users
+ 		>>> [ println('found user ' + it) ] 
+		.. [ println('finished') ] 
+		?: [ println('user not found!') ]
+
+	userIds <<< 6 // load user 6 by passing it in
 
 ## Streaming with Opt and operator overloading
 
