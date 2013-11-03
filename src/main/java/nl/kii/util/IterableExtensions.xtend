@@ -7,7 +7,7 @@ import java.util.HashSet
 import java.util.List
 import java.util.Map
 import java.util.Set
-import org.eclipse.xtext.xbase.lib.Functions.Function1
+import org.eclipse.xtext.xbase.lib.Functions
 import org.eclipse.xtext.xbase.lib.Pair
 
 import static extension nl.kii.util.OptExtensions.*
@@ -149,6 +149,14 @@ class IterableExtensions {
 		]
 		map
 	}
+
+	/** 
+	 * Convert to a different type. will throw a class cast exception at runtime
+	 * if you convert to the wrong type!
+	 */
+	def static <T> Iterable<T> mapTo(Iterable<?> iterable, Class<T> type) {
+		iterable.map [ it as T ]
+	}
 	
 	// REDUCTION //////////////////////////////////////////////////////////////
 	
@@ -196,51 +204,47 @@ class IterableExtensions {
 	def static <T> boolean in(T instance, Object... objects) {
 		if(instance.defined && objects.defined) objects.contains(instance) else false
 	}
-	
-	// OPERATORS //////////////////////////////////////////////////////////////
-	
-	// adding items to a list using >>
-	
-	def static <T> operator_doubleLessThan(List<T> list, T value) {
-		if(list instanceof ImmutableList<?>) {
-			list.addSafe(value)
-		} else {
-			list.add(value)
-			list
-		}
-	}
-			
-//	def static <T> operator_doubleGreaterThan(List<T> list, T value) {
-//		operator_doubleLessThan(list, value)
-//	}
 
-	// iterating through items using >> closure
+// OPERATORS //////////////////////////////////////////////////////////////
+        
+    // adding items to a list using >>
+    
+    def static <T> operator_doubleLessThan(List<T> list, T value) {
+            if(list instanceof ImmutableList<?>) {
+                    list.addSafe(value)
+            } else {
+                    list.add(value)
+                    list
+            }
+    }
+                    
+    // iterating through items using >> closure
 
-	def static <T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
-		iterable.forEach(fn)
-		iterable
-	}
+    def static <T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
+            iterable.forEach(fn)
+            iterable
+    }
 
-	// mapping, filtering
+    // mapping, filtering
 
-	// map with ->
-	def static <T, R> operator_mappedTo(Iterable<T> original, Function1<? super T, ? extends R> transformation) {
-		original.map(transformation)
-	}
-	
-	// filter with +
-	def static <T> operator_plus(Iterable<T> unfiltered, Function1<? super T, Boolean> predicate) {
-		unfiltered.filter(predicate)
-	}
-	
-	// remove with -
-	def static <T> operator_minus(Iterable<T> unfiltered, Function1<? super T, Boolean> predicate) {
-		unfiltered.filter(!predicate)
-	}
+    // map with ->
+    def static <T, R> operator_mappedTo(Iterable<T> original, Functions.Function1<? super T, ? extends R> transformation) {
+            original.map(transformation)
+    }
+    
+    // filter with +
+    def static <T> operator_plus(Iterable<T> unfiltered, Functions.Function1<? super T, Boolean> predicate) {
+            unfiltered.filter(predicate)
+    }
+    
+    // remove with -
+    def static <T> operator_minus(Iterable<T> unfiltered, Functions.Function1<? super T, Boolean> predicate) {
+            unfiltered.filter(!predicate)
+    }
 
-	// negating a filter with !
-	def static <T> Function1<? super T, Boolean> operator_not(Function1<? super T, Boolean> predicate) {
-		[ !predicate.apply(it) ]
-	}
+    // negating a filter with !
+    def static <T> Functions.Function1<? super T, Boolean> operator_not(Functions.Function1<? super T, Boolean> predicate) {
+            [ !predicate.apply(it) ]
+    }
 
 }

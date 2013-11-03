@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +18,7 @@ import nl.kii.util.Readable;
 import nl.kii.util.Some;
 import nl.kii.util.User;
 import org.eclipse.xtend2.lib.StringConcatenation;
+import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Extension;
@@ -350,58 +350,24 @@ public class TestXtendTools {
   }
   
   @Test
-  public void testOperators() {
-    List<Integer> _list = IterableExtensions.<Integer>list(Integer.class);
-    List<Integer> _doubleLessThan = IterableExtensions.<Integer>operator_doubleLessThan(_list, Integer.valueOf(3));
-    List<Integer> _doubleLessThan_1 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(6));
-    final List<Integer> immutable = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(12));
-    int _length = ((Object[])Conversions.unwrapArray(immutable, Object.class)).length;
-    Assert.assertEquals(_length, 3);
-    LinkedList<Integer> _linkedList = new LinkedList<Integer>();
-    List<Integer> _doubleLessThan_2 = IterableExtensions.<Integer>operator_doubleLessThan(_linkedList, Integer.valueOf(3));
-    List<Integer> _doubleLessThan_3 = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, Integer.valueOf(6));
-    final List<Integer> mutable = IterableExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(12));
-    int _length_1 = ((Object[])Conversions.unwrapArray(mutable, Object.class)).length;
-    Assert.assertEquals(_length_1, 3);
-    final Function1<Integer,Boolean> _function = new Function1<Integer,Boolean>() {
-        public Boolean apply(final Integer it) {
-          boolean _greaterThan = ((it).intValue() > 2);
-          return Boolean.valueOf(_greaterThan);
-        }
-      };
-    Iterable<Integer> _plus = IterableExtensions.<Integer>operator_plus(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(3, 6, 2, 9, 16)), _function);
-    final Function1<Comparable<? super Integer>,Boolean> _function_1 = new Function1<Comparable<? super Integer>,Boolean>() {
-        public Boolean apply(final Comparable<? super Integer> it) {
-          boolean _greaterThan = (it.compareTo(Integer.valueOf(5)) > 0);
-          return _greaterThan;
-        }
-      };
-    Function1<? super Integer,Boolean> _not = IterableExtensions.<Integer>operator_not(_function_1);
-    Iterable<Integer> _minus = IterableExtensions.<Integer>operator_minus(_plus, _not);
-    final Function1<Integer,String> _function_2 = new Function1<Integer,String>() {
-        public String apply(final Integer it) {
-          String _plus = ("number " + it);
-          return _plus;
-        }
-      };
-    final Iterable<String> chain = IterableExtensions.<Integer, String>operator_mappedTo(_minus, _function_2);
-    int _length_2 = ((Object[])Conversions.unwrapArray(chain, Object.class)).length;
-    Assert.assertEquals(_length_2, 3);
-  }
-  
-  @Test
-  public void testOperators2() {
-  }
-  
-  @Test
   public void testLogging() {
     final List<Integer> list = Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3));
-    Procedure1<? super Integer> _printEach = LogExtensions.<Integer>printEach();
-    IterableExtensions.<Integer>operator_doubleGreaterThan(list, _printEach);
-    Procedure1<? super Integer> _printEach_1 = LogExtensions.<Integer>printEach("entry:");
-    IterableExtensions.<Integer>operator_doubleGreaterThan(list, _printEach_1);
     LogExtensions.<Integer>printEach(list);
     LogExtensions.<Integer>printEach(list, "got list:");
     LogExtensions.<Integer>info(list, this.logger);
+  }
+  
+  @Test
+  public void testMapTo() {
+    final List<Object> list = CollectionLiterals.<Object>newLinkedList();
+    list.add(Integer.valueOf(4));
+    list.add(Integer.valueOf(9));
+    final Iterable<Integer> mappedList = IterableExtensions.<Integer>mapTo(list, Integer.class);
+    Integer _get = ((Integer[])Conversions.unwrapArray(mappedList, Integer.class))[0];
+    Integer _integer = new Integer(4);
+    Assert.assertEquals(_get, _integer);
+    Integer _get_1 = ((Integer[])Conversions.unwrapArray(mappedList, Integer.class))[1];
+    Integer _integer_1 = new Integer(9);
+    Assert.assertEquals(_get_1, _integer_1);
   }
 }

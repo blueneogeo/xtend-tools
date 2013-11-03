@@ -53,32 +53,32 @@ class LogExtensions {
 	
 	def static <T> printEach(Iterable<T> list, String msg) {
 		if(msg.defined) println(msg)
-		list >> [ println(logEntry) ]
+		list.each [ println(logEntry) ]
 	}
 
 	def static <T> trace(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.trace(msg)
-		list >> [ log.logger.trace(logEntry) ]
+		list.each [ log.logger.trace(logEntry) ]
 	}
 	
 	def static <T> debug(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.debug(msg)
-		list >> [ log.logger.debug(logEntry) ]
+		list.each [ log.logger.debug(logEntry) ]
 	}
 	
 	def static <T> info(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.info(msg)
-		list >> [ log.logger.info(logEntry) ]
+		list.each [ log.logger.info(logEntry) ]
 	}
 	
 	def static <T> warn(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.warn(msg)
-		list >> [ log.logger.warn(logEntry) ]
+		list.each [ log.logger.warn(logEntry) ]
 	}
 	
 	def static <T> error(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.error(msg)
-		list >> [ log.logger.error(logEntry) ]
+		list.each [ log.logger.error(logEntry) ]
 	}
 	
 	def protected static getLogEntry(Object o) { ' - ' + o.toString }

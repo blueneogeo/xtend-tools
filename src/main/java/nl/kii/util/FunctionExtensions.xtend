@@ -6,6 +6,8 @@ import org.eclipse.xtext.xbase.lib.Functions.Function2
 
 class FunctionExtensions {
 	
+	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
+	
 	/** Negate the result of a function */
 	def static Function0<Boolean> operator_not(Function0<Boolean> fn) {
 		[| !fn.apply ]

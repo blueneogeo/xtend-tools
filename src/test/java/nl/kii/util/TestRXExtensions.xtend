@@ -2,12 +2,12 @@ package nl.kii.util
 
 import org.junit.Test
 
-import static nl.kii.util.LogExtensions.*
-import static nl.kii.util.OptExtensions.*
-
+import static extension nl.kii.util.IterableExtensions.*
+import static extension nl.kii.rx.ObservableExtensions.*
+import static extension nl.kii.rx.ValueSubjectExtensions.*
+import static extension nl.kii.rx.PromiseExtensions.*
+import static extension nl.kii.rx.StreamExtensions.*
 import static extension org.junit.Assert.*
-
-import static extension nl.kii.util.RxExtensions.*
 
 class TestRXExtensions {
 	
@@ -28,7 +28,7 @@ class TestRXExtensions {
 			apply(2)
 			apply(5)
 			apply(3)
-			complete
+			finish
 			// apply(error)
 		]
 	}
@@ -96,41 +96,9 @@ class TestRXExtensions {
 	@Test
 	def void testConnectables() {
 		val stream = Integer.stream
-		stream.split.each [ println('a: ' + it) ].connect
+		// stream.split.each [ println('a: ' + it) ].connect
 		stream.split.map [ 'got value ' + it ].each [ println('b: ' + it) ]
 		stream.apply(2)
-	}
-	
-	@Test
-	def void testOperators() {
-		// test connectables example
-		val stream = Integer.stream
-		stream >>> [ println('a: ' + it) ]
-		stream.split >>> [ println('a: ' + it) ]
-		stream.split -> [ 'got value ' + it ] >>> [ println('b: ' + it) ]
-		stream <<< 2
-	}
-	
-	@Test
-	def void testOperators2() {
-		val stream = Integer.stream
-		stream 
-			+ [ it > 2 ]
-			- [ it > 9 ]
-			-> ['got number ' + it] 
-			>>> [ println('got ' + it)] .. [ println('we are done') ] 
-			?: [ println('caught ' + message) ]
-
-		stream <<< 2 <<< 5 <<< 12 <<< 3 <<< none
-	}
-	
-	@Test
-	def void testErrorHandling() {
-		val stream = Integer.stream
-		stream >>> printEach ?: [ println('got error!')	]
-		// stream >>> onSome['do something' ].onNone[ ].onErr[ ] // operator(stream, (Opt<T>)=>void)
-
-		stream <<< 1 <<< 2 <<< error
 	}
 	
 	@Test
@@ -140,7 +108,9 @@ class TestRXExtensions {
 			.onSome [ println('got ' + it) ]
 			.onNone [ println('none') ]
 			.onErr [ println('error') ]
-		stream <<< 'hey' <<< 'hi' <<< error
+		stream.apply('hey')
+		stream.apply('hi')
+		stream.apply('error')
 	}
 	
 	@Test
@@ -149,9 +119,9 @@ class TestRXExtensions {
 		val counter = 0.observe
 		counter.apply.assertEquals(0)
 		// observe any changes
-		counter >>> [ println('counter was changed! << will be called twice') ]
+		counter.each [ println('counter was changed! << will be called twice') ]
 		// put in a new value
-		counter <<< 5
+		counter.apply(5)
 		// now check the new value
 		counter.apply.assertEquals(5)
 	}
@@ -167,27 +137,9 @@ class TestRXExtensions {
 		v1.apply(30)
 		v3.apply.assertEquals(30 + 40)
 		// listen to the changes of v3
-		v3 >>> [ println('v3 changed to ' + it) ]
-		v2 <<< 90
+		v3.each [ println('v3 changed to ' + it) ]
+		v2.apply(90)
 		v3.apply.assertEquals(30 + 90)
-	}
-	
-	@Test
-	def void test() {
-		
-		val a = 'Frank'.observe
-		val b = 'Selhorst'.observe
-		val c = a -> [ toLowerCase ] >>> 'test'
-
-		val x = [| c.apply + ' ' + b.apply ].observe(c, b)
-		
-		x -> [ it + '!' ] >>> [ println(it) ]
-		
-		b <<< 'Vogel'
-		a <<< 'Christian'
-		x <<< 'Direct input'
-		
-
 	}
 	
 }

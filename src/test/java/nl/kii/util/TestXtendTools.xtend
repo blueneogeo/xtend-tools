@@ -2,7 +2,7 @@ package nl.kii.util
 
 import java.io.Closeable
 import java.io.IOException
-import java.util.LinkedList
+import java.util.List
 import org.junit.Test
 
 import static nl.kii.util.CloseableExtensions.*
@@ -152,33 +152,21 @@ class TestXtendTools {
 	@Test def void testAvg() {
 		#[1, 2, 3, 4].average.assertEquals(2.5, 0)
 	}
-	
-	@Test def void testOperators() {
-
-		val immutable = Integer.list << 3 << 6 << 12
-		immutable.length.assertEquals(3)
 		
-		val mutable = new LinkedList<Integer> << 3 << 6 << 12
-		mutable.length.assertEquals(3)
-		
-		val chain = #[3, 6, 2, 9, 16] 
-			+ [ it > 2 ] // positive filter
-			- ![ it > 5 ] // negative filter
-			-> [ 'number ' + it ] // map
-		chain.length.assertEquals(3)
-	}
-
-	@Test def void testOperators2() {
-		
-	}
-	
 	@Test def void testLogging() {
 		val list = #[1, 2, 3]
-		list >> printEach // print each
-		list >> printEach('entry:') // print each
 		list.printEach
 		list.printEach('got list:')
 		list.info(logger)
+	}
+	
+	@Test def void testMapTo() {
+		val List<Object> list = newLinkedList
+		list.add(4)
+		list.add(9)
+		val mappedList = list.mapTo(Integer)
+		mappedList.get(0).assertEquals(new Integer(4))
+		mappedList.get(1).assertEquals(new Integer(9))
 	}
 	
 }

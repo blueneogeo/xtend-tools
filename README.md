@@ -17,20 +17,52 @@ http://www.eclipse.org/xtend/
 
 If you use maven or gradle, the dependency is the following:
 
-	com.kimengi.util:xtend-tools:2.6-SNAPSHOT
+	com.kimengi.util:xtend-tools:2.17-SNAPSHOT
 
 Note: currently this library is not yet on MavenCentral.
 
-To use, add the following import statements at the top of your Xtend source file:
+Use the following import statements to use this library:
+
+Option programming:
+
+	import nl.kii.util.Opt.*
+	import static extension nl.kii.util.OptExtensions.*
+
+Logger helpers:
+
+	import nl.kii.util.Log
+	import static extension nl.kii.util.LogExtensions.*
+	import static extension org.slf4j.LoggerFactory.*
+
+Using keyword:
 
 	import static extension nl.kii.util.CloseableExtensions.*
-	import static extension nl.kii.util.IterableExtensions.*
-	import static extension nl.kii.util.LogExtensions.*
-	import static extension nl.kii.util.ObjectExtensions.*
-	import static extension nl.kii.util.OptExtensions.*
-	import static extension nl.kii.util.RxExtensions.*
 
-Not all are necessary, but you can optimise the imports in Eclipse afterwards.
+Iterable and Lists:
+
+	import static extension nl.kii.util.IterableExtensions.*
+
+RX Observable helpers:
+
+	import static extension nl.kii.rx.ObservableExtensions.*
+
+RX Streams:
+
+	import static extension nl.kii.rx.StreamExtensions.*
+
+RX Promises:
+
+	import static extension nl.kii.rx.PromiseExtensions.*
+
+RX ValueSubject (observe values):
+
+	import static extension nl.kii.rx.ValueSubjectExtensions.*
+
+Serialising objects:
+
+	import static extension nl.kii.util.ObjectExtensions.*
+
+Each of these is discussed below.
 
 ## Optional Programming
 
@@ -158,19 +190,34 @@ Often you can also reverse the direction. For example, this has the same result:
 
 ## Streams
 
-RXJava is a library written by NetFlix that allows for streams of data, much like Java 8 has introduced with the StreamAPI. RxExtensions.xtend contains helper extensions to make working with streams in Xtend very user-friendly.
+RXJava is a library written by NetFlix that allows for streams of data, much like Java 8 has introduced with the StreamAPI. These streams are a very nice way of reasoning about asynchronous data, and for making your code non-blocking.
+
+RxExtensions.xtend contains helper extensions to make working with streams in Xtend very user-friendly.
+
+For more information on RXJava, see this page:
+https://github.com/Netflix/RxJava/wiki
+
+I've taken liberty of defining my own naming, which differs from that of RX. To clarify, this is how the concepts translate:
+
+#### rx.Observable
+
+In RX, an Observable is an instance that you can listen to, and Observer is something that you can put something into. These two interfaces are separate.
+
+A problem I found with RX is that the concepts it introduces are unclear and unintuitive. Observables and Subjects are not as intuitive as Streams and Promises. They also do not allow state to be kept.
+
+This is why in this library, I've taken the liberty to define these three new concepts, wrapping the solid RX framework.
+
+#### Xtend-tools Stream
 
 A stream is like a list that keeps on filling. If you consider a normal List<T> to be something that you 'pull' data from, you can see a stream as a list that has pushed data into it. You never know when a new item is being pushed onto the stream. That is why you subscribe a lambda/closure to a stream to handle an incoming result. 
 
-Streams are a very nice way of reasoning about asynchronous data, and for making your code non-blocking. For more information, check the RXJava documentation.
-
-https://github.com/Netflix/RxJava/wiki
+If you create a stream with starting values, Xtend-tools simply calls Observable.create for you. If you start from scratch, it will use rx.PublishSubject.
 
 #### Defining a new stream
 
 You can define a new stream like this:
 
-	import static extension nl.kii.util.RxExtensions.*
+	import static extension nl.kii.util.StreamExtensions.*
 	...
 	val stream = Integer.stream
 

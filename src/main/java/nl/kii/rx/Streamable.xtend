@@ -1,4 +1,4 @@
-package nl.kii.util
+package nl.kii.rx
 
 import rx.Observable
 

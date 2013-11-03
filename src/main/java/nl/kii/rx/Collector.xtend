@@ -1,11 +1,14 @@
-package nl.kii.util
+package nl.kii.rx
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import org.eclipse.xtext.xbase.lib.Pair
 import rx.subjects.PublishSubject
 
-import static extension nl.kii.util.RxExtensions.*
-import java.util.concurrent.ConcurrentHashMap
+import static nl.kii.util.Streams.*
+
+import static extension nl.kii.rx.ObservableExtensions.*
+import static extension nl.kii.rx.StreamExtensions.*
 
 /**
  * Collector can collect data from various asynchronous sources.
@@ -56,7 +59,7 @@ class Collector<T> implements Streamable<Pair<String, T>> {
 		[ 
 			stream.apply(name -> it)
 			if(count.incrementAndGet == total.get)
-				stream.complete
+				stream.finish
 		]
 	}
 	

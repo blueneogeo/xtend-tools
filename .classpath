@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src/test/xtend-gen"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/xtend-gen"/>
-	<classpathentry kind="src" path="src/main/proto-gen"/>
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="/Users/christianvogel/.gradle/caches/artifacts-24/filestore/org.eclipse.xtend/org.eclipse.xtend.lib/2.4.3/jar/c97f357ef98b294b33c4a7cb7c917afe22595315/org.eclipse.xtend.lib-2.4.3.jar" sourcepath="/Users/christianvogel/.gradle/caches/artifacts-24/filestore/org.eclipse.xtend/org.eclipse.xtend.lib/2.4.3/source/3aac2d3232a157842d4b9f58d5c2b624a8a54902/org.eclipse.xtend.lib-2.4.3-sources.jar"/>
