@@ -5,8 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.eclipse.xtext.xbase.lib.Pair
 import rx.subjects.PublishSubject
 
-import static nl.kii.util.Streams.*
-
 import static extension nl.kii.rx.StreamExtensions.*
 
 /**

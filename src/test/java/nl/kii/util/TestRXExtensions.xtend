@@ -7,6 +7,8 @@ import static extension nl.kii.rx.ObserveExtensions.*
 import static extension nl.kii.rx.PromiseExtensions.*
 import static extension nl.kii.rx.StreamExtensions.*
 import static extension org.junit.Assert.*
+import nl.kii.rx.Countdown
+import nl.kii.rx.Collector
 
 class TestRXExtensions {
 	
