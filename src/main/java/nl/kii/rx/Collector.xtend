@@ -7,7 +7,6 @@ import rx.subjects.PublishSubject
 
 import static nl.kii.util.Streams.*
 
-import static extension nl.kii.rx.ObservableExtensions.*
 import static extension nl.kii.rx.StreamExtensions.*
 
 /**

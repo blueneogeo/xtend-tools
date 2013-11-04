@@ -248,7 +248,7 @@ As you see this looks very much like the List methods. You can apply mappings, f
 	stream
 		.filter [ it > 5 ]
 		.map [ 'value: ' + it ]
-		.each(printer) // into another stream!
+		.streamTo(printer) // into another stream!
 
 	printer.each [ println(it) ]
 

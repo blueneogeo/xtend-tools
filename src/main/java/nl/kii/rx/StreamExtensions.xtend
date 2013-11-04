@@ -225,15 +225,15 @@ class StreamExtensions {
 
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
     
-    def static <T> Iterable<? extends T> operator_tripleGreaterThan(Iterable<? extends T> iterable, Observer<T> stream) {
+    def static <T> Iterable<? extends T> operator_doubleGreaterThan(Iterable<? extends T> iterable, Observer<T> stream) {
             iterable.streamTo(stream)
     }        
 
-    def static <T> operator_tripleGreaterThan(Observable<T> stream, (T)=>void handler) {
+    def static <T> operator_doubleGreaterThan(Observable<T> stream, (T)=>void handler) {
             stream.each(handler)
     }
 
-    def static <T> operator_tripleGreaterThan(Observable<T> stream, Observer<T> observer) {
+    def static <T> operator_doubleGreaterThan(Observable<T> stream, Observer<T> observer) {
             stream.streamTo(observer)
     }
 
@@ -249,11 +249,11 @@ class StreamExtensions {
             stream.filter [ !predicate.apply(it) ] // cannot use !predicate, due to bug in Xtend
     }
 
-    def static <T> operator_tripleLessThan(Subject<T, T> stream, T value) {
+    def static <T> operator_doubleLessThan(Subject<T, T> stream, T value) {
             stream.apply(value)
     }
     
-    def static <T> operator_tripleLessThan(Subject<T, T> stream, Opt<T> opt) {
+    def static <T> operator_doubleLessThan(Subject<T, T> stream, Opt<T> opt) {
             stream.apply(opt)
     }
 

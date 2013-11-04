@@ -63,7 +63,7 @@ class ObserveExtensions {
 		val ObservedValue<T> observed = fn.apply.observe
 		// every change in any of the observables causes an update on o
 		val (Object)=>void handler = [ observed.apply(fn.apply) ]
-		observables.forEach [ it >>> handler ]
+		observables.forEach [ it >> handler ]
 		observed
 	}
 
