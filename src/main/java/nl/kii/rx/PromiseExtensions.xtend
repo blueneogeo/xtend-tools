@@ -7,7 +7,7 @@ import rx.Observable
 import rx.Scheduler
 import rx.subjects.AsyncSubject
 
-import static extension nl.kii.rx.ObservableExtensions.*
+import static extension nl.kii.rx.StreamExtensions.*
 import nl.kii.util.Some
 import nl.kii.util.None
 import nl.kii.util.Err

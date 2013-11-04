@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import nl.kii.rx.ObservableExtensions;
+import nl.kii.rx.ObserveExtensions;
 import nl.kii.rx.PromiseExtensions;
 import nl.kii.rx.StreamExtensions;
 import nl.kii.rx.ValueSubject;
-import nl.kii.rx.ValueSubjectExtensions;
 import nl.kii.util.Collector;
 import nl.kii.util.Countdown;
 import nl.kii.util.Opt;
@@ -43,20 +43,20 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    Observable<Opt<String>> _each = ObservableExtensions.<String>each(_map, _function_1);
+    Observable<Opt<String>> _each = StreamExtensions.<String>each(_map, _function_1);
     final Procedure1<Object> _function_2 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("we are done!");
         }
       };
-    Observable<Opt<String>> _onFinish = ObservableExtensions.<String>onFinish(_each, _function_2);
+    Observable<Opt<String>> _onFinish = StreamExtensions.<String>onFinish(_each, _function_2);
     final Procedure1<Throwable> _function_3 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("caught: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    ObservableExtensions.<String>onError(_onFinish, _function_3);
+    StreamExtensions.<String>onError(_onFinish, _function_3);
     final Procedure1<PublishSubject<Integer>> _function_4 = new Procedure1<PublishSubject<Integer>>() {
         public void apply(final PublishSubject<Integer> it) {
           StreamExtensions.<Integer>apply(it, Integer.valueOf(2));
@@ -90,26 +90,26 @@ public class TestRXExtensions {
           InputOutput.<String>println(it);
         }
       };
-    Observable<Opt<String>> _each = ObservableExtensions.<String>each(_map_1, _function_2);
+    Observable<Opt<String>> _each = StreamExtensions.<String>each(_map_1, _function_2);
     final Procedure1<Object> _function_3 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("we are done!");
         }
       };
-    Observable<Opt<String>> _onFinish = ObservableExtensions.<String>onFinish(_each, _function_3);
+    Observable<Opt<String>> _onFinish = StreamExtensions.<String>onFinish(_each, _function_3);
     final Procedure1<Throwable> _function_4 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("caught: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    ObservableExtensions.<String>onError(_onFinish, _function_4);
+    StreamExtensions.<String>onError(_onFinish, _function_4);
     PromiseExtensions.<String>apply(promise, "Hello!");
   }
   
   @Test
   public void testConnectedStream() {
-    StreamExtensions.<Integer>each(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3)), this.handler);
+    StreamExtensions.<Integer>streamTo(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3)), this.handler);
   }
   
   private final PublishSubject<Integer> handler = new Function0<PublishSubject<Integer>>() {
@@ -123,7 +123,7 @@ public class TestRXExtensions {
                   InputOutput.<String>println(_plus);
                 }
               };
-            ObservableExtensions.<Integer>each(it, _function);
+            StreamExtensions.<Integer>each(it, _function);
           }
         };
       PublishSubject<Integer> _doubleArrow = ObjectExtensions.<PublishSubject<Integer>>operator_doubleArrow(_stream, _function);
@@ -144,7 +144,7 @@ public class TestRXExtensions {
           InputOutput.<String>println("counting...");
         }
       };
-    Observable<Opt<Pair<String,Boolean>>> _each = ObservableExtensions.<Pair<String,Boolean>>each(_stream, _function);
+    Observable<Opt<Pair<String,Boolean>>> _each = StreamExtensions.<Pair<String,Boolean>>each(_stream, _function);
     final Procedure1<Object> _function_1 = new Procedure1<Object>() {
         public void apply(final Object it) {
           Boolean _isSuccess = countdown.isSuccess();
@@ -152,7 +152,7 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    ObservableExtensions.<Pair<String,Boolean>>onFinish(_each, _function_1);
+    StreamExtensions.<Pair<String,Boolean>>onFinish(_each, _function_1);
     c2.apply(Boolean.valueOf(true));
     c1.apply(Boolean.valueOf(true));
     c3.apply(Boolean.valueOf(true));
@@ -176,7 +176,7 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus_2);
         }
       };
-    Observable<Opt<Pair<String,String>>> _each = ObservableExtensions.<Pair<String,String>>each(_stream, _function);
+    Observable<Opt<Pair<String,String>>> _each = StreamExtensions.<Pair<String,String>>each(_stream, _function);
     final Procedure1<Object> _function_1 = new Procedure1<Object>() {
         public void apply(final Object it) {
           final ConcurrentHashMap<String,String> it_1 = collector.result();
@@ -191,7 +191,7 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus_2);
         }
       };
-    ObservableExtensions.<Pair<String,String>>onFinish(_each, _function_1);
+    StreamExtensions.<Pair<String,String>>onFinish(_each, _function_1);
     cage.apply("12");
     cname.apply("John");
     cuser.apply("Christian");
@@ -214,33 +214,33 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    ObservableExtensions.<String>each(_map, _function_1);
+    StreamExtensions.<String>each(_map, _function_1);
     StreamExtensions.<Integer>apply(stream, Integer.valueOf(2));
   }
   
   @Test
   public void testOptStream() {
     final PublishSubject<String> stream = StreamExtensions.<String>stream(String.class);
-    Observable<Opt<String>> _options = ObservableExtensions.<String>options(stream);
+    Observable<Opt<String>> _options = StreamExtensions.<String>options(stream);
     final Procedure1<String> _function = new Procedure1<String>() {
         public void apply(final String it) {
           String _plus = ("got " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    Observable<Opt<String>> _onSome = ObservableExtensions.<String>onSome(_options, _function);
+    Observable<Opt<String>> _onSome = StreamExtensions.<String>onSome(_options, _function);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
         public void apply(final String it) {
           InputOutput.<String>println("none");
         }
       };
-    Observable<Opt<String>> _onNone = ObservableExtensions.<String>onNone(_onSome, _function_1);
+    Observable<Opt<String>> _onNone = StreamExtensions.<String>onNone(_onSome, _function_1);
     final Procedure1<Throwable> _function_2 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           InputOutput.<String>println("error");
         }
       };
-    ObservableExtensions.<String>onErr(_onNone, _function_2);
+    StreamExtensions.<String>onErr(_onNone, _function_2);
     StreamExtensions.<String>apply(stream, "hey");
     StreamExtensions.<String>apply(stream, "hi");
     StreamExtensions.<String>apply(stream, "error");
@@ -248,7 +248,7 @@ public class TestRXExtensions {
   
   @Test
   public void testObservable() {
-    final ValueSubject<Integer> counter = ValueSubjectExtensions.<Integer>observe(Integer.valueOf(0));
+    final ValueSubject<Integer> counter = ObserveExtensions.<Integer>observe(Integer.valueOf(0));
     Integer _apply = counter.apply();
     Assert.assertEquals((_apply).intValue(), 0);
     final Procedure1<Integer> _function = new Procedure1<Integer>() {
@@ -256,7 +256,7 @@ public class TestRXExtensions {
           InputOutput.<String>println("counter was changed! << will be called twice");
         }
       };
-    ObservableExtensions.<Integer>each(counter, _function);
+    StreamExtensions.<Integer>each(counter, _function);
     StreamExtensions.<Integer>apply(counter, Integer.valueOf(5));
     Integer _apply_1 = counter.apply();
     Assert.assertEquals((_apply_1).intValue(), 5);
@@ -264,8 +264,8 @@ public class TestRXExtensions {
   
   @Test
   public void testComputedObservable() {
-    final ValueSubject<Integer> v1 = ValueSubjectExtensions.<Integer>observe(Integer.valueOf(10));
-    final ValueSubject<Integer> v2 = ValueSubjectExtensions.<Integer>observe(Integer.valueOf(40));
+    final ValueSubject<Integer> v1 = ObserveExtensions.<Integer>observe(Integer.valueOf(10));
+    final ValueSubject<Integer> v2 = ObserveExtensions.<Integer>observe(Integer.valueOf(40));
     final Function0<Integer> _function = new Function0<Integer>() {
         public Integer apply() {
           Integer _apply = v1.apply();
@@ -274,7 +274,7 @@ public class TestRXExtensions {
           return _plus;
         }
       };
-    final ValueSubject<Integer> v3 = ValueSubjectExtensions.<Integer>observe(_function, v1, v2);
+    final ValueSubject<Integer> v3 = ObserveExtensions.<Integer>observe(_function, v1, v2);
     StreamExtensions.<Integer>apply(v1, Integer.valueOf(30));
     Integer _apply = v3.apply();
     int _plus = (30 + 40);
@@ -285,7 +285,7 @@ public class TestRXExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    ObservableExtensions.<Integer>each(v3, _function_1);
+    StreamExtensions.<Integer>each(v3, _function_1);
     StreamExtensions.<Integer>apply(v2, Integer.valueOf(90));
     Integer _apply_1 = v3.apply();
     int _plus_1 = (30 + 90);

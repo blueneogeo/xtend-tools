@@ -8,7 +8,7 @@ import static nl.kii.util.OptExtensions.*
 import static extension nl.kii.rx.ObservableExtensions.*
 import static extension nl.kii.rx.StreamExtensions.*
 
-class ValueSubjectExtensions {
+class ObserveExtensions {
 	
 	// CREATING AN OBSERVED ///////////////////////////////////////////////////
 	
@@ -32,7 +32,7 @@ class ValueSubjectExtensions {
 	 */
 	def static <T> ValueSubject<T> observe(Observable<T> stream, T startValue) {
 		startValue.observe => [
-			stream.each(it)
+			stream.streamTo(it)
 		]
 	}
 
@@ -42,7 +42,7 @@ class ValueSubjectExtensions {
 	def static <T> ValueSubject<Opt<T>> observe(Observable<Opt<T>> observable) {
 		val Opt<T> nothing = none
 		nothing.observe => [
-			observable.each(it)
+			observable.streamTo(it)
 		]
 	}	
 	

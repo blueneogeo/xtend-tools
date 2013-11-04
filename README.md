@@ -6,7 +6,7 @@ Some tools and Xtend extensions that make life with the Xtend programming langua
 - RXJava Streams: easy asynchronous programming with Xtend
 - List and Stream operators: reason about lists and streams with the same syntax, and convert between them easily (without blocking)
 - Promises: reason about Futures as with a stream
-- Observable values: easy, thread-safe listenable variables
+- Observable values: easy, thread-safe, listenable variables
 - Stream methods and Events code pattern 
 - SL4J Logging wrapper: allows more efficient and compact logging
 

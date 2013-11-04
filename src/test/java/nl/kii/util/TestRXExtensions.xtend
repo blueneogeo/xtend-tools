@@ -2,9 +2,8 @@ package nl.kii.util
 
 import org.junit.Test
 
-import static extension nl.kii.util.IterableExtensions.*
 import static extension nl.kii.rx.ObservableExtensions.*
-import static extension nl.kii.rx.ValueSubjectExtensions.*
+import static extension nl.kii.rx.ObserveExtensions.*
 import static extension nl.kii.rx.PromiseExtensions.*
 import static extension nl.kii.rx.StreamExtensions.*
 import static extension org.junit.Assert.*
@@ -51,7 +50,7 @@ class TestRXExtensions {
 	
 	@Test
 	def void testConnectedStream() {
-		#[1, 2, 3].each(handler)
+		#[1, 2, 3].streamTo(handler)
 	}
 	
 	val handler = Integer.stream => [
