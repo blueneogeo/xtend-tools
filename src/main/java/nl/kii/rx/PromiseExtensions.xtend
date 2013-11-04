@@ -91,19 +91,10 @@ class PromiseExtensions {
 	}
 	
 	// REACT TO A PROMISE BEING FULFILLED /////////////////////////////////////
-	
-	/** 
-	 * When the promise is fulfilled, call the handler
-	 * <pre>
-	 * val p = Integer.promise
-	 * p.then [ println('got value ' + it) ]
-	 * p.apply(4) // will print the message above
-	 */
-	def static <T> Observable<Opt<T>> then(Observable<T> promise, (T)=>void handler) {
-		promise.options.onSome(handler)
-	}
 
-	/** 
+	/**
+	 * Alias for StreamExtensions.mapAsync.
+	 * <p>
 	 * When the promise is fulfilled, call the function which produces a new promise. 
 	 * This allows you to chain promises without having callback hell.
 	 * <p>
@@ -133,25 +124,33 @@ class PromiseExtensions {
 	 * </pre>
 	 * 
 	 */
-	def static <T, R> Observable<R> then(Observable<T> promise, Functions.Function1<T, ? extends Future<R>> futureFn) {
-		promise
-			.map [ futureFn.apply(it).promise ]
-			.flatMap[it]
-	}		
-
-	/** when the future is fulfilled, call the function which produces a new promise */
-	def static <T, R> Observable<Opt<T>> then(Future<T> future, (T)=>void eachFn) {
-		future
-			.promise
-			.each(eachFn)
+	def static <T, R> Observable<R> then(Observable<T> promise, Functions.Function1<T, ? extends Observable<R>> observableFn) {
+		promise.mapAsync(observableFn)
 	}
 
 	/** when the future is fulfilled, call the function which produces a new promise */
-	def static <T, R> Observable<R> then(Future<T> future, (T)=>Future<R> futureFn) {
+	def static <T, R> Observable<R> then(Future<T> future, Functions.Function1<T, ? extends Observable<R>> observableFn) {
 		future
 			.promise
-			.map [ futureFn.apply(it).promise ]
-			.flatMap[it]
+			.mapAsync(observableFn)
+	}
+
+	/** 
+	 * When the promise is fulfilled, call the handler. Alias for StreamExtensions.each
+	 * <pre>
+	 * val p = Integer.promise
+	 * p.then [ println('got value ' + it) ]
+	 * p.apply(4) // will print the message above
+	 */
+	def static <T> Observable<Opt<T>> then(Observable<T> promise, (T)=>void handler) {
+		promise.each(handler)
+	}	
+
+	/** 
+	 * When the future is fulfilled, call the handler.
+	 */
+	def static <T> Observable<Opt<T>> then(Future<T> future, (T)=>void handler) {
+		future.promise.each(handler)
 	}
 	
 }

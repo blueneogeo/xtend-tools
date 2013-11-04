@@ -111,11 +111,11 @@ class OptExtensions {
 		new None<T>
 	}
 	
-	def static <T> Err<T> error(Throwable t) {
+	def static <T> Err<T> err(Throwable t) {
 		new Err<T>(t)
 	}
 	
-	def static <T> Err<T> error() {
+	def static <T> Err<T> err() {
 		new Err<T>()
 	}
 
@@ -129,7 +129,7 @@ class OptExtensions {
 		try {
 			fn.apply(null).option
 		} catch (Exception e) {
-			error(e)
+			err(e)
 		}
 	}
 	

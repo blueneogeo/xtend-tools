@@ -46,7 +46,7 @@ import rx.Observer
  *
  * @param <T>
  */
-class ValueSubject<T> extends BehaviorSubject<T> implements Function0<T> {
+class ObservedValue<T> extends BehaviorSubject<T> implements Function0<T> {
 	
 	AtomicReference<T> current
 	
@@ -59,7 +59,7 @@ class ValueSubject<T> extends BehaviorSubject<T> implements Function0<T> {
      *            {@link BehaviorSubject} has not yet received any events.
      * @return the constructed {@link BehaviorSubject}.
      */
-    override static <T> ValueSubject<T> createWithDefaultValue(T defaultValue) {
+    override static <T> ObservedValue<T> createWithDefaultValue(T defaultValue) {
         val observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
 
         val currentValue = new AtomicReference<T>(defaultValue);
@@ -78,7 +78,7 @@ class ValueSubject<T> extends BehaviorSubject<T> implements Function0<T> {
             subscription
 		]
 
-        new ValueSubject<T>(currentValue, onSubscribe, observers)
+        new ObservedValue<T>(currentValue, onSubscribe, observers)
     }
 
 	protected new(AtomicReference<T> currentValue, OnSubscribeFunc<T> onSubscribe, ConcurrentHashMap<Subscription,Observer<? super T>> observers) {

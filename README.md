@@ -42,10 +42,6 @@ Iterable and Lists:
 
 	import static extension nl.kii.util.IterableExtensions.*
 
-RX Observable helpers:
-
-	import static extension nl.kii.rx.ObservableExtensions.*
-
 RX Streams:
 
 	import static extension nl.kii.rx.StreamExtensions.*
@@ -54,9 +50,9 @@ RX Promises:
 
 	import static extension nl.kii.rx.PromiseExtensions.*
 
-RX ValueSubject (observe values):
+RX Observe:
 
-	import static extension nl.kii.rx.ValueSubjectExtensions.*
+	import static extension nl.kii.rx.ObserveExtensions.*
 
 Serialising objects:
 
@@ -64,7 +60,7 @@ Serialising objects:
 
 Each of these is discussed below.
 
-## Optional Programming
+## Option Programming
 
 A problem in Java is catching NullPointerExceptions. You end up with a lot of NullPointerException checks, or with code that throws one while your program runs. Languages like Scala use the idea of an Option to solve this. It forces you to catch these errors at compile time. By marking something an Opt<T> instead of a T, you are saying that the result is optional, and that the programmer should handle the case of no result.
 
@@ -117,7 +113,7 @@ These can also be chained:
 
 #### Attempt
 
-You can also catch errors this way, in case findUser were to throw an exception if there was no user found:
+With attempt, you can catch errors, much like when you perform a try/catch. However the difference is that attempt will not throw an Exception, but instead will return an Err, None or Some(value), depending on what happened when executing the passed function.
 
 	val Opt<User> user = attempt [ findUser(id) ]
 
@@ -192,7 +188,7 @@ Often you can also reverse the direction. For example, this has the same result:
 
 RXJava is a library written by NetFlix that allows for streams of data, much like Java 8 has introduced with the StreamAPI. These streams are a very nice way of reasoning about asynchronous data, and for making your code non-blocking.
 
-RxExtensions.xtend contains helper extensions to make working with streams in Xtend very user-friendly.
+StreamExtensions.xtend contains helper extensions to make working with streams in Xtend very user-friendly.
 
 For more information on RXJava, see this page:
 https://github.com/Netflix/RxJava/wiki
@@ -230,7 +226,7 @@ You can also create a stream directly out of values:
 Pushing into a stream is like calling a function:
 
 	stream.apply(12)
-	stream <<< 12 // same thing
+	stream << 12 // same thing
 
 #### Responding to values being pushed onto the stream
 
@@ -240,7 +236,7 @@ When a new value is pushed onto a stream, you can react to it like this:
 
 There is an operator overload as well:
 
-	stream >>> [ println('got value ' + it) ]
+	stream >> [ println('got value ' + it) ]
 
 #### Stream Operations
 
@@ -285,7 +281,7 @@ Use the stream.split command to create a new stream from an existing one. For ex
 To complete a stream indicates that a batch of data has finished. To do so, you call the complete method:
 
 	stream.complete
-	stream <<< none // same thing, see below
+	stream << none // same thing, see below
 
 You can also listen for a stream to complete:
 
@@ -313,12 +309,16 @@ To create a promise:
 
 To respond to it, you can use any normal stream operator:
 
-	p.map[api.getUser(it)].filter[isLoggedIn].each[sayWelcome(it)]
+	p.map[api.getUser(it)]
+		.filter[isLoggedIn]
+		.each[sayWelcome(it)]
 
 Then to put something into it:
 
 	p.apply(4) // this also completes the promise
-	p <<< 4 // same thing
+	p << 4 // same thing
+
+#### Futures as Promises
 
 You can also directly convert any Future<T> into a promise. For example:
 
@@ -326,17 +326,47 @@ You can also directly convert any Future<T> into a promise. For example:
 	val promise = future.promise
 	promise.each [ println('got user ' + it) ]
 
-There are many more operations. See RxExtensions.xtend for more:
+There are many more operations. See PromiseExtensions.xtend for more:
 
-https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/RxExtensions.xtend
+https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/rx/PromiseExtensions.xtend
 
-## Observable Values
+#### Collapsing Callback Hell
 
-Observable values let you monitor state. For example, a simple counter:
+One of the problems of closure programming is what gets called 'callback hell'. It is the amount of required nesting that comes from a lot of callbacks.
+
+For example, a fictional 2-level callback problem, where the Async functions require closures to be passed:
+
+	// written out a little more explicit to make types easier to follow
+	loadUrlAsync('http://test.com', [ String page |
+		findImagesAsync(page, [ List<String> images |
+			images.each [ println('image url' + it) ]
+		], [ ParseError error |
+			println('parsing error: ' + error.message)
+		])
+	], [ HttpException error |
+		println('loading error: ' + error.message)
+	])
+
+Each closure also needs an error closure handler, and nesting makes things complicated. At 3 or more levels, things get much worse. With Promises and PromiseExtensions.then, you can make life a lot better:
+
+	loadUrlAsync('http://test.com')
+		.then [ findImagesAsync(it) ]
+		.then [ println('image url: ' + it) ]
+		.onErr [ println('error occurred : ' + message ]
+
+For this to work, the loadUrlAsync and findImagesAsync function need to return a Promise (in the form of an Observable) instead.
+
+The then extension takes a Future or Promise, and maps the function to it. If this function returns a future or promise, it then creates from this a new stream of those results (using the flatMap function from RX). This allows you to keep chaining results like above, while in the background this is an asynchronous process. If the function you pass does not return a future or observable, it is simply processed as an RX.each, so the function is called for each incoming result.
+
+Notice how error handling is now also much improved due to RX. The duty of dealing with errors has now been delegated outside of the loop, letting you deal with them more easily.
+
+## Observed Values
+
+Observed values let you monitor state. They are implemented by class nl.kii.rx.ObservedValue. For example, a simple counter:
 
 	var counter = 0
 	...
-	counter = counter + 1 // statefull update
+	counter = counter + 1 // stateful update
 
 Often when this happens, you want some other part of your code to respond, for example, update the counter on screen. However, you also still want to be able to access the counter in a normal fashion.
 
@@ -345,34 +375,39 @@ Normally, this means that you have to create a stream, and push changes onto tha
 	var counter = 0
 	// have a stream ready so we can have code respond
 	val stream = Integer.stream
-	stream >>> [ window.showCount(it) ]
+	stream >> [ window.showCount(it) ]
 	...
 	// later we update
 	counter = counter + 1
-	stream <<< counter // let other code respond
+	stream << counter // let other code respond
 
 The downside of this approach is that when counter changes, you have to remember to also push the count onto the stream. Also, this means having a reference to the stream, and extra code.
 
 Observing a value combines the above code into a single, simple concept:
 
 	val counter = 0.observe // creates an observable value, which starts at 0 in this case
-	counter >>> [ window.showCount(it) ] // if it changes, do something
+	counter >> [ window.showCount(it) ] // if it changes, do something
 	...
 	// later we update with a single call:
-	counter <<< counter.apply + 1 // same as: counter.apply(counter.apply + 1)
+	counter << counter.apply + 1 // same as: counter.apply(counter.apply + 1)
 
-As you see, we no longer need to explicitly create a stream. Creating an observable value will create both the value and the stream. Later we can update the value using apply(newValue) and get the existing contained value using apply().
+As you see, we no longer need to explicitly create a stream. Creating an observed value will create both the value and the stream. Later we can update the value using apply(newValue) and get the existing contained value using apply().
 
-Observable values are of type ValueSubject, which in turns extends rx.BehaviorSubject.
+A rule with an observed value (and any rx.BehaviorSubject, which it extends) is that is must always start with a value. You can simply later change this value, and get it. It is also thread safe, as the actual wrapped value is contained in an AtomicReference.
 
-A rule with an observable value (and any behaviorsubject) is that is must always start with a value. You can simply later change this value, and get it. It is also thread safe, as the actual wrapped value is contained in an AtomicReference.
+#### Computed Observed Values
 
-#### Computed Observable Values
+A computed observed value will update itself using a function whenever its dependencies change. 
 
-A computed observable value will update itself using a function whenever its dependencies change. An example says more here:
+Often values in your code need explicit recalculation when something else changes. For example, in a window, when the width of the window changes, perhaps the width of a table inside that window should also change. Or when the amount of registered users changes, the amount of free space should be calculated, and responded to when it's too low.
+
+Calculated observed values let you create such connections easily, and lets you monitor them as any stream.
+
+An example says more here:
 
 	val first = 'Hello'.observe
 	val second = 'World'.observe
+
 	val hello = [ first.apply + ' ' + second.apply ].observe(first, second)
 
 Here, hello gets automatically calculated from first and second, and it will immediately have a value:
@@ -381,36 +416,34 @@ Here, hello gets automatically calculated from first and second, and it will imm
 
 If you change first or second, hello will also change:
 
-	second <<< 'John'
+	second << 'John'
 	println(hello.apply) // prints 'Hello John'
 
 So far, it acts much like a function. And it is. However it is also observable:
 
-	hello >>> [ println('got message: ' + it) ] // prints both messages, and new ones as first and second change.
+	hello >> [ println('got message: ' + it) ]
 
-Also, unlike a function, you can put in your own values, as it is an observable value (ValueSubject):
+Now, if either first or second gets a new value, the calculated message will be printed.
 
-	hello <<< 'test' // prints 'got message test'
+Also, unlike a function, you can put in your own values, as it still is a normal observed value:
 
-#### Transforming a Stream into an Observable Value
+	hello << 'test' // prints 'got message test'
+
+#### Transforming a Stream into an Observed Value
 
 If you have an observable value, and you apply transformations on it, you will get a stream, and cannot reason about it as a variable anymore:
 
 	val x = 12.observe // x is a ValueSubject<Integer>
 	val y = x.filter[it > 6] // y is an Observable<Integer>
-	y <<< 4 // does not work
+	y << 4 // does not work
 
 However you can transform the stream into a new ValueSubject as follows:
 
-	val z = y.observe(0) // 0 is the start value
-
-Or, via operators:
-	
-	val z = y >>> 0 // 0 is the start value
+	val z = y.observe(7) // 7 is the start value
 
 A tip: if you have an Opt<T> stream, you can also start with a None as starting value:
 
-	val latest = someStream.options >>> none
+	val latest = someStream.options.observe(none)
 
 Now latest.apply will return a None at first.
 
@@ -438,13 +471,13 @@ Since many of these operations are so common, and Xtend has nice operator overlo
 
 #### Specific for streams:
 
-	a >>> [..] // a.each [..] - execute the fn for each item from the stream
+	a >> [..] // a.each [..] - execute the fn for each item from the stream
 
-	a >>> b // a.each(b) - connect the out of stream a to the in of stream b
+	a >> b // a.each(b) - connect the out of stream a to the in of stream b
 
-	val o = a >>> x // a.observe(x) - create an observable
+	val o = a >> x // a.observe(x) - create an observable
 
-	a <<< b // a.apply(b) - put value b into the stream
+	a << b // a.apply(b) - put value b into the stream
 
 	!a // a.complete - mark the stream as complete
 
@@ -452,17 +485,17 @@ Since many of these operations are so common, and Xtend has nice operator overlo
 
 	a ?: [..] // a.onError [..] // apply the fn when the stream has an error
 
-There is a trick to the >>> stream operator. Instead of just subscribing the passed function to the stream, it first converts the Observable<T> to an Observable<Opt<T>> and it will return that observable. This allows you to chain it with .. and ?: like this:
+There is a trick to the >> stream operator. Instead of just subscribing the passed function to the stream, it first converts the Observable<T> to an Observable<Opt<T>> and it will return that observable. This allows you to chain it with .. and ?: like this:
 
 	val userIds = Long.stream
 	userIds
 		-> [ userAPI.getUser(it) ] // can throw exception
 			+ [ isLoggedIn ] // only process logged in users
- 		>>> [ println('found user ' + it) ] 
+ 		>> [ println('found user ' + it) ] 
 		.. [ println('finished') ] 
 		?: [ println('user not found!') ]
 
-	userIds <<< 6 // load user 6 by passing it in
+	userIds << 6 // load user 6 by passing it in
 
 ## Streaming with Opt and operator overloading
 
@@ -478,17 +511,17 @@ This allows you to create lists of Opt<T> which will fully represent a stream of
 
 In combination with the operator overloading, it also makes for nice short code:
 
-	val stream = Long.stream <<< 4 <<< 2 <<< 5 <<< none // end the stream, no need to call stream.complete
+	val stream = Long.stream << 4 << 2 << 5 << none // end the stream, no need to call stream.complete
 
 Putting all these things together, you can be very succinct in defining stream handling. For example, to create a stream, an error handler and a complete handler:
 
 	// listen to twitter for tweets using async api
 	val tweetStream = twitterAPI.getTweets(userId)
 	// handle incoming tweets
-	tweetStream >>> [ processTweet ] .. [ closeConnection ] ?: [ reportError ]
+	tweetStream >> [ processTweet ] .. [ closeConnection ] ?: [ reportError ]
 
 	// push in your own tweet for testing
-	tweetSteam <<< test1 <<< test2 <<< none
+	tweetSteam << test1 << test2 << none
 
 #### Listening to a Stream of Opts
 
@@ -520,14 +553,14 @@ In most languages with closures, you pass a closure to a class so it can call th
 		new(String title) { … etc … }
 		… implementation … 
 		// somewhere in the code, do this:
-	  // onKeydown <<< id
+	  // onKeydown << id
 	}
 
 	// then to use this elsewhere:
 	val btw = new SomeButton('press me') => [
 		// assign actions to listeners
-		onKeydown >>> [ …perform action… ]
-		onKeyup >>> [ …perform action… ]
+		onKeydown >> [ …perform action… ]
+		onKeyup >> [ …perform action… ]
 	]
 	
 ## Code Pattern: Stream Methods
@@ -543,7 +576,7 @@ Something we found valuable during stream programming is defining streams like m
 		}
 
 		def startListening() {
-			stream >>> onNewTweet
+			stream >> onNewTweet
 		}
 
 		def stopListening() {
@@ -560,7 +593,7 @@ Something we found valuable during stream programming is defining streams like m
 
 Here onNewTweet acts almost like a method. You can apply values to it like a method, and it is a member of the class. This pattern allows you to abstract away complex processing into a method like structure instead of having everything integrated directly into one clump of code.
 
-There is one gotcha to keep in mind though. onNewTweet will only exist AFTER the class has been created. Also, it is created in order, and that means that if you have two of these 'stream methods', you cannot have the first one call the second one, since at creation, it does not yet exist. The solution is to reverse their place in your source code.
+There are gotchas to keep in mind with this pattern. onNewTweet will only exist AFTER the class has been created. Also, it is created in order, and that means that if you have two of these 'stream methods', you cannot have the first one call the second one, since at creation, it does not yet exist. The solution is to reverse their place in your source code.
 
 ## Logging
 

@@ -30,7 +30,7 @@ class CloseableExtensions {
 		try {
 			using(closable, fn).option
 		} catch(Throwable e) {
-			error(e)
+			err(e)
 		}
 	}
 	

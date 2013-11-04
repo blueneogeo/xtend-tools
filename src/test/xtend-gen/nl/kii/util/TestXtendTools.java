@@ -362,7 +362,7 @@ public class TestXtendTools {
     final List<Object> list = CollectionLiterals.<Object>newLinkedList();
     list.add(Integer.valueOf(4));
     list.add(Integer.valueOf(9));
-    final Iterable<Integer> mappedList = IterableExtensions.<Integer>mapTo(list, Integer.class);
+    final Iterable<Integer> mappedList = IterableExtensions.<Integer>mapAs(list, Integer.class);
     Integer _get = ((Integer[])Conversions.unwrapArray(mappedList, Integer.class))[0];
     Integer _integer = new Integer(4);
     Assert.assertEquals(_get, _integer);

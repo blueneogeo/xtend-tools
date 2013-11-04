@@ -23,14 +23,14 @@ class ObserveExtensions {
 	 *  x >>> [ println('x was changed to ' + it) ] // tells you changed to 20
 	 * </pre>
 	 */
-	def static <T> ValueSubject<T> observe(T value) {
-		ValueSubject.createWithDefaultValue(value)
+	def static <T> ObservedValue<T> observe(T value) {
+		ObservedValue.createWithDefaultValue(value)
 	}
 	
 	/**
 	 * Transform a stream into a valuesubject, with the start value
 	 */
-	def static <T> ValueSubject<T> observe(Observable<T> stream, T startValue) {
+	def static <T> ObservedValue<T> observe(Observable<T> stream, T startValue) {
 		startValue.observe => [
 			stream.streamTo(it)
 		]
@@ -39,14 +39,14 @@ class ObserveExtensions {
 	/**
 	 * Transform a stream into a valuesubject<Opt<T>>, with a startvalue of none
 	 */
-	def static <T> ValueSubject<Opt<T>> observe(Observable<Opt<T>> observable) {
+	def static <T> ObservedValue<Opt<T>> observe(Observable<Opt<T>> observable) {
 		val Opt<T> nothing = none
 		nothing.observe => [
 			observable.streamTo(it)
 		]
 	}	
 	
-	// CREATING A COMPUTED OBSERVED ///////////////////////////////////////////
+	// CREATING A COMPUTED OBSERVE VALUE //////////////////////////////////////
 	
 	/**
 	 * Lets you listen to observables, and if any has an update, execute the passed function.
@@ -58,9 +58,9 @@ class ObserveExtensions {
 	 * y <<< 'John' // prints 'hello John'
 	 * </pre>
 	 */
-	def static <T> ValueSubject<T> observe(=>T fn, Observable<?> ... observables) {
+	def static <T> ObservedValue<T> observe(=>T fn, Observable<?> ... observables) {
 		// initial value is made from executing the function
-		val ValueSubject<T> observed = fn.apply.observe
+		val ObservedValue<T> observed = fn.apply.observe
 		// every change in any of the observables causes an update on o
 		val (Object)=>void handler = [ observed.apply(fn.apply) ]
 		observables.forEach [ it >>> handler ]

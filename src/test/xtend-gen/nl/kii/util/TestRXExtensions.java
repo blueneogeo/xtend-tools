@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import nl.kii.rx.ObservableExtensions;
 import nl.kii.rx.ObserveExtensions;
+import nl.kii.rx.ObservedValue;
 import nl.kii.rx.PromiseExtensions;
 import nl.kii.rx.StreamExtensions;
-import nl.kii.rx.ValueSubject;
 import nl.kii.util.Collector;
 import nl.kii.util.Countdown;
 import nl.kii.util.Opt;
@@ -248,7 +248,7 @@ public class TestRXExtensions {
   
   @Test
   public void testObservable() {
-    final ValueSubject<Integer> counter = ObserveExtensions.<Integer>observe(Integer.valueOf(0));
+    final ObservedValue<Integer> counter = ObserveExtensions.<Integer>observe(Integer.valueOf(0));
     Integer _apply = counter.apply();
     Assert.assertEquals((_apply).intValue(), 0);
     final Procedure1<Integer> _function = new Procedure1<Integer>() {
@@ -264,8 +264,8 @@ public class TestRXExtensions {
   
   @Test
   public void testComputedObservable() {
-    final ValueSubject<Integer> v1 = ObserveExtensions.<Integer>observe(Integer.valueOf(10));
-    final ValueSubject<Integer> v2 = ObserveExtensions.<Integer>observe(Integer.valueOf(40));
+    final ObservedValue<Integer> v1 = ObserveExtensions.<Integer>observe(Integer.valueOf(10));
+    final ObservedValue<Integer> v2 = ObserveExtensions.<Integer>observe(Integer.valueOf(40));
     final Function0<Integer> _function = new Function0<Integer>() {
         public Integer apply() {
           Integer _apply = v1.apply();
@@ -274,7 +274,7 @@ public class TestRXExtensions {
           return _plus;
         }
       };
-    final ValueSubject<Integer> v3 = ObserveExtensions.<Integer>observe(_function, v1, v2);
+    final ObservedValue<Integer> v3 = ObserveExtensions.<Integer>observe(_function, v1, v2);
     StreamExtensions.<Integer>apply(v1, Integer.valueOf(30));
     Integer _apply = v3.apply();
     int _plus = (30 + 40);

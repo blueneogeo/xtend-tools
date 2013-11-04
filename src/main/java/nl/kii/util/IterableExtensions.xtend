@@ -154,7 +154,7 @@ class IterableExtensions {
 	 * Convert to a different type. will throw a class cast exception at runtime
 	 * if you convert to the wrong type!
 	 */
-	def static <T> Iterable<T> mapTo(Iterable<?> iterable, Class<T> type) {
+	def static <T> Iterable<T> mapAs(Iterable<?> iterable, Class<T> type) {
 		iterable.map [ it as T ]
 	}
 	

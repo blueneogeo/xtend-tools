@@ -164,7 +164,7 @@ class TestXtendTools {
 		val List<Object> list = newLinkedList
 		list.add(4)
 		list.add(9)
-		val mappedList = list.mapTo(Integer)
+		val mappedList = list.mapAs(Integer)
 		mappedList.get(0).assertEquals(new Integer(4))
 		mappedList.get(1).assertEquals(new Integer(9))
 	}

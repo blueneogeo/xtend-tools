@@ -52,6 +52,37 @@ class StreamExtensions {
 		stream
 	}
 
+	// ASYNC MAPPING //////////////////////////////////////////////////////////
+	
+	/** 
+	 * Take a stream of values, and for each, map them into new values using an asynchronous process
+	 * described by a passed function which produces an observable. The resulting stream is put in
+	 * order of incoming values.
+	 * <p>
+	 * This lets you chain asynchronous operations together and avoid callback hell.
+	 * The function you pass should return a stream/Observable to be listened to for the result.
+	 * <pre>
+	 * // given the following interface
+	 * def Observable<User> loadUserAsync(int userId)
+	 * def Observable<Profile> loadUserProfileAsync(User user)
+	 * def void displayUserProfile(Profile profile) 
+	 * 
+	 * // we can now do this:
+	 * #[4534, 3432, 67] // some user id's
+	 *    .stream
+	 *    .mapAsync [ userId | userAPI.loadUserAsync(userId) ]
+	 *    .mapAsync [ user | profileAPI.loadUserProfileAsync(user) ]
+	 *    .each [ profile | displayUserProfile(profile) ]
+	 *    .onErr [ println('got error ' + it) ]
+	 * </pre>
+	 */
+	def static <T, R> Observable<R> mapAsync(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
+		stream
+			.map [ observableFn.apply(it) ]
+			.flatMap[it]
+			.synchronize
+	}	
+
 	// RESPOND TO THE STREAM //////////////////////////////////////////////////
 
 	def static<T> finish(PublishSubject<T> subject) {
