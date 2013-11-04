@@ -49,8 +49,8 @@ class PromiseExtensions {
 	 * val promisedUser = futureUser.promise
 	 * promisedUser.then [ showUser(it) ]
 	 */
-	def static <T> Observable<T> promise(Future<?> future, Class<T> type) {
-		Observable.from(future as Future<T>)
+	def static <T> Observable<T> promise(Future<T> future) {
+		Observable.from(future)
 	}
 
 	/**
@@ -133,24 +133,24 @@ class PromiseExtensions {
 	 * </pre>
 	 * 
 	 */
-	def static <T, R> Observable<R> then(Observable<T> promise, Class<R> outgoingFutureType, Functions.Function1<T, ? extends Future<R>> futureFn) {
+	def static <T, R> Observable<R> then(Observable<T> promise, Functions.Function1<T, ? extends Future<R>> futureFn) {
 		promise
-			.map [ futureFn.apply(it).promise(outgoingFutureType) ]
+			.map [ futureFn.apply(it).promise ]
 			.flatMap[it]
 	}		
 
 	/** when the future is fulfilled, call the function which produces a new promise */
-	def static <T, R> Observable<Opt<T>> then(Future<T> future, Class<T> incomingFutureType, (T)=>void eachFn) {
+	def static <T, R> Observable<Opt<T>> then(Future<T> future, (T)=>void eachFn) {
 		future
-			.promise(incomingFutureType)
+			.promise
 			.each(eachFn)
 	}
 
 	/** when the future is fulfilled, call the function which produces a new promise */
-	def static <T, R> Observable<R> then(Future<T> future, Class<T> incomingFutureType, Class<R> outgoingFutureType, (T)=>Future<R> futureFn) {
+	def static <T, R> Observable<R> then(Future<T> future, (T)=>Future<R> futureFn) {
 		future
-			.promise(incomingFutureType)
-			.map [ futureFn.apply(it).promise(outgoingFutureType) ]
+			.promise
+			.map [ futureFn.apply(it).promise ]
 			.flatMap[it]
 	}
 	
