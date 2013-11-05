@@ -46,7 +46,7 @@ class StreamExtensions {
 		switch(opt) {
 			Some<T>: stream.apply(opt.value)
 			None<T>: stream.finish
-			Err<T>: stream.onError(opt.exception)
+			Err<T>: stream.error(opt.exception)
 		}
 		stream
 	}
@@ -89,7 +89,7 @@ class StreamExtensions {
 		subject
 	}
 	
-	def static<T> error(PublishSubject<T> subject, Throwable t) {
+	def static<T> error(Observer<T> subject, Throwable t) {
 		subject.onError(t)
 		subject
 	}
@@ -137,6 +137,24 @@ class StreamExtensions {
 		)
 		stream.streamTo(helper)
 		optStream
+	}
+	
+	/**
+	 * Convert a stream of Options (back) to a normal stream.
+	 * <li>every some(value) becomes a normal value in the stream
+	 * <li>every none completes the stream
+	 * <li>an err(throwable) is converted in an error, stopping the stream
+	 */
+	def static <T> Observable<T> collapse(Observable<Opt<T>> optStream) {
+		val PublishSubject<T> stream = newStream
+		optStream.each [
+			switch it {
+				Some<T>: stream << value
+				None<T>: stream.finish
+				Err<T>: throw exception
+			}
+		]
+		stream
 	}
 
 	/**

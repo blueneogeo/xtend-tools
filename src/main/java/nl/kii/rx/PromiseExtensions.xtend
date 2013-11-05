@@ -142,12 +142,13 @@ class PromiseExtensions {
 	 * p.then [ println('got value ' + it) ]
 	 * p.apply(4) // will print the message above
 	 */
-	def static <T> Observable<Opt<T>> then(Observable<T> promise, (T)=>void handler) {
-		promise.each(handler)
+	def static <T> Observable<T> then(Observable<T> promise, (T)=>void handler) {
+		promise.each(handler).collapse
 	}	
 
-	/** 
-	 * When the future is fulfilled, call the handler.
+	/**
+	 * When the future is fulfilled, call the handler for generating side-effects
+	 * Returns an Opt<T> observable, so you can chain it with .onFinish and .onError
 	 */
 	def static <T> Observable<Opt<T>> then(Future<T> future, (T)=>void handler) {
 		future.promise.each(handler)
