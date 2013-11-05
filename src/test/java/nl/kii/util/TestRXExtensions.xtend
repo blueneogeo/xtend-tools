@@ -1,14 +1,15 @@
 package nl.kii.util
 
+import nl.kii.rx.Collector
+import nl.kii.rx.Countdown
 import org.junit.Test
 
-import static extension nl.kii.rx.ObservableExtensions.*
+import static nl.kii.util.OptExtensions.*
+
 import static extension nl.kii.rx.ObserveExtensions.*
 import static extension nl.kii.rx.PromiseExtensions.*
 import static extension nl.kii.rx.StreamExtensions.*
 import static extension org.junit.Assert.*
-import nl.kii.rx.Countdown
-import nl.kii.rx.Collector
 
 class TestRXExtensions {
 	
@@ -109,9 +110,23 @@ class TestRXExtensions {
 			.onSome [ println('got ' + it) ]
 			.onNone [ println('none') ]
 			.onErr [ println('error') ]
-		stream.apply('hey')
-		stream.apply('hi')
-		stream.apply('error')
+		stream << 'hey' << 'hi'
+		// stream.error(new Exception('error!'))
+		stream.apply(none)
+		stream.finish
+	}
+	
+	@Test
+	def void testConditionalOptStream() {
+		val stream = Integer.stream
+		stream
+			.options [ it < 4 ]
+			.or (10)
+			.each [ println('greater than 5: ' + it) ]
+			.onFinish[ println('done') ]
+			.onError [ println('error: ' + it)]
+		stream << 4 << 9 << 3 << 0 << 5
+		stream.finish
 	}
 	
 	@Test
@@ -122,9 +137,9 @@ class TestRXExtensions {
 		// observe any changes
 		counter.each [ println('counter was changed! << will be called twice') ]
 		// put in a new value
-		counter.apply(5)
+		counter << 5
 		// now check the new value
-		counter.apply.assertEquals(5)
+		counter.get.assertEquals(5)
 	}
 	
 	@Test
@@ -133,14 +148,14 @@ class TestRXExtensions {
 		val v1 = 10.observe
 		val v2 = 40.observe
 		// create a computed value
-		val v3 = [| v1.apply + v2.apply ].observe(v1, v2)
+		val v3 = [| v1.get + v2.get ].observe(v1, v2)
 		// now if either changes, v3 should also update
-		v1.apply(30)
-		v3.apply.assertEquals(30 + 40)
+		v1 << 30
+		v3.get.assertEquals(30 + 40)
 		// listen to the changes of v3
 		v3.each [ println('v3 changed to ' + it) ]
-		v2.apply(90)
-		v3.apply.assertEquals(30 + 90)
+		v2 << 90
+		v3.get.assertEquals(30 + 90)
 	}
 	
 }

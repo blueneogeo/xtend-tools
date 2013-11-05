@@ -389,7 +389,7 @@ Observing a value combines the above code into a single, simple concept:
 	counter >> [ window.showCount(it) ] // if it changes, do something
 	...
 	// later we update with a single call:
-	counter << counter.apply + 1 // same as: counter.apply(counter.apply + 1)
+	counter << counter.get + 1
 
 As you see, we no longer need to explicitly create a stream. Creating an observed value will create both the value and the stream. Later we can update the value using apply(newValue) and get the existing contained value using apply().
 
@@ -408,16 +408,16 @@ An example says more here:
 	val first = 'Hello'.observe
 	val second = 'World'.observe
 
-	val hello = [ first.apply + ' ' + second.apply ].observe(first, second)
+	val hello = [ first.get + ' ' + second.get ].observe(first, second)
 
 Here, hello gets automatically calculated from first and second, and it will immediately have a value:
 
-	println(hello.apply) // prints 'Hello World'
+	println(hello.get) // prints 'Hello World'
 
 If you change first or second, hello will also change:
 
 	second << 'John'
-	println(hello.apply) // prints 'Hello John'
+	println(hello.get) // prints 'Hello John'
 
 So far, it acts much like a function. And it is. However it is also observable:
 
@@ -475,8 +475,6 @@ Since many of these operations are so common, and Xtend has nice operator overlo
 
 	a >> b // a.each(b) - connect the out of stream a to the in of stream b
 
-	val o = a >> x // a.observe(x) - create an observable
-
 	a << b // a.apply(b) - put value b into the stream
 
 	!a // a.complete - mark the stream as complete
@@ -485,7 +483,7 @@ Since many of these operations are so common, and Xtend has nice operator overlo
 
 	a ?: [..] // a.onError [..] // apply the fn when the stream has an error
 
-There is a trick to the >> stream operator. Instead of just subscribing the passed function to the stream, it first converts the Observable<T> to an Observable<Opt<T>> and it will return that observable. This allows you to chain it with .. and ?: like this:
+There is a trick to the .each method, which is called by the >> stream operator. Instead of just subscribing the passed function to the stream, it first converts the Observable<T> to an Observable<Opt<T>> and it will return that observable. This allows you to chain it with .. and ?: like this:
 
 	val userIds = Long.stream
 	userIds

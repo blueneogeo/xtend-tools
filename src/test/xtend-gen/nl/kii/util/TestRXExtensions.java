@@ -5,13 +5,15 @@ import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import nl.kii.rx.Collector;
 import nl.kii.rx.Countdown;
-import nl.kii.rx.ObservableExtensions;
 import nl.kii.rx.ObserveExtensions;
 import nl.kii.rx.ObservedValue;
 import nl.kii.rx.PromiseExtensions;
 import nl.kii.rx.StreamExtensions;
+import nl.kii.util.None;
 import nl.kii.util.Opt;
+import nl.kii.util.OptExtensions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
+import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -22,6 +24,7 @@ import rx.Observable;
 import rx.observables.ConnectableObservable;
 import rx.subjects.AsyncSubject;
 import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
 import rx.util.functions.Func1;
 
 @SuppressWarnings("all")
@@ -200,7 +203,7 @@ public class TestRXExtensions {
   @Test
   public void testConnectables() {
     final PublishSubject<Integer> stream = StreamExtensions.<Integer>stream(Integer.class);
-    ConnectableObservable<Integer> _split = ObservableExtensions.<Integer>split(stream);
+    ConnectableObservable<Integer> _split = StreamExtensions.<Integer>split(stream);
     final Func1<Integer,String> _function = new Func1<Integer,String>() {
         public String call(final Integer it) {
           String _plus = ("got value " + it);
@@ -241,9 +244,50 @@ public class TestRXExtensions {
         }
       };
     StreamExtensions.<String>onErr(_onNone, _function_2);
-    StreamExtensions.<String>apply(stream, "hey");
-    StreamExtensions.<String>apply(stream, "hi");
-    StreamExtensions.<String>apply(stream, "error");
+    Subject<String,String> _doubleLessThan = StreamExtensions.<String>operator_doubleLessThan(stream, "hey");
+    StreamExtensions.<String>operator_doubleLessThan(_doubleLessThan, "hi");
+    None<String> _none = OptExtensions.<String>none();
+    StreamExtensions.<String>apply(stream, _none);
+    StreamExtensions.<String>finish(stream);
+  }
+  
+  @Test
+  public void testConditionalOptStream() {
+    final PublishSubject<Integer> stream = StreamExtensions.<Integer>stream(Integer.class);
+    final Function1<Integer,Boolean> _function = new Function1<Integer,Boolean>() {
+        public Boolean apply(final Integer it) {
+          boolean _lessThan = ((it).intValue() < 4);
+          return Boolean.valueOf(_lessThan);
+        }
+      };
+    Observable<Opt<Integer>> _options = StreamExtensions.<Integer>options(stream, _function);
+    Observable<Integer> _or = StreamExtensions.<Integer>or(_options, Integer.valueOf(10));
+    final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          String _plus = ("greater than 5: " + it);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    Observable<Opt<Integer>> _each = StreamExtensions.<Integer>each(_or, _function_1);
+    final Procedure1<Object> _function_2 = new Procedure1<Object>() {
+        public void apply(final Object it) {
+          InputOutput.<String>println("done");
+        }
+      };
+    Observable<Opt<Integer>> _onFinish = StreamExtensions.<Integer>onFinish(_each, _function_2);
+    final Procedure1<Throwable> _function_3 = new Procedure1<Throwable>() {
+        public void apply(final Throwable it) {
+          String _plus = ("error: " + it);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    StreamExtensions.<Integer>onError(_onFinish, _function_3);
+    Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(4));
+    Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(9));
+    Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(3));
+    Subject<Integer,Integer> _doubleLessThan_3 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, Integer.valueOf(0));
+    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(5));
+    StreamExtensions.<Integer>finish(stream);
   }
   
   @Test
@@ -257,9 +301,9 @@ public class TestRXExtensions {
         }
       };
     StreamExtensions.<Integer>each(counter, _function);
-    StreamExtensions.<Integer>apply(counter, Integer.valueOf(5));
-    Integer _apply_1 = counter.apply();
-    Assert.assertEquals((_apply_1).intValue(), 5);
+    StreamExtensions.<Integer>operator_doubleLessThan(counter, Integer.valueOf(5));
+    Integer _get = counter.get();
+    Assert.assertEquals((_get).intValue(), 5);
   }
   
   @Test
@@ -268,17 +312,17 @@ public class TestRXExtensions {
     final ObservedValue<Integer> v2 = ObserveExtensions.<Integer>observe(Integer.valueOf(40));
     final Function0<Integer> _function = new Function0<Integer>() {
         public Integer apply() {
-          Integer _apply = v1.apply();
-          Integer _apply_1 = v2.apply();
-          int _plus = ((_apply).intValue() + (_apply_1).intValue());
+          Integer _get = v1.get();
+          Integer _get_1 = v2.get();
+          int _plus = ((_get).intValue() + (_get_1).intValue());
           return _plus;
         }
       };
     final ObservedValue<Integer> v3 = ObserveExtensions.<Integer>observe(_function, v1, v2);
-    StreamExtensions.<Integer>apply(v1, Integer.valueOf(30));
-    Integer _apply = v3.apply();
+    StreamExtensions.<Integer>operator_doubleLessThan(v1, Integer.valueOf(30));
+    Integer _get = v3.get();
     int _plus = (30 + 40);
-    Assert.assertEquals((_apply).intValue(), _plus);
+    Assert.assertEquals((_get).intValue(), _plus);
     final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
         public void apply(final Integer it) {
           String _plus = ("v3 changed to " + it);
@@ -286,9 +330,9 @@ public class TestRXExtensions {
         }
       };
     StreamExtensions.<Integer>each(v3, _function_1);
-    StreamExtensions.<Integer>apply(v2, Integer.valueOf(90));
-    Integer _apply_1 = v3.apply();
+    StreamExtensions.<Integer>operator_doubleLessThan(v2, Integer.valueOf(90));
+    Integer _get_1 = v3.get();
     int _plus_1 = (30 + 90);
-    Assert.assertEquals((_apply_1).intValue(), _plus_1);
+    Assert.assertEquals((_get_1).intValue(), _plus_1);
   }
 }

@@ -32,15 +32,15 @@ import rx.Observer
 	visitors << 2
 	
 	// but you can also use it like a variable
-	println('current visitor count is ' + visitors.apply)
+	println('current visitor count is ' + visitors.get)
 	 
 	// or increment it in this case:
-	visitors << visitors.apply + 1
+	visitors << visitors.get + 1
 	 
 	// its strength is compounded in combination with a computed observable:
 	val otherVisitors = 0.observe
 	// computed is an observable which gets a new evaluated value if visitors or othervisitors changes
-	val computed = [ visitors.apply + 4 + otherVisitors.apply.length ].observe(visitors, otherVisitors)
+	val computed = [ visitors.get + 4 + otherVisitors.get.length ].observe(visitors, otherVisitors)
 
   } </pre>
  *
@@ -48,7 +48,7 @@ import rx.Observer
  */
 class ObservedValue<T> extends BehaviorSubject<T> implements Function0<T> {
 	
-	AtomicReference<T> current
+	val AtomicReference<T> current
 	
     /**
      * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each
@@ -87,6 +87,10 @@ class ObservedValue<T> extends BehaviorSubject<T> implements Function0<T> {
 	}
 	
 	override apply() {
+		current.get
+	}
+	
+	def get() {
 		current.get
 	}
 	

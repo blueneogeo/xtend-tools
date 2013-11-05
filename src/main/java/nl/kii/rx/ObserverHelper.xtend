@@ -10,10 +10,10 @@ class ObserverHelper<T> implements Observer<T> {
 	
 	new() { }
 	
-	new((T)=>void onNext, (Throwable)=>void onError, ()=>void onCompleted) {
+	new((T)=>void onNext, ()=>void onCompleted, (Throwable)=>void onError) {
 		this.onNext = onNext
-		this.onError = onError
 		this.onCompleted = onCompleted
+		this.onError = onError
 	}
 	
 	override onCompleted() {

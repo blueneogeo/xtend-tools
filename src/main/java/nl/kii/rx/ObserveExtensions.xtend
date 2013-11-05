@@ -5,7 +5,6 @@ import rx.Observable
 
 import static nl.kii.util.OptExtensions.*
 
-import static extension nl.kii.rx.ObservableExtensions.*
 import static extension nl.kii.rx.StreamExtensions.*
 
 class ObserveExtensions {
@@ -65,6 +64,12 @@ class ObserveExtensions {
 		val (Object)=>void handler = [ observed.apply(fn.apply) ]
 		observables.forEach [ it >> handler ]
 		observed
+	}
+
+	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
+	
+	def static <T> operator_not(ObservedValue<T> value) {
+		value.get
 	}
 
 }

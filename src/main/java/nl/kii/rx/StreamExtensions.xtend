@@ -8,7 +8,6 @@ import org.eclipse.xtext.xbase.lib.Functions
 import rx.Observable
 import rx.Observer
 import rx.subjects.PublishSubject
-import rx.subjects.ReplaySubject
 import rx.subjects.Subject
 
 import static extension nl.kii.util.OptExtensions.*
@@ -46,7 +45,7 @@ class StreamExtensions {
 	def static <T> apply(Subject<T, T> stream, Opt<T> opt) {
 		switch(opt) {
 			Some<T>: stream.apply(opt.value)
-			None<T>: stream.onCompleted
+			None<T>: stream.finish
 			Err<T>: stream.onError(opt.exception)
 		}
 		stream
@@ -85,7 +84,7 @@ class StreamExtensions {
 
 	// RESPOND TO THE STREAM //////////////////////////////////////////////////
 
-	def static<T> finish(PublishSubject<T> subject) {
+	def static<T> finish(Observer<T> subject) {
 		subject.onCompleted
 		subject
 	}
@@ -130,14 +129,28 @@ class StreamExtensions {
 	 * and allows you to use a single handler of results.
 	 */
 	def static <T> Observable<Opt<T>> options(Observable<T> stream) {
-		val ReplaySubject<Opt<T>> optStream = ReplaySubject.create
+		val PublishSubject<Opt<T>> optStream = newStream
 		val helper = new ObserverHelper<T>(
 			[ optStream.onNext(some(it)) ],
-			[ optStream.onNext(new Err<T>) ],
-			[| optStream.onNext(none) ]
+			[| optStream.onNext(none) ],
+			[ optStream.onNext(new Err<T>) ]
 		)
 		stream.streamTo(helper)
 		optStream
+	}
+
+	/**
+	 * Convert a normal stream of T into Opt<T> using a filter function.
+	 * <p>
+	 * For every value that matches, a Some<T> is pushed onto the resulting
+	 * stream of Opt<T>, and every value that does not matches results in
+	 * a None<T> being pushed.
+	 * <p>
+	 * This allows you to filter the stream using filterEmpty, or provide an
+	 * alternative using .or, like you can with Iterables.or .
+	 */
+	def static <T> Observable<Opt<T>> options(Observable<T> stream, (T)=>boolean someFilter) {
+		stream.map [ if(someFilter.apply(it)) some(it) else none ]
 	}
 
 	/** 
@@ -150,6 +163,26 @@ class StreamExtensions {
 		stream
 	}
 	
+	/** 
+	 * Collapses an Opt<T> stream into a T stream, using the alternativeFn to
+	 * provide the value in case of a None. Errors are converted back into normal
+	 * stream errors.
+	 */
+	def static <T> Observable<T> or(Observable<Opt<T>> optStream, (Object)=> T alternativeFn) {
+		optStream.map [
+			switch(it) {
+				Some<T>: value
+				None<T>: alternativeFn.apply(null)
+				Err<T>: throw exception
+			}
+		]
+	}
+	
+	/** Same as alternative Fn, but with a static value */
+	def static <T> Observable<T> or(Observable<Opt<T>> optStream, T alternative) {
+		optStream.or [ alternative ]
+	}
+
 	/**
 	 * React to some value entering the stream
 	 */
@@ -162,7 +195,9 @@ class StreamExtensions {
 	 * React to a none entering the stream
 	 */
 	def static <T> onNone(Observable<Opt<T>> optStream, (T)=>void handler) {
-		optStream.subscribe [ ifNone [ handler.apply(it) ] ]
+		optStream.subscribe [ 
+			ifNone [ handler.apply(null) ]
+		]
 		optStream
 	}
 

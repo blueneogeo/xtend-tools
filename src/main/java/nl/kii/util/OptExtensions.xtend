@@ -56,8 +56,8 @@ class OptExtensions {
 	/**
 	 * Only perform the function if o is a None. Returns the result of the function for chaining
 	 */
-	def static <T, I> Opt<I> ifNone(Opt<I> o, (I)=>void fn) {
-		if(o.hasNone) fn.apply(o.value)
+	def static <T, I> Opt<I> ifNone(Opt<I> o, (Object)=>void fn) {
+		if(o.hasNone) fn.apply(null)
 		o
 	}
 
@@ -229,6 +229,12 @@ class OptExtensions {
 	// example: val user = api.getUser(12).orThrow [ new UserNotFoundException ] // getUser can return null
 	def static <T> T orThrow(T o, (Object)=>Throwable exceptionFn) {
 		if(o.defined) o else throw exceptionFn.apply(null)
+	}
+
+	// throw a standard exception with the passed message
+	// example: val user = api.getUser(12).orThrow('user not found')
+	def static <T> T orThrow(T o, String message) {
+		if(o.defined) o else throw new Exception(message)
 	}
 
 	// try to unwrap an option, and if there is nothing, calls the exceptionFn to get a exception to throw
