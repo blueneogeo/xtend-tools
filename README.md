@@ -391,9 +391,9 @@ Observing a value combines the above code into a single, simple concept:
 	// later we update with a single call:
 	counter << counter.get + 1
 
-As you see, we no longer need to explicitly create a stream. Creating an observed value will create both the value and the stream. Later we can update the value using apply(newValue) and get the existing contained value using apply().
+As you see, we no longer need to explicitly create a stream. Creating an observed value will create both the value and the stream. It is a value that can inform you that it has changed. Later we can update the value using apply(newValue) (or the << operator) and get the existing contained value using get().
 
-A rule with an observed value (and any rx.BehaviorSubject, which it extends) is that is must always start with a value. You can simply later change this value, and get it. It is also thread safe, as the actual wrapped value is contained in an AtomicReference.
+A rule with an observed value (and any rx.BehaviorSubject, which it extends) is that is must always start with a value. You can simply later change this value, and get it. It is also thread safe, with the actual wrapped value contained in an AtomicReference.
 
 #### Computed Observed Values
 
@@ -410,7 +410,7 @@ An example says more here:
 
 	val hello = [ first.get + ' ' + second.get ].observe(first, second)
 
-Here, hello gets automatically calculated from first and second, and it will immediately have a value:
+Here, hello is also an observed value, which gets automatically calculated from first and second.
 
 	println(hello.get) // prints 'Hello World'
 
@@ -433,19 +433,25 @@ Also, unlike a function, you can put in your own values, as it still is a normal
 
 If you have an observable value, and you apply transformations on it, you will get a stream, and cannot reason about it as a variable anymore:
 
-	val x = 12.observe // x is a ValueSubject<Integer>
+	val x = 12.observe // x is an ObservedValue<Integer>
 	val y = x.filter[it > 6] // y is an Observable<Integer>
+	x << 4 // does work
 	y << 4 // does not work
 
-However you can transform the stream into a new ValueSubject as follows:
+However you can transform the stream into a new ObservedValue as follows:
 
 	val z = y.observe(7) // 7 is the start value
 
-A tip: if you have an Opt<T> stream, you can also start with a None as starting value:
+	z << 4 // does work again
 
-	val latest = someStream.options.observe(none)
+A tip: if you need to be able to start with an empty observable value, create an Opt<T> stream and start it with none. Due to Java type erasure, it is easier to start with a stream and convert it to an Opt stream and from there create an observed value from it. For example, to create an ObservedValue<Opt<String>>:
 
-Now latest.apply will return a None at first.
+	val latest = String.stream.options.observe(none)
+
+Now latest.get will start with None. This is a bit like starting a normal variable with null.
+
+	latest << 'iOS6.1'.option
+	println(latest.get.value)
 
 ## List and Stream Operators
 
