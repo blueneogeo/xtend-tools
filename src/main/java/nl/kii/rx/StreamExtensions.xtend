@@ -11,6 +11,7 @@ import rx.subjects.PublishSubject
 import rx.subjects.Subject
 
 import static extension nl.kii.util.OptExtensions.*
+import rx.subjects.ReplaySubject
 
 class StreamExtensions {
 	
@@ -129,13 +130,12 @@ class StreamExtensions {
 	 * and allows you to use a single handler of results.
 	 */
 	def static <T> Observable<Opt<T>> options(Observable<T> stream) {
-		val PublishSubject<Opt<T>> optStream = newStream
-		val helper = new ObserverHelper<T>(
+		val ReplaySubject<Opt<T>> optStream = ReplaySubject.create
+		stream.subscribe(
 			[ optStream.onNext(some(it)) ],
-			[| optStream.onNext(none) ],
-			[ optStream.onNext(new Err<T>) ]
+			[ optStream.onNext(err(it)) ],
+			[| optStream.onNext(none) ]
 		)
-		stream.streamTo(helper)
 		optStream
 	}
 	
@@ -146,12 +146,12 @@ class StreamExtensions {
 	 * <li>an err(throwable) is converted in an error, stopping the stream
 	 */
 	def static <T> Observable<T> collapse(Observable<Opt<T>> optStream) {
-		val PublishSubject<T> stream = newStream
+		val ReplaySubject<T> stream = ReplaySubject.create
 		optStream.each [
 			switch it {
 				Some<T>: stream << value
 				None<T>: stream.finish
-				Err<T>: throw exception
+				Err<T>: stream.error(exception)
 			}
 		]
 		stream

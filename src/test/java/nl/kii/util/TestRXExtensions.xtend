@@ -119,8 +119,7 @@ class TestRXExtensions {
 	@Test
 	def void testConditionalOptStream() {
 		val stream = Integer.stream
-		stream
-			.options [ it < 4 ]
+		stream.options [ it < 4 ]
 			.or (10)
 			.each [ println('greater than 5: ' + it) ]
 			.onFinish[ println('done') ]
