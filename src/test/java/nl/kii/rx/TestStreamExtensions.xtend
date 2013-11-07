@@ -1,10 +1,9 @@
 package nl.kii.rx
 
-import nl.kii.rx.Collector
-import nl.kii.rx.Countdown
 import org.junit.Test
 
 import static extension nl.kii.rx.StreamExtensions.*
+import static extension org.junit.Assert.*
 
 class TestStreamExtensions {
 	
@@ -39,38 +38,15 @@ class TestStreamExtensions {
 	]
 	
 	@Test
-	def void testCountDown() {
-		val countdown = new Countdown
-		val c1 = countdown.await
-		val c2 = countdown.await
-		val c3 = countdown.await
-		countdown.stream
-			.each [ println('counting...') ]
-			.onFinish [ println('countdown done. success:' + countdown.success) ]
-		c2.apply(true)
-		c1.apply(true)
-		c3.apply(true)
-	}
-	
-	@Test
 	def void testCollector() {
-		val collector = new Collector<String>
-		val cuser = collector.await('user')
-		val cname = collector.await('name')
-		val cage = collector.await('age')
-		
-		collector.stream
-			.each [ println('got ' + it.key + ' has value ' + it.value)]
-			.onFinish [
-				val it = collector.result
-				println('found user ' + get('user'))
-				println('found name ' + get('name'))
-				println('found age ' + get('age'))
-			]
-
-		cage.apply('12')
-		cname.apply('John')
-		cuser.apply('Christian')
+		val s = Integer.stream
+		val bucket = s.collect
+		s << 3 << 4
+		bucket.get.length.assertEquals(2)
+		s << 2 << 9
+		bucket.get.length.assertEquals(4)
+		bucket.clear
+		bucket.get.length.assertEquals(0)
 	}
 
 }

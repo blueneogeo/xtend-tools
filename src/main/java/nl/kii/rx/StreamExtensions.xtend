@@ -152,6 +152,20 @@ class StreamExtensions {
 		cstream
 	}
 	
+	/** Collect the results in an observed value bucket */
+	def static <T> collect(Observable<T> stream) {
+		val collector = new Collector
+		stream.streamTo(collector)
+		collector
+	}
+	
+	/** At most collect maxSize elements in the bucket, to protect against memory overflow */
+	def static <T> collect(Observable<T> stream, int maxSize) {
+		val collector = new Collector(maxSize)
+		stream.streamTo(collector)
+		collector
+	}
+
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
     
     def static <T> Iterable<? extends T> operator_doubleGreaterThan(Iterable<? extends T> iterable, Observer<T> stream) {

@@ -1,13 +1,13 @@
 package nl.kii.rx
 
-import rx.subjects.BehaviorSubject
-import java.util.concurrent.atomic.AtomicReference
-import rx.Observable.OnSubscribeFunc
 import java.util.concurrent.ConcurrentHashMap
-import rx.Subscription
-import rx.operators.SafeObservableSubscription
+import java.util.concurrent.atomic.AtomicReference
 import org.eclipse.xtext.xbase.lib.Functions.Function0
 import rx.Observer
+import rx.Subscription
+import rx.operators.SafeObservableSubscription
+import rx.subjects.BehaviorSubject
+import rx.Observable.OnSubscribeFunc
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
@@ -50,15 +50,6 @@ class ObservedValue<T> extends BehaviorSubject<T> implements Function0<T> {
 	
 	val AtomicReference<T> current
 	
-    /**
-     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each
-     * {@link Observer} that subscribes to it.
-     *
-     * @param defaultValue
-     *            The value which will be published to any {@link Observer} as long as the
-     *            {@link BehaviorSubject} has not yet received any events.
-     * @return the constructed {@link BehaviorSubject}.
-     */
     override static <T> ObservedValue<T> createWithDefaultValue(T defaultValue) {
         val observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
 

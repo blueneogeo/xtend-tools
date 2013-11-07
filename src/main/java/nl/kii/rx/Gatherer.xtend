@@ -9,7 +9,7 @@ import static extension nl.kii.rx.StreamExtensions.*
 import rx.Observable
 
 /**
- * Collector can collect data from various asynchronous sources.
+ * Gatherer can collect data from various asynchronous sources.
  * <p>
  * You use it by calling the await(name) method, which gives you
  * a Procedure1 in return. The async code elsewhere can then call
