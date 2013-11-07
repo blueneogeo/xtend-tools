@@ -6,6 +6,7 @@ import org.eclipse.xtext.xbase.lib.Pair
 import rx.subjects.PublishSubject
 
 import static extension nl.kii.rx.StreamExtensions.*
+import rx.Observable
 
 /**
  * Collector can collect data from various asynchronous sources.
@@ -42,7 +43,7 @@ import static extension nl.kii.rx.StreamExtensions.*
  * ]
  * </pre>
  */
-class Collector<T> implements Streamable<Pair<String, T>> {
+class Gatherer<T> implements Streamable<Pair<String, T>> {
 	
 	val PublishSubject<Pair<String, T>> stream = newStream
 	val protected count = new AtomicInteger
@@ -101,7 +102,7 @@ class Collector<T> implements Streamable<Pair<String, T>> {
  * [|... some other async code... signal2.apply(true) ...].scheduleLater
  * </pre>
  */
-class Countdown extends Collector<Boolean> {
+class Countdown extends Gatherer<Boolean> {
 	
 	def (Boolean)=>void await() {
 		super.await(total.get.toString)
@@ -112,3 +113,10 @@ class Countdown extends Collector<Boolean> {
 	}
 	
 }
+
+interface Streamable<T> {
+	
+	def Observable<T> stream()
+	
+}
+

@@ -130,9 +130,7 @@ class PromiseExtensions {
 
 	/** when the future is fulfilled, call the function which produces a new promise */
 	def static <T, R> Observable<R> then(Future<T> future, Functions.Function1<T, ? extends Observable<R>> observableFn) {
-		future
-			.promise
-			.mapAsync(observableFn)
+		future.promise.mapAsync(observableFn)
 	}
 
 	/** 
@@ -143,15 +141,19 @@ class PromiseExtensions {
 	 * p.apply(4) // will print the message above
 	 */
 	def static <T> Observable<T> then(Observable<T> promise, (T)=>void handler) {
-		promise.each(handler).collapse
+		promise.each(handler)
 	}	
 
 	/**
 	 * When the future is fulfilled, call the handler for generating side-effects
 	 * Returns an Opt<T> observable, so you can chain it with .onFinish and .onError
 	 */
-	def static <T> Observable<Opt<T>> then(Future<T> future, (T)=>void handler) {
+	def static <T> Observable<T> then(Future<T> future, (T)=>void handler) {
 		future.promise.each(handler)
 	}
+	
+	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
+	
+	
 	
 }

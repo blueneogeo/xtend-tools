@@ -1,17 +1,11 @@
 package nl.kii.rx
 
-import nl.kii.util.Err
-import nl.kii.util.None
-import nl.kii.util.Opt
-import nl.kii.util.Some
 import org.eclipse.xtext.xbase.lib.Functions
 import rx.Observable
 import rx.Observer
+import rx.observables.ConnectableObservable
 import rx.subjects.PublishSubject
 import rx.subjects.Subject
-
-import static extension nl.kii.util.OptExtensions.*
-import rx.subjects.ReplaySubject
 
 class StreamExtensions {
 	
@@ -40,15 +34,6 @@ class StreamExtensions {
 
 	def static<T> apply(Subject<T, T> stream, T value) {
 		stream.onNext(value)
-		stream
-	}
-
-	def static <T> apply(Subject<T, T> stream, Opt<T> opt) {
-		switch(opt) {
-			Some<T>: stream.apply(opt.value)
-			None<T>: stream.finish
-			Err<T>: stream.error(opt.exception)
-		}
 		stream
 	}
 
@@ -85,11 +70,13 @@ class StreamExtensions {
 
 	// RESPOND TO THE STREAM //////////////////////////////////////////////////
 
+	/** Inform a stream that it finished */
 	def static<T> finish(Observer<T> subject) {
 		subject.onCompleted
 		subject
 	}
 	
+	/** Inform a stream that an error occurred */
 	def static<T> error(Observer<T> subject, Throwable t) {
 		subject.onError(t)
 		subject
@@ -101,181 +88,70 @@ class StreamExtensions {
 		stream
 	}
 	
-	/** Create a new Observable from the passed Observable (stream). Internally it creates a 
-	 * ConnectableObservable<T>, connects it, and returns it.
-	 * <p>
-	 * This allows you to split a stream into multiple streams:
+	/** 
+	 * Respond to each incoming value by calling the passed onValue function. Eg:
 	 * <pre>
-	 * stream => [
-	 * 		split.each [ println('1st stream got ' + it) ]
-	 * 		split.each [ println('2nd stream also got ' + it) ]
-	 * ]
-	 * </pre> 
-	 */
-	def static <T> split(Observable<T> stream) {
-		val connector = stream.publish
-		connector.connect
-		connector
-		// alternative implementation: newStream => [ stream.each(it) ]
-	}
-	
-	// OPTION STREAMS /////////////////////////////////////////////////////////
-	
-	/**
-	 * Convert a normal stream into an option stream:
-	 * <li>every value is converted into Some(value)
-	 * <li>a complete is converted into a None
-	 * <li>an error is converted into an Err
-	 * This means a stream is converted into a list of a single type,
-	 * and allows you to use a single handler of results.
-	 */
-	def static <T> Observable<Opt<T>> options(Observable<T> stream) {
-		val ReplaySubject<Opt<T>> optStream = ReplaySubject.create
-		stream.subscribe(
-			[ optStream.onNext(some(it)) ],
-			[ optStream.onNext(err(it)) ],
-			[| optStream.onNext(none) ]
-		)
-		optStream
-	}
-	
-	/**
-	 * Convert a stream of Options (back) to a normal stream.
-	 * <li>every some(value) becomes a normal value in the stream
-	 * <li>every none completes the stream
-	 * <li>an err(throwable) is converted in an error, stopping the stream
-	 */
-	def static <T> Observable<T> collapse(Observable<Opt<T>> optStream) {
-		val ReplaySubject<T> stream = ReplaySubject.create
-		optStream.each [
-			switch it {
-				Some<T>: stream << value
-				None<T>: stream.finish
-				Err<T>: stream.error(exception)
-			}
-		]
-		stream
-	}
-
-	/**
-	 * Convert a normal stream of T into Opt<T> using a filter function.
-	 * <p>
-	 * For every value that matches, a Some<T> is pushed onto the resulting
-	 * stream of Opt<T>, and every value that does not matches results in
-	 * a None<T> being pushed.
-	 * <p>
-	 * This allows you to filter the stream using filterEmpty, or provide an
-	 * alternative using .or, like you can with Iterables.or .
-	 */
-	def static <T> Observable<Opt<T>> options(Observable<T> stream, (T)=>boolean someFilter) {
-		stream.map [ if(someFilter.apply(it)) some(it) else none ]
-	}
-
-	/** 
-	 * Filter empty results from a stream (None and Err), just giving you
-	 * the normal values directly.
-	 */	
-	def static <T> Observable<T> filterEmpty(Observable<Opt<T>> optStream) {
-		val PublishSubject<T> stream = newStream
-		optStream.subscribe [ ifSome [ stream.apply(it) ] ]
-		stream
-	}
-	
-	/** 
-	 * Collapses an Opt<T> stream into a T stream, using the alternativeFn to
-	 * provide the value in case of a None. Errors are converted back into normal
-	 * stream errors.
-	 */
-	def static <T> Observable<T> or(Observable<Opt<T>> optStream, (Object)=> T alternativeFn) {
-		optStream.map [
-			switch(it) {
-				Some<T>: value
-				None<T>: alternativeFn.apply(null)
-				Err<T>: throw exception
-			}
-		]
-	}
-	
-	/** Same as alternative Fn, but with a static value */
-	def static <T> Observable<T> or(Observable<Opt<T>> optStream, T alternative) {
-		optStream.or [ alternative ]
-	}
-
-	/**
-	 * React to some value entering the stream
-	 */
-	def static <T> onSome(Observable<Opt<T>> optStream, (T)=>void handler) {
-		optStream.subscribe [ ifSome [ handler.apply(it) ] ]
-		optStream
-	}
-	
-	/**
-	 * React to a none entering the stream
-	 */
-	def static <T> onNone(Observable<Opt<T>> optStream, (T)=>void handler) {
-		optStream.subscribe [ 
-			ifNone [ handler.apply(null) ]
-		]
-		optStream
-	}
-
-	/**
-	 * React to a none entering the stream
-	 */
-	def static <T> onErr(Observable<Opt<T>> optStream, (Throwable)=>void handler) {
-		optStream.subscribe [ ifErr [ handler.apply(it) ] ]
-		optStream
-	}	
-
-	// OPTSTREAM WRAPPING INTERFACE ///////////////////////////////////////////
-	
-	/**
-	 * Create an optstream and handle onSome, return the optstream. Will call the handler for each value found.
-	 * This allows for easier coding than using the options. Instead of:
+	 * val longs = Long.stream
 	 * 
+	 * longs.each [ println('got ' + it) ]
+	 * 
+	 * longs.apply(4L).apply(6L)
+	 * </pre>
+	 * <p>
+	 * It will automatically connect if the stream is a ConnectableObservable!
+	 * It will return an unconnected ConnectableObservable of the passed stream.
+	 * The reason for this is that this is how we are able to chain .each, .onError
+	 * and .onFinish together for a nice clean and chainable syntax:
 	 * <pre>
-	 * Integer.stream.options
-	 * 	.onSome [ println('got value' + it) ]
-	 * 	.onNone [ println('completed stream') ]
-	 * 	.onErr  [ println('an error occurred!') ]
+	 * val longs = Long.stream
+	 * 
+	 * longs
+	 *     .each [ println('got ' + it) ]
+	 *     .onError [ println('got an error: ' + it) ]
+	 *     .onFinish [ println('we are done!') ]
+	 * 
+	 * longs.apply(4L).apply(6L)
 	 * </pre>
 	 * 
-	 * You can then use a syntax that is more like the list interface:
 	 * 
+	 * If you need to subscribe and have more control, use
+	 * the .subscribe method instead, which will also not autoconnect and provide you
+	 * with the subscription:
 	 * <pre>
-	 * Integer.stream
-	 * 	.each [ println('got value' + it) ]
-	 * 	.onFinish [ println('completed stream') ]
-	 * 	.onError  [ println('an error occurred!') ]
-	 * </pre>
+	 * val longs = Long.stream
 	 * 
-	 * Or using the operators:
-	 * <pre>
-	 * Integer.stream
-	 * 	>>> [ println('got value' + it) ]
-	 * 	.. [ println('completed stream') ]
-	 * 	?: [ println('an error occurred!') ]
-	 * </pre>
+	 * val subscription = longs.subscribe(
+	 *     [ println('got ' + it) ],
+	 *     [ println('got an error: ' + it) ],
+	 *     [ println('we are done!') ]
+	 * )
 	 * 
+	 * longs.apply(4L).apply(6L)
+	 * </pre>
 	 */
-	def static <T> Observable<Opt<T>> each(Observable<T> stream, (T)=>void handler) {
-		stream.options.onSome(handler)
+	def static <T> each(Observable<T> stream, (T)=>void onValue) {
+		switch stream {	ConnectableObservable<T>: stream.connect }
+		val cstream = stream.publish
+		stream.subscribe(onValue, [])
+		cstream
 	}
 
-	/** 
-	 * Alias for onErr, called if a Err result, meaning there was an error inside the handling of the stream
-	 */
-	def static <T> onError(Observable<Opt<T>> stream, (Throwable)=>void handler) {
-		stream.onErr(handler)
+	/** Handle an error occurring on the stream */
+	def static <T> onError(Observable<T> stream, (Throwable)=> void onError) {
+		switch stream {	ConnectableObservable<T>: stream.connect }
+		val cstream = stream.publish
+		stream.subscribe([], onError)
+		cstream
 	}
 	
-	/**
-	 * Alias for onNone, called if a None result, meaning the stream was completed
-	 */
-	def static <T> onFinish(Observable<Opt<T>> stream, (Object)=>void handler) {
-		stream.onNone(handler)
-	}	
-
+	/** Handle the stream completing */
+	def static <T> onFinish(Observable<T> stream, (Object)=>void onFinish) {
+		switch stream {	ConnectableObservable<T>: stream.connect }
+		val cstream = stream.publish
+		stream.subscribe([], [], [| onFinish.apply(null) ])
+		cstream
+	}
+	
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
     
     def static <T> Iterable<? extends T> operator_doubleGreaterThan(Iterable<? extends T> iterable, Observer<T> stream) {
@@ -290,8 +166,20 @@ class StreamExtensions {
             stream.streamTo(observer)
     }
 
+    def static<T> operator_upTo(ConnectableObservable<T> stream, (Object)=>void handler) {
+            stream.onFinish(handler)
+    }
+    
+    def static <T> operator_elvis(ConnectableObservable<T> stream, (Throwable)=>void handler) {
+            stream.onError(handler)
+    }
+	
     def static <T, R> operator_mappedTo(Observable<T> stream, (T)=>R fn) {
             stream.map(fn)
+    }
+
+    def static <T, R> Observable<R> operator_greaterThan(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
+            stream.mapAsync(observableFn)
     }
     
     def static <T> operator_plus(Observable<T> stream, (T)=>boolean fn) {
@@ -305,17 +193,5 @@ class StreamExtensions {
     def static <T> operator_doubleLessThan(Subject<T, T> stream, T value) {
             stream.apply(value)
     }
-    
-    def static <T> operator_doubleLessThan(Subject<T, T> stream, Opt<T> opt) {
-            stream.apply(opt)
-    }
 
-    def static<T> operator_upTo(Observable<Opt<T>> stream, (Object)=>void handler) {
-            stream.onFinish(handler)
-    }
-    
-    def static <T> operator_elvis(Observable<Opt<T>> stream, (Throwable)=>void handler) {
-            stream.onError(handler)
-    }
-    
 }
