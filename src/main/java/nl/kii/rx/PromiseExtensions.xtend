@@ -37,11 +37,10 @@ class PromiseExtensions {
 	/**
 	 * Create a promise which is immediately fulfilled by an item
 	 * <pre>val p = 12.promise</pre>
-	 * Commented out, because it rarely makes sense and pollutes
+	 */
 	def static <T> Observable<T> promise(T item) {
 		Observable.from(item)
 	}
-	 */
 
 	/**
 	 * Take a promised item from a future and immediately feed it into an existing observer
