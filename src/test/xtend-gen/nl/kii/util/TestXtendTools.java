@@ -67,8 +67,8 @@ public class TestXtendTools {
       };
     Opt<None<Object>> _attempt = OptExtensions.<None<Object>>attempt(_function);
     OptExtensions.<None<Object>>assertNone(_attempt);
-    final Function1<Object,Object> _function_1 = new Function1<Object,Object>() {
-        public Object apply(final Object it) {
+    final Function1<TestXtendTools,Object> _function_1 = new Function1<TestXtendTools,Object>() {
+        public Object apply(final TestXtendTools it) {
           try {
             Exception _exception = new Exception();
             throw _exception;
@@ -77,7 +77,7 @@ public class TestXtendTools {
           }
         }
       };
-    Opt<Object> _attempt_1 = OptExtensions.<Object>attempt(_function_1);
+    Opt<Object> _attempt_1 = OptExtensions.<TestXtendTools, Object>attempt(this, _function_1);
     OptExtensions.<Object>assertNone(_attempt_1);
     final Function1<Object,String> _function_2 = new Function1<Object,String>() {
         public String apply(final Object it) {

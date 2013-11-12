@@ -94,14 +94,15 @@ public class TestPromiseStreamExtensions {
   
   @Test
   public void testThen() {
-    Observable<String> _promise = PromiseExtensions.<String>promise("Christian");
+    AsyncSubject<String> _promise = PromiseExtensions.<String>promise(String.class);
+    AsyncSubject<String> _apply = PromiseExtensions.<String>apply(_promise, "Christian");
     final Function1<String,Observable<String>> _function = new Function1<String,Observable<String>>() {
         public Observable<String> apply(final String it) {
           Observable<String> _greetingAsync = TestPromiseStreamExtensions.this.toGreetingAsync(it);
           return _greetingAsync;
         }
       };
-    Observable<String> _then = PromiseExtensions.<String, String>then(_promise, _function);
+    Observable<String> _then = PromiseExtensions.<String, String>then(_apply, _function);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
         public void apply(final String it) {
           Assert.assertEquals(it, "Welcome Christian");
@@ -111,14 +112,15 @@ public class TestPromiseStreamExtensions {
   }
   
   public Observable<String> toGreetingAsync(final String test) {
-    Observable<String> _promise = PromiseExtensions.<String>promise(test);
+    AsyncSubject<String> _promise = PromiseExtensions.<String>promise(String.class);
+    AsyncSubject<String> _apply = PromiseExtensions.<String>apply(_promise, test);
     final Func1<String,String> _function = new Func1<String,String>() {
         public String call(final String it) {
           String _plus = ("Welcome " + it);
           return _plus;
         }
       };
-    Observable<String> _map = _promise.<String>map(_function);
+    Observable<String> _map = _apply.<String>map(_function);
     return _map;
   }
 }

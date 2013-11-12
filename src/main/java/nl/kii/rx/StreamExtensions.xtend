@@ -11,20 +11,48 @@ class StreamExtensions {
 	
 	// CREATE A STREAM ////////////////////////////////////////////////////////
 	
+	/**
+	 * Used for making a stream of any type by using Xtend type inference.
+	 * 
+	 * This is necessary when using generics. For example:
+	 * <pre>
+	 * val s = AsyncResult.stream // misses out on genertic type info
+	 * // use inference instead:
+	 * val Observable<AsyncResult<Map<Int, String>>> s = newStream
+	 * </pre>
+	 */
 	def static <T> PublishSubject<T> newStream() {
 		PublishSubject.create
 	}
 
+	/**
+	 * Create a stream of type T
+	 * 
+	 * <pre>
+	 * val ints = Integer.stream
+	 * ints >> [ println(it) ]
+	 * ints << 4 << 9 // prints 4 and 9
+	 * </pre>
+	 */
 	def static <T> PublishSubject<T> stream(Class<T> type) {
 		PublishSubject.create
 	}
 
-	/** Transform an iterable into a stream */
+	/** 
+	 * Transform an iterable into a stream
+	 * 
+	 * <pre>
+	 * val s = #[4, 9].stream
+	 * s >> [ println(it) ] // prints 4 and 9
+	 * </pre>
+	 */
 	def static <T> Observable<T> stream(Iterable<? extends T> iterable) {
 		Observable.from(iterable)
 	}
 	
-	/** Push a collection of values into a stream */
+	/** 
+	 * Push a collection of values into a stream
+	 */
 	def static <T> Iterable<? extends T> streamTo(Iterable<? extends T> iterable, Observer<T> observer) {
 		iterable.forEach [ observer.onNext(it) ]
 		iterable
@@ -32,6 +60,9 @@ class StreamExtensions {
 	
 	// SEND DATA TO A STREAM //////////////////////////////////////////////////
 
+	/**
+	 * Apply a value on a stream, which pushes it onto the stream to be processed.
+	 */
 	def static<T> apply(Subject<T, T> stream, T value) {
 		stream.onNext(value)
 		stream
@@ -168,42 +199,138 @@ class StreamExtensions {
 
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
     
+    /**
+     * Convert a list into a stream
+     * 
+     * <pre>
+     * val s = Integer.stream
+     * s.each [ println(it) ]
+     * #[4, 9] >> s // prints 4 and 9
+     * </pre>
+     */
     def static <T> Iterable<? extends T> operator_doubleGreaterThan(Iterable<? extends T> iterable, Observer<T> stream) {
             iterable.streamTo(stream)
     }        
 
+	/**
+	 * Shortcut for stream.each
+	 * 
+	 * <pre>
+	 * val s = String.stream
+	 * s.apply('Hello')
+	 * s.apply('World')
+	 * s >> [ println(it) ] // prints 'Hello' and 'World'
+	 */
     def static <T> operator_doubleGreaterThan(Observable<T> stream, (T)=>void handler) {
             stream.each(handler)
     }
 
+	/** 
+	 * Stream the results from one stream to another
+	 * 
+	 * <pre>
+	 * val s1 = String.stream
+	 * val s2 = String.stream
+	 * s2.each [ println(it) ]
+	 * 
+	 * s1 >> s2
+	 * s.apply('Hello') // prints 'Hello'
+	 * s.apply('World') // prints 'World'
+	 */
     def static <T> operator_doubleGreaterThan(Observable<T> stream, Observer<T> observer) {
             stream.streamTo(observer)
     }
 
+	/**
+	 * Calls the handler when the stream finishes/completes
+	 * 
+	 * <pre>
+	 * val s = String.stream
+	 * s >> [ println(it) ] .. [ println('done!') ]
+	 * 
+	 * s.apply('test') // prints 'test'
+	 * s.finish // prints 'done'
+	 */
     def static<T> operator_upTo(ConnectableObservable<T> stream, (Object)=>void handler) {
             stream.onFinish(handler)
     }
     
+    /**
+     * Calls the handler when the stream had an error
+     * 
+     * <pre>
+     * val s = Integer.stream
+     * s >> [ it / 0 ] ?: [ println('error found') ]
+     * 
+     * s.apply(1) // prints 'error found' (because dividing by 0)
+     */
     def static <T> operator_elvis(ConnectableObservable<T> stream, (Throwable)=>void handler) {
             stream.onError(handler)
     }
-	
+
+	/**
+	 * Shortcut operator for stream.map
+	 * 
+	 * <pre>
+	 * val s = Integer.stream
+	 * s -> [ it * 2 ] >> [ println(it) ]
+	 * s << 4 << 5 // prints 8 and 10
+	 */	
     def static <T, R> operator_mappedTo(Observable<T> stream, (T)=>R fn) {
             stream.map(fn)
     }
 
-    def static <T, R> Observable<R> operator_greaterThan(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
+	/**
+	 * Shortcut for mapAsync/then. Lets you chain methods that produce observables. In other words,
+	 * it lets you produce a chain of async operations, such as, do A$, then when A$ finishes, do B$, etc.
+	 * <p>
+	 * Note: the $ at the end of a method/function name is a convention for a method that returns an observable
+	 * 
+	 * <pre>
+	 * // given definition
+	 * def Observable<FileData> loadFile$(String path)
+	 * def Observable<String> processResult$(FileData data)
+	 * def void printResults(String s)
+	 * 
+	 * // the following
+	 * loadFile$('test.txt')
+	 *     .then [ processResult$(it) ]
+	 *     .each [ printResults(it.data) ]
+	 * 
+	 * // can also be written as
+	 * loadFile$('test.txt') >= [ processResult$(it) ] >> [ printResults(data) ]
+	 */
+    def static <T, R> Observable<R> operator_greaterEqualsThan(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
             stream.mapAsync(observableFn)
     }
-    
+
+	/**
+	 * Perform positive filtering, returning a stream that only contains the values that match the filter.
+	 * 
+	 * <pre>
+	 * val s = Integer.stream
+	 * s << 3 << 4 << 5 << 6
+	 * s +[ it > 4 ] >> [ println(it) ] // prints 5 and 6
+	 */    
     def static <T> operator_plus(Observable<T> stream, (T)=>boolean fn) {
             stream.filter(fn)
     }
 
+	/**
+	 * Perform negative filtering, returning a stream that only contains the values do NOT match the filter.
+	 * 
+	 * <pre>
+	 * val s = Integer.stream
+	 * s << 3 << 4 << 5 << 6
+	 * s -[ it > 4 ] >> [ println(it) ] // prints 3 and 4
+	 */    
     def static <T> operator_minus(Observable<T> stream, Functions.Function1<? super T, Boolean> predicate) {
             stream.filter [ !predicate.apply(it) ] // cannot use !predicate, due to bug in Xtend
     }
 
+	/**
+	 * Alias for stream.apply(value)
+	 */
     def static <T> operator_doubleLessThan(Subject<T, T> stream, T value) {
             stream.apply(value)
     }

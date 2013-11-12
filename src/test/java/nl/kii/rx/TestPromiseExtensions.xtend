@@ -42,13 +42,13 @@ class TestPromiseStreamExtensions {
 	
 	@Test
 	def void testThen() {
-		'Christian'.promise
+		String.promise.apply('Christian')
 			.then [ toGreetingAsync ]
 			.then [ assertEquals('Welcome Christian') ]
 	}
 	
 	def toGreetingAsync(String test) {
-		test.promise.map [ 'Welcome ' + it ]
+		String.promise.apply(test).map [ 'Welcome ' + it ]
 	}
 
 }

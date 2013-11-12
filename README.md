@@ -24,7 +24,7 @@ http://www.eclipse.org/xtend/
 
 If you use maven or gradle, the dependency is the following:
 
-	com.kimengi.util:xtend-tools:3.0-SNAPSHOT
+	com.kimengi.util:xtend-tools:3.1-SNAPSHOT
 
 Note: currently this library is not yet on MavenCentral.
 

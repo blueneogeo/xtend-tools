@@ -133,6 +133,18 @@ class OptExtensions {
 		}
 	}
 	
+	/**
+	 * wrap a call as an option (exception or null generates none)<p>
+	 * example: val userOption = attempt [ api.getUser(userId) ] // if API throws exception, return None
+	 */
+	def static <P, T> Opt<T> attempt(P parm, (P)=> T fn) {
+		try {
+			fn.apply(parm).option
+		} catch (Exception e) {
+			err(e)
+		}
+	}
+
 	/** 
 	 * Same as => but with optional execution and option result<p>
 	 * example: normally you do: user => [ name = 'john' ]<p>
