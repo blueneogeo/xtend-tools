@@ -19,6 +19,7 @@ class TestPromiseStreamExtensions {
 			.each [ println(it) ]
 			.onFinish [ println('we are done!') ]
 			.onError [ println('caught: ' + it)]
+			.start
 		
 		promise.apply('Hello!')
 		
@@ -33,9 +34,6 @@ class TestPromiseStreamExtensions {
 			-> [ toLowerCase ]
 			-> [ 'Hey cool I got this text: ' + it ]
 			>> [ println(it) ]
-			.. [ println('we are done!') ]
-			?: [ println('caught: ' + it)]
-		
 		promise.apply('Hello!')
 		
 	}
@@ -43,11 +41,11 @@ class TestPromiseStreamExtensions {
 	@Test
 	def void testThen() {
 		String.promise.apply('Christian')
-			.then [ toGreetingAsync ]
-			.then [ assertEquals('Welcome Christian') ]
+			.then [ toGreeting$ ]
+			.then [	assertEquals('Welcome Christian') ]
 	}
 	
-	def toGreetingAsync(String test) {
+	def toGreeting$(String test) {
 		String.promise.apply(test).map [ 'Welcome ' + it ]
 	}
 

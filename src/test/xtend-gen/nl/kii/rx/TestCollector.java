@@ -4,12 +4,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import nl.kii.rx.Countdown;
 import nl.kii.rx.Gatherer;
 import nl.kii.rx.StreamExtensions;
+import nl.kii.rx.Subscriber;
 import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Test;
 import rx.Observable;
-import rx.observables.ConnectableObservable;
 
 @SuppressWarnings("all")
 public class TestCollector {
@@ -26,7 +26,7 @@ public class TestCollector {
           InputOutput.<String>println("counting...");
         }
       };
-    ConnectableObservable<Pair<String,Boolean>> _each = StreamExtensions.<Pair<String,Boolean>>each(_stream, _function);
+    Subscriber<Pair<String,Boolean>> _each = StreamExtensions.<Pair<String,Boolean>>each(_stream, _function);
     final Procedure1<Object> _function_1 = new Procedure1<Object>() {
         public void apply(final Object it) {
           Boolean _isSuccess = countdown.isSuccess();
@@ -34,7 +34,7 @@ public class TestCollector {
           InputOutput.<String>println(_plus);
         }
       };
-    StreamExtensions.<Pair<String,Boolean>>onFinish(_each, _function_1);
+    _each.onFinish(_function_1);
     c2.apply(Boolean.valueOf(true));
     c1.apply(Boolean.valueOf(true));
     c3.apply(Boolean.valueOf(true));
@@ -58,7 +58,7 @@ public class TestCollector {
           InputOutput.<String>println(_plus_2);
         }
       };
-    ConnectableObservable<Pair<String,String>> _each = StreamExtensions.<Pair<String,String>>each(_stream, _function);
+    Subscriber<Pair<String,String>> _each = StreamExtensions.<Pair<String,String>>each(_stream, _function);
     final Procedure1<Object> _function_1 = new Procedure1<Object>() {
         public void apply(final Object it) {
           final ConcurrentHashMap<String,String> it_1 = collector.result();
@@ -73,7 +73,7 @@ public class TestCollector {
           InputOutput.<String>println(_plus_2);
         }
       };
-    StreamExtensions.<Pair<String,String>>onFinish(_each, _function_1);
+    _each.onFinish(_function_1);
     cage.apply("12");
     cname.apply("John");
     cuser.apply("Christian");

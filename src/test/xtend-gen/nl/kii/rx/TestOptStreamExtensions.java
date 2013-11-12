@@ -2,6 +2,7 @@ package nl.kii.rx;
 
 import nl.kii.rx.OptStreamExtensions;
 import nl.kii.rx.StreamExtensions;
+import nl.kii.rx.Subscriber;
 import nl.kii.util.None;
 import nl.kii.util.Opt;
 import nl.kii.util.OptExtensions;
@@ -10,7 +11,6 @@ import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Test;
 import rx.Observable;
-import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -63,20 +63,20 @@ public class TestOptStreamExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    ConnectableObservable<Integer> _each = StreamExtensions.<Integer>each(_or, _function_1);
+    Subscriber<Integer> _each = StreamExtensions.<Integer>each(_or, _function_1);
     final Procedure1<Object> _function_2 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("done");
         }
       };
-    ConnectableObservable<Integer> _onFinish = StreamExtensions.<Integer>onFinish(_each, _function_2);
+    Subscriber<Integer> _onFinish = _each.onFinish(_function_2);
     final Procedure1<Throwable> _function_3 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("error: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    StreamExtensions.<Integer>onError(_onFinish, _function_3);
+    _onFinish.onError(_function_3);
     Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(4));
     Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(9));
     Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(3));

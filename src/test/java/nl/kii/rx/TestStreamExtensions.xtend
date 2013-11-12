@@ -18,6 +18,7 @@ class TestStreamExtensions {
 			.each [ println('a: ' + it) ]
 			.onFinish [ println('we are done!') ]
 			.onError [ println('caught: ' + it)]
+			.start
 
 		stream => [
 			apply(2)
@@ -34,7 +35,7 @@ class TestStreamExtensions {
 	}
 	
 	val handler = Integer.stream => [
-		each [ println('handler got number: ' + it)]
+		each [ println('handler got number: ' + it)].start
 	]
 	
 	@Test

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import nl.kii.rx.Collector;
 import nl.kii.rx.StreamExtensions;
+import nl.kii.rx.Subscriber;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.InputOutput;
@@ -13,7 +14,6 @@ import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Assert;
 import org.junit.Test;
 import rx.Observable;
-import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.util.functions.Func1;
@@ -37,20 +37,21 @@ public class TestStreamExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    ConnectableObservable<String> _each = StreamExtensions.<String>each(_map, _function_1);
+    Subscriber<String> _each = StreamExtensions.<String>each(_map, _function_1);
     final Procedure1<Object> _function_2 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("we are done!");
         }
       };
-    ConnectableObservable<String> _onFinish = StreamExtensions.<String>onFinish(_each, _function_2);
+    Subscriber<String> _onFinish = _each.onFinish(_function_2);
     final Procedure1<Throwable> _function_3 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("caught: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    StreamExtensions.<String>onError(_onFinish, _function_3);
+    Subscriber<String> _onError = _onFinish.onError(_function_3);
+    _onError.start();
     final Procedure1<PublishSubject<Integer>> _function_4 = new Procedure1<PublishSubject<Integer>>() {
         public void apply(final PublishSubject<Integer> it) {
           StreamExtensions.<Integer>apply(it, Integer.valueOf(2));
@@ -80,7 +81,8 @@ public class TestStreamExtensions {
                   InputOutput.<String>println(_plus);
                 }
               };
-            StreamExtensions.<Integer>each(it, _function);
+            Subscriber<Integer> _each = StreamExtensions.<Integer>each(it, _function);
+            _each.start();
           }
         };
       PublishSubject<Integer> _doubleArrow = ObjectExtensions.<PublishSubject<Integer>>operator_doubleArrow(_stream, _function);

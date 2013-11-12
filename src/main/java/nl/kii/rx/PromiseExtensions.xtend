@@ -2,16 +2,16 @@ package nl.kii.rx
 
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
+import nl.kii.util.Err
+import nl.kii.util.None
+import nl.kii.util.Opt
+import nl.kii.util.Some
 import org.eclipse.xtext.xbase.lib.Functions
 import rx.Observable
 import rx.Scheduler
-import rx.subjects.AsyncSubject
+import rx.subjects.ReplaySubject
 
 import static extension nl.kii.rx.StreamExtensions.*
-import nl.kii.util.Some
-import nl.kii.util.None
-import nl.kii.util.Err
-import nl.kii.util.Opt
 
 /**
  * Promises are like futures, in that they have no value yet, but may be fulfilled later.
@@ -22,16 +22,16 @@ class PromiseExtensions {
 	
 	// CREATING A PROMISE /////////////////////////////////////////////////////
 	
-	def static <T> AsyncSubject<T> newPromise() {
-		AsyncSubject.create
+	def static <T> ReplaySubject<T> newPromise() {
+		ReplaySubject.create
 	}
 
 	/** 
 	 * Create a promise of a certain type. Usage:
 	 * <pre>val p = Integer.promise</pre>
 	 */
-	def static <T> AsyncSubject<T> promise(Class<T> type) {
-		AsyncSubject.create
+	def static <T> ReplaySubject<T> promise(Class<T> type) {
+		ReplaySubject.create
 	}
 	
 	/**
@@ -74,7 +74,7 @@ class PromiseExtensions {
 	/**
 	 * Fulfill a promise with a value
 	 */
-	def static<T> apply(AsyncSubject<T> promise, T value) {
+	def static<T> apply(ReplaySubject<T> promise, T value) {
 		promise.onNext(value)
 		promise.onCompleted
 		promise
@@ -83,7 +83,7 @@ class PromiseExtensions {
 	/**
 	 * Send an option into a promise. 
 	 */
-	def static <T> apply(AsyncSubject<T> promise, Opt<T> opt) {
+	def static <T> apply(ReplaySubject<T> promise, Opt<T> opt) {
 		switch(opt) {
 			Some<T>: promise.apply(opt.value)
 			None<T>: promise.onCompleted
@@ -135,22 +135,29 @@ class PromiseExtensions {
 	}
 
 	/** 
-	 * When the promise is fulfilled, call the handler. Alias for StreamExtensions.each
+	 * When the promise is fulfilled, call the handler. Alias for StreamExtensions.each(..).start.
+	 * If you need error handling, use .each instead, so you can chain it with .onError and .onFinish.
+	 * Do not forget to start it when you do.
 	 * <pre>
 	 * val p = Integer.promise
 	 * p.then [ println('got value ' + it) ]
 	 * p.apply(4) // will print the message above
 	 */
-	def static <T> Observable<T> then(Observable<T> promise, (T)=>void handler) {
-		promise.each(handler)
+	def static <T> then(Observable<T> promise, (T)=>void handler) {
+		promise.each(handler).start
 	}	
 
-	/**
-	 * When the future is fulfilled, call the handler for generating side-effects
-	 * Returns an Opt<T> observable, so you can chain it with .onFinish and .onError
+	/** 
+	 * When the promise is fulfilled, call the handler. Alias for StreamExtensions.each(..).start.
+	 * If you need error handling, use .each instead, so you can chain it with .onError and .onFinish.
+	 * Do not forget to start it when you do.
+	 * <pre>
+	 * val p = Integer.promise
+	 * p.then [ println('got value ' + it) ]
+	 * p.apply(4) // will print the message above
 	 */
-	def static <T> Observable<T> then(Future<T> future, (T)=>void handler) {
-		future.promise.each(handler)
+	def static <T> then(Future<T> future, (T)=>void handler) {
+		future.promise.each(handler).start
 	}
 	
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////

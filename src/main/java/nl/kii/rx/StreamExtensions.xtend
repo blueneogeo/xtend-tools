@@ -119,20 +119,33 @@ class StreamExtensions {
 		stream
 	}
 	
+	/**
+	 * Create a subscriber, which lets this library piece together a subscription
+	 * call function by function. You create the actual subscription by calling
+	 * start() on the created Subscriber.
+	 * 
+	 * <pre>
+	 * val subscription = Integer.stream
+	 *     .subscribe
+	 *     .each [ ... ]
+	 *     .onError [ ... ]
+	 *     .start
+	 */
+	def static <T> subscribe(Observable<T> stream) {
+		new Subscriber<T>(stream)
+	}
+	
 	/** 
 	 * Respond to each incoming value by calling the passed onValue function. Eg:
 	 * <pre>
 	 * val longs = Long.stream
 	 * 
-	 * longs.each [ println('got ' + it) ]
+	 * longs.each [ println('got ' + it) ].start
 	 * 
 	 * longs.apply(4L).apply(6L)
 	 * </pre>
 	 * <p>
-	 * It will automatically connect if the stream is a ConnectableObservable!
-	 * It will return an unconnected ConnectableObservable of the passed stream.
-	 * The reason for this is that this is how we are able to chain .each, .onError
-	 * and .onFinish together for a nice clean and chainable syntax:
+	 * It automatically creates a subscriber by calling stream.subscribe
 	 * <pre>
 	 * val longs = Long.stream
 	 * 
@@ -161,26 +174,17 @@ class StreamExtensions {
 	 * </pre>
 	 */
 	def static <T> each(Observable<T> stream, (T)=>void onValue) {
-		switch stream {	ConnectableObservable<T>: stream.connect }
-		val cstream = stream.publish
-		stream.subscribe(onValue, [])
-		cstream
+		stream.subscribe.each(onValue)
 	}
 
 	/** Handle an error occurring on the stream */
 	def static <T> onError(Observable<T> stream, (Throwable)=> void onError) {
-		switch stream {	ConnectableObservable<T>: stream.connect }
-		val cstream = stream.publish
-		stream.subscribe([], onError)
-		cstream
+		stream.subscribe.onError(onError)
 	}
 	
 	/** Handle the stream completing */
 	def static <T> onFinish(Observable<T> stream, (Object)=>void onFinish) {
-		switch stream {	ConnectableObservable<T>: stream.connect }
-		val cstream = stream.publish
-		stream.subscribe([], [], [| onFinish.apply(null) ])
-		cstream
+		stream.subscribe.onFinish(onFinish)
 	}
 	
 	/** Collect the results in an observed value bucket */
@@ -213,7 +217,7 @@ class StreamExtensions {
     }        
 
 	/**
-	 * Shortcut for stream.each
+	 * Shortcut for stream.then
 	 * 
 	 * <pre>
 	 * val s = String.stream
@@ -222,7 +226,7 @@ class StreamExtensions {
 	 * s >> [ println(it) ] // prints 'Hello' and 'World'
 	 */
     def static <T> operator_doubleGreaterThan(Observable<T> stream, (T)=>void handler) {
-            stream.each(handler)
+            stream.each(handler).start
     }
 
 	/** 

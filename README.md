@@ -76,17 +76,47 @@ Pushing into a stream is like calling a function:
 
 #### Responding to values being pushed onto the stream
 
-When a new value is pushed onto a stream, you can react to it like this:
+When a new value is pushed onto a stream, you can create side effects like this:
 
-	stream.each [ println('got value ' + it) ]
+	stream
+		.each [ println('got value ' + it) ]
+		.start
 
-There is an operator overload as well:
+There is an operator overload as well, which automatically calls start:
 
 	stream >> [ println('got value ' + it) ]
 
+#### Completing a Stream
+
+To complete a stream indicates that a batch of data has finished. To do so, you call the complete method:
+
+	stream.complete
+	stream << none // same thing, see below
+
+You can also listen for a stream to finish/complete:
+
+	stream
+		.each [ ... ]
+		.onFinish [ ... handle the stream finishing ... ]
+		.start
+
+#### Error Handling
+
+A normal problem in async programming is that if you have an error, this can be thrown in a different thread than your UI, and you have no way of normally catching it. RX will catch and carry the error forward through the stream, much like the closing of the stream, and you can listen for the error at the end:
+
+	stream
+		.each [ ... ]
+		.onFinish [ ... ]
+		.onError [ … do error handling … ]
+		.start
+
+You can also manually send an error to a stream:
+
+	stream.error(throwable)
+
 #### Stream Operations
 
-As you see this looks very much like the List methods. You can apply mappings, filtering, and more, much like with a list. Much of the strength of stream programming comes from the fact that you can apply many of these transformation functions on data that has not yet arrived, and as needed. This makes streams really well suited for any asynchronous programming. For example:
+Stream operations act very much like the List methods. You can apply mappings, filtering, and more, much like with a list. Much of the strength of stream programming comes from the fact that you can apply many of these transformation functions on data that has not yet arrived, and as needed. This makes streams really well suited for any asynchronous programming. For example:
 
 	val stream = Integer.stream
 	val printer = String.stream
@@ -96,34 +126,11 @@ As you see this looks very much like the List methods. You can apply mappings, f
 		.map [ 'value: ' + it ]
 		.streamTo(printer) // into another stream!
 
-	printer.each [ println(it) ]
+	printer >> [ println(it) ]
 
 These mimic the List/Iterable API. What I call a stream is actually a RXJava Subject, which in turn is an Observable. RX gives you a huge amount of clever manipulations on these streams. To see all of them, visit the RXJava documentation:
 
 http://netflix.github.io/RxJava/javadoc/rx/Observable.html
-
-#### Completing a Stream
-
-To complete a stream indicates that a batch of data has finished. To do so, you call the complete method:
-
-	stream.complete
-	stream << none // same thing, see below
-
-You can also listen for a stream to complete:
-
-	stream.onComplete [ … ]
-	stream .. [ … ] // same thing, see below
-
-#### Error Handling
-
-A normal problem in async programming is that if you have an error, this can be thrown in a different thread than your UI, and you have no way of normally catching it. RX will catch and carry the error forward through the stream, much like the closing of the stream, and you can listen for the error at the end:
-
-	stream.onError [ … do error handling … ]
-	stream ?: [ …do error handling… ] // same thing
-
-You can also manually send an error to a stream:
-
-	stream.error(throwable)
 
 ## Promises
 
@@ -178,12 +185,13 @@ For example, a fictional 2-level callback problem, where the Async functions req
 
 Each closure also needs an error closure handler, and nesting makes things complicated. At 3 or more levels, things get much worse. With Promises and PromiseExtensions.then, you can make life a lot better:
 
-	loadUrlAsync('http://test.com')
-		.then [ findImagesAsync(it) ]
-		.then [ println('image url: ' + it) ]
-		.onErr [ println('error occurred : ' + message ]
+	loadUrl$('http://test.com')
+		.then [ findImages$(it) ]
+		.each [ println('image url: ' + it) ]
+		.onError [ println('error occurred : ' + message ]
+		.start
 
-For this to work, the loadUrlAsync and findImagesAsync function need to return a Promise (in the form of an Observable) instead.
+For this to work, the loadUrl$ and findImages$ function need to return a Promise (in the form of an Observable) instead. Notice the $ at the end of the method name. This is a convention, which indicates that the return type is an Observable<T>.
 
 The then extension takes a Future or Promise, and maps the function to it. If this function returns a future or promise, it then creates from this a new stream of those results (using the flatMap function from RX). This allows you to keep chaining results like above, while in the background this is an asynchronous process. If the function you pass does not return a future or observable, it is simply processed as an RX.each, so the function is called for each incoming result.
 
@@ -293,6 +301,8 @@ Since many of these operations are so common, and Xtend has nice operator overlo
 
 #### Operators that work for both streams and lists:
 
+If you import both the StreamExtensions and IteratorExtensions, you can perform these on both:
+
 	![..] // negate the result of the boolean fn
 
 	a +[..] // a.filter[..] - allow only where fn returns true
@@ -304,14 +314,6 @@ Since many of these operations are so common, and Xtend has nice operator overlo
 	a >> [..] // a.each [..] - execute the fn for each item
 
 	a << b // a.add(b) - add value b
-
-#### Specific for streams:
-
-	!a // a.complete - mark the stream as complete
-
-	a .. [..] // a.onFinish [..] // apply the fn when the stream completes
-
-	a ?: [..] // a.onError [..] // apply the fn when the stream has an error
 
 ## Streaming with Opt and operator overloading
 
@@ -355,6 +357,8 @@ You can then listen to the event of a some, none and err being passed through th
 		.onNone [ println('the stream is completed!') ]
 		.onErr [ println('there was an error processing:' + message) ]
 
+Note: .options creates a ReplaySubject in the background. This means that it will take up as much memory as the items that are streamed through it.
+
 ## Code Pattern: Event Streams
 
 In most languages with closures, you pass a closure to a class so it can call this closure when there is a result. For example, if you load some code in the background, you pass a closure when you have the result. However if for example you have an interface and want to listen for results, you can have many listeners. Instead of providing listener interfaces to solve this, you can also use public streams. An example tells more:
@@ -391,14 +395,14 @@ Something we found valuable during stream programming is defining streams like m
 		}
 
 		def startListening() {
-			stream >> onNewTweet
+			stream >> onNewTweet$
 		}
 
 		def stopListening() {
 			onNewTweet.complete
 		}
 
-		val onNewTweet = Tweet.stream => [
+		val onNewTweet$ = Tweet.stream => [
 			filter [ language == 'EN' ]
 			.map [ message ]
 			.each [ println('got tweet with message: ' + it) ]
@@ -406,7 +410,7 @@ Something we found valuable during stream programming is defining streams like m
 
 	}
 
-Here onNewTweet acts almost like a method. You can apply values to it like a method, and it is a member of the class. This pattern allows you to abstract away complex processing into a method like structure instead of having everything integrated directly into one clump of code.
+Here onNewTweet$ acts almost like a method. You can apply values to it like a method, and it is a member of the class. This pattern allows you to abstract away complex processing into a method like structure instead of having everything integrated directly into one clump of code.
 
 There are gotchas to keep in mind with this pattern. onNewTweet will only exist AFTER the class has been created. Also, it is created in order, and that means that if you have two of these 'stream methods', you cannot have the first one call the second one, since at creation, it does not yet exist. The solution is to reverse their place in your source code.
 
