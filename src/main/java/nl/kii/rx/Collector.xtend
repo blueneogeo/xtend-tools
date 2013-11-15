@@ -30,16 +30,25 @@ class Collector<T> implements Observer<T>, Functions.Function0<Collection<T>> {
 	val int maxSize
 	val Collection<T> list = new ConcurrentLinkedDeque
 	val PublishSubject<Collection<T>> stream 
+	val (Collection<T>)=>void onFinish
 
-	new() { this(-1) }
+	new() { this(null, -1) }
+
+	new(int maxSize) { this(null, maxSize) }
+
+	new((Collection<T>)=>void onFinish) { 
+		this(onFinish, -1)
+	}
 	
-	new(int maxSize) { 
+	new((Collection<T>)=>void onFinish, int maxSize) { 
 		this.maxSize = maxSize
+		this.onFinish = onFinish
 		stream = newStream
 	}
 	
 	override onCompleted() {
 		stream.apply(list)
+		if(onFinish != null) onFinish.apply(list)
 	}
 	
 	override onError(Throwable e) {

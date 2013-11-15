@@ -15,7 +15,8 @@ class TestStreamExtensions {
 		stream
 			.take(6)
 			.map [ 'got number ' + it ]
-			.each [ println('a: ' + it) ]
+			.each [ println(it) ]
+			.each [ println('printing again: ' + it) ]
 			.onFinish [ println('we are done!') ]
 			.onError [ println('caught: ' + it)]
 			.start

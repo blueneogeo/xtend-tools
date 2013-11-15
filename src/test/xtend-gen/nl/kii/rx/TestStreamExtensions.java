@@ -33,26 +33,32 @@ public class TestStreamExtensions {
     Observable<String> _map = _take.<String>map(_function);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
         public void apply(final String it) {
-          String _plus = ("a: " + it);
-          InputOutput.<String>println(_plus);
+          InputOutput.<String>println(it);
         }
       };
     Subscriber<String> _each = StreamExtensions.<String>each(_map, _function_1);
-    final Procedure1<Object> _function_2 = new Procedure1<Object>() {
+    final Procedure1<String> _function_2 = new Procedure1<String>() {
+        public void apply(final String it) {
+          String _plus = ("printing again: " + it);
+          InputOutput.<String>println(_plus);
+        }
+      };
+    Subscriber<String> _each_1 = _each.each(_function_2);
+    final Procedure1<Object> _function_3 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("we are done!");
         }
       };
-    Subscriber<String> _onFinish = _each.onFinish(_function_2);
-    final Procedure1<Throwable> _function_3 = new Procedure1<Throwable>() {
+    Subscriber<String> _onFinish = _each_1.onFinish(_function_3);
+    final Procedure1<Throwable> _function_4 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("caught: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    Subscriber<String> _onError = _onFinish.onError(_function_3);
+    Subscriber<String> _onError = _onFinish.onError(_function_4);
     _onError.start();
-    final Procedure1<PublishSubject<Integer>> _function_4 = new Procedure1<PublishSubject<Integer>>() {
+    final Procedure1<PublishSubject<Integer>> _function_5 = new Procedure1<PublishSubject<Integer>>() {
         public void apply(final PublishSubject<Integer> it) {
           StreamExtensions.<Integer>apply(it, Integer.valueOf(2));
           StreamExtensions.<Integer>apply(it, Integer.valueOf(5));
@@ -62,7 +68,7 @@ public class TestStreamExtensions {
           StreamExtensions.<Integer>finish(it);
         }
       };
-    ObjectExtensions.<PublishSubject<Integer>>operator_doubleArrow(stream, _function_4);
+    ObjectExtensions.<PublishSubject<Integer>>operator_doubleArrow(stream, _function_5);
   }
   
   @Test

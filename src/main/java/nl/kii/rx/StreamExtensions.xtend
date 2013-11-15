@@ -6,6 +6,8 @@ import rx.Observer
 import rx.observables.ConnectableObservable
 import rx.subjects.PublishSubject
 import rx.subjects.Subject
+import java.util.List
+import java.util.Collection
 
 class StreamExtensions {
 	
@@ -67,8 +69,34 @@ class StreamExtensions {
 		stream.onNext(value)
 		stream
 	}
+	
+	/** Inform a stream that it finished */
+	def static<T> finish(Observer<T> subject) {
+		subject.onCompleted
+		subject
+	}
+	
+	/** Inform a stream that an error occurred */
+	def static<T> error(Observer<T> subject, Throwable t) {
+		subject.onError(t)
+		subject
+	}	
 
-	// ASYNC MAPPING //////////////////////////////////////////////////////////
+	// MAPPING ////////////////////////////////////////////////////////////////
+	
+	/**
+	 * Flattens an observable of a list of items into one stream of just the items
+	 */
+	def static <T> Observable<T> flatten(Observable<List<T>> stream) {
+		stream.flatMap [ it.stream ]
+	}
+
+	/**
+	 * Flattens an observable of an observable into a single observable
+	 */	
+	def static <T> Observable<T> flattenStream(Observable<Observable<T>> stream) {
+		stream.flatMap [ it ]
+	}
 	
 	/** 
 	 * Take a stream of values, and for each, map them into new values using an asynchronous process
@@ -95,29 +123,11 @@ class StreamExtensions {
 	def static <T, R> Observable<R> mapAsync(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
 		stream
 			.map [ observableFn.apply(it) ]
-			.flatMap[it]
-			.synchronize
+			.flattenStream
 	}	
 
 	// RESPOND TO THE STREAM //////////////////////////////////////////////////
 
-	/** Inform a stream that it finished */
-	def static<T> finish(Observer<T> subject) {
-		subject.onCompleted
-		subject
-	}
-	
-	/** Inform a stream that an error occurred */
-	def static<T> error(Observer<T> subject, Throwable t) {
-		subject.onError(t)
-		subject
-	}
-	
-	/** Connect the output of one stream to the input of another */
-	def static <T> streamTo(Observable<T> stream, Observer<T> observer) {
-		stream.subscribe(observer)
-		stream
-	}
 	
 	/**
 	 * Create a subscriber, which lets this library piece together a subscription
@@ -134,6 +144,20 @@ class StreamExtensions {
 	def static <T> subscribe(Observable<T> stream) {
 		new Subscriber<T>(stream)
 	}
+
+	/** 
+	 * Connect the output of one stream to the input of another.
+	 * This will also start the stream, so before you make this call,
+	 * make sure that the observer stream is already wired up to react to
+	 * incoming T's.
+	 * 
+	 * @return the subscription that was created. allows you to unsubscribe from the stream.
+	 */
+	def static <T> streamTo(Observable<T> stream, Observer<T> observer) {
+		stream.subscribe(observer)
+	}
+	
+	// SUBSCRIBE SHORTCUTS ////////////////////////////////////////////////////
 	
 	/** 
 	 * Respond to each incoming value by calling the passed onValue function. Eg:
@@ -197,6 +221,20 @@ class StreamExtensions {
 	/** At most collect maxSize elements in the bucket, to protect against memory overflow */
 	def static <T> collect(Observable<T> stream, int maxSize) {
 		val collector = new Collector(maxSize)
+		stream.streamTo(collector)
+		collector
+	}
+
+	/** At most collect maxSize elements in the bucket, to protect against memory overflow */
+	def static <T> collect(Observable<T> stream, int maxSize, (Collection<T>)=>void onFinish) {
+		val collector = new Collector(onFinish, maxSize)
+		stream.streamTo(collector)
+		collector
+	}
+
+	/** At most collect maxSize elements in the bucket, to protect against memory overflow */
+	def static <T> collect(Observable<T> stream, (Collection<T>)=>void onFinish) {
+		val collector = new Collector(onFinish)
 		stream.streamTo(collector)
 		collector
 	}
