@@ -9,6 +9,8 @@ import rx.subjects.Subject
 import java.util.List
 import java.util.Collection
 
+enum StreamCommand { finish }
+
 class StreamExtensions {
 	
 	// CREATE A STREAM ////////////////////////////////////////////////////////
@@ -64,12 +66,46 @@ class StreamExtensions {
 
 	/**
 	 * Apply a value on a stream, which pushes it onto the stream to be processed.
+	 * You can also pass an exception, which will throw an error on the stream,
+	 * or you can pass StreamCommand.finish (use finish() to create it easily) to
+	 * finish the stream.
 	 */
 	def static<T> apply(Subject<T, T> stream, T value) {
-		stream.onNext(value)
+		switch value {
+			StreamCommand: switch value {
+				case StreamCommand.finish: stream.finish
+			}
+			Exception: stream.error(value)
+			default: stream.onNext(value)
+		}
 		stream
 	}
-	
+
+	/**
+	 * Send an error to a stream, same as stream.error(e).
+	 */
+	def static<T> apply(Subject<T, T> stream, Throwable e) {
+		stream.error(e)
+		stream
+	}
+
+	/**
+	 * Quick way to create a finish stream command, to use for applying:
+	 * <pre>
+	 * stream << 3 << 9 << 12 << finish
+	 */	
+	def static finish() { StreamCommand.finish	}
+
+	/**
+	 * Send a command to the stream (usually to finish it)
+	 */
+	def static<T> apply(Subject<T, T> stream, StreamCommand cmd) {
+		switch cmd {
+			case StreamCommand.finish: stream.finish
+		}
+		stream
+	}
+
 	/** Inform a stream that it finished */
 	def static<T> finish(Observer<T> subject) {
 		subject.onCompleted
@@ -83,18 +119,18 @@ class StreamExtensions {
 	}	
 
 	// MAPPING ////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * Flattens an observable of a list of items into one stream of just the items
 	 */
-	def static <T> Observable<T> flatten(Observable<List<T>> stream) {
+	def static <T> Observable<T> flattenList(Observable<List<T>> stream) {
 		stream.flatMap [ it.stream ]
 	}
 
 	/**
 	 * Flattens an observable of an observable into a single observable
 	 */	
-	def static <T> Observable<T> flattenStream(Observable<Observable<T>> stream) {
+	def static <T> Observable<T> flatten(Observable<Observable<T>> stream) {
 		stream.flatMap [ it ]
 	}
 	
@@ -123,11 +159,46 @@ class StreamExtensions {
 	def static <T, R> Observable<R> mapAsync(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
 		stream
 			.map [ observableFn.apply(it) ]
-			.flattenStream
-	}	
+			.flatten
+	}
+
+	/**
+	 * Keep streaming while the condition is valid
+	 * <pre>
+	 * val stream = Integer.stream
+	 * stream.while[ it <= 10 ].toList >> [ println(join(', ')) ]
+	 * stream << 4 << 8 << 10 << 11 << 5
+	 * // outputs: 4, 8, 10
+	 */	
+	def static <T> while_(Observable<T> stream, (T)=>boolean untilFn) {
+		val Subject<T, T> newStream = newStream
+		stream.subscribe(
+			[ if(!untilFn.apply(it)) newStream.finish else newStream << it ],
+			[ newStream.error(it) ],
+			[| newStream.finish ]
+		)
+		newStream
+	}
+
+	/**
+	 * Keep streaming until the condition has been reached.
+	 * <pre>
+	 * val stream = Integer.stream
+	 * stream.until[ it > 10 ].toList >> [ println(join(', ')) ]
+	 * stream << 4 << 8 << 10 << 11 << 5
+	 * // outputs: 4, 8, 10
+	 */	
+	def static <T> until(Observable<T> stream, (T)=>boolean untilFn) {
+		val Subject<T, T> newStream = newStream
+		stream.subscribe(
+			[ if(untilFn.apply(it)) newStream.finish else newStream << it ],
+			[ newStream.error(it) ],
+			[| newStream.finish ]
+		)
+		newStream
+	}
 
 	// RESPOND TO THE STREAM //////////////////////////////////////////////////
-
 	
 	/**
 	 * Create a subscriber, which lets this library piece together a subscription
@@ -238,7 +309,7 @@ class StreamExtensions {
 		stream.streamTo(collector)
 		collector
 	}
-
+	
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
     
     /**
@@ -377,4 +448,17 @@ class StreamExtensions {
             stream.apply(value)
     }
 
+	/**
+	 * Alias for stream.apply(value)
+	 */
+    def static <T> operator_doubleLessThan(Subject<T, T> stream, Throwable value) {
+            stream.apply(value)
+    }
+
+	/**
+	 * Alias for stream.apply(value)
+	 */
+    def static <T> operator_doubleLessThan(Subject<T, T> stream, StreamCommand value) {
+            stream.apply(value)
+    }
 }

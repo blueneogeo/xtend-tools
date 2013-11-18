@@ -3,12 +3,16 @@ package nl.kii.rx;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import nl.kii.rx.Collector;
+import nl.kii.rx.StreamCommand;
 import nl.kii.rx.StreamExtensions;
 import nl.kii.rx.Subscriber;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
+import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.InputOutput;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Assert;
@@ -58,17 +62,13 @@ public class TestStreamExtensions {
       };
     Subscriber<String> _onError = _onFinish.onError(_function_4);
     _onError.start();
-    final Procedure1<PublishSubject<Integer>> _function_5 = new Procedure1<PublishSubject<Integer>>() {
-        public void apply(final PublishSubject<Integer> it) {
-          StreamExtensions.<Integer>apply(it, Integer.valueOf(2));
-          StreamExtensions.<Integer>apply(it, Integer.valueOf(5));
-          StreamExtensions.<Integer>apply(it, Integer.valueOf(3));
-          Exception _exception = new Exception("this error is intentional");
-          StreamExtensions.<Integer>error(it, _exception);
-          StreamExtensions.<Integer>finish(it);
-        }
-      };
-    ObjectExtensions.<PublishSubject<Integer>>operator_doubleArrow(stream, _function_5);
+    Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(2));
+    Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(5));
+    Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(3));
+    Exception _exception = new Exception("intentional error");
+    Subject<Integer,Integer> _doubleLessThan_3 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, _exception);
+    StreamCommand _finish = StreamExtensions.finish();
+    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, _finish);
   }
   
   @Test
@@ -114,5 +114,73 @@ public class TestStreamExtensions {
     Collection<Integer> _get_2 = bucket.get();
     int _length_2 = ((Object[])Conversions.unwrapArray(_get_2, Object.class)).length;
     Assert.assertEquals(_length_2, 0);
+  }
+  
+  @Test
+  public void testUntil() {
+    final PublishSubject<Integer> stream = StreamExtensions.<Integer>stream(Integer.class);
+    final Function1<Integer,Boolean> _function = new Function1<Integer,Boolean>() {
+        public Boolean apply(final Integer it) {
+          boolean _greaterThan = ((it).intValue() > 10);
+          return Boolean.valueOf(_greaterThan);
+        }
+      };
+    Subject<Integer,Integer> _until = StreamExtensions.<Integer>until(stream, _function);
+    final Func1<Integer,String> _function_1 = new Func1<Integer,String>() {
+        public String call(final Integer it) {
+          String _string = it.toString();
+          return _string;
+        }
+      };
+    Observable<String> _map = _until.<String>map(_function_1);
+    Observable<List<String>> _list = _map.toList();
+    final Procedure1<List<String>> _function_2 = new Procedure1<List<String>>() {
+        public void apply(final List<String> it) {
+          String _join = IterableExtensions.join(it, ", ");
+          InputOutput.<String>println(_join);
+        }
+      };
+    StreamExtensions.<List<String>>operator_doubleGreaterThan(_list, _function_2);
+    Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(4));
+    Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(8));
+    Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(10));
+    Subject<Integer,Integer> _doubleLessThan_3 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, Integer.valueOf(11));
+    Subject<Integer,Integer> _doubleLessThan_4 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(5));
+    StreamCommand _finish = StreamExtensions.finish();
+    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, _finish);
+  }
+  
+  @Test
+  public void testWhile() {
+    final PublishSubject<Integer> stream = StreamExtensions.<Integer>stream(Integer.class);
+    final Function1<Integer,Boolean> _function = new Function1<Integer,Boolean>() {
+        public Boolean apply(final Integer it) {
+          boolean _lessEqualsThan = ((it).intValue() <= 10);
+          return Boolean.valueOf(_lessEqualsThan);
+        }
+      };
+    Subject<Integer,Integer> _while_ = StreamExtensions.<Integer>while_(stream, _function);
+    final Func1<Integer,String> _function_1 = new Func1<Integer,String>() {
+        public String call(final Integer it) {
+          String _string = it.toString();
+          return _string;
+        }
+      };
+    Observable<String> _map = _while_.<String>map(_function_1);
+    Observable<List<String>> _list = _map.toList();
+    final Procedure1<List<String>> _function_2 = new Procedure1<List<String>>() {
+        public void apply(final List<String> it) {
+          String _join = IterableExtensions.join(it, ", ");
+          InputOutput.<String>println(_join);
+        }
+      };
+    StreamExtensions.<List<String>>operator_doubleGreaterThan(_list, _function_2);
+    Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(4));
+    Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(8));
+    Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(10));
+    Subject<Integer,Integer> _doubleLessThan_3 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, Integer.valueOf(11));
+    Subject<Integer,Integer> _doubleLessThan_4 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(5));
+    StreamCommand _finish = StreamExtensions.finish();
+    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, _finish);
   }
 }
