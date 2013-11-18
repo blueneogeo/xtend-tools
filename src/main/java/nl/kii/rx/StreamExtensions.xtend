@@ -8,6 +8,8 @@ import rx.subjects.PublishSubject
 import rx.subjects.Subject
 import java.util.List
 import java.util.Collection
+import org.eclipse.xtext.xbase.lib.Procedures.Procedure1
+import org.eclipse.xtext.xbase.lib.Functions.Function1
 
 enum StreamCommand { finish }
 
@@ -167,7 +169,7 @@ class StreamExtensions {
 	 * <pre>
 	 * val stream = Integer.stream
 	 * stream.while[ it <= 10 ].toList >> [ println(join(', ')) ]
-	 * stream << 4 << 8 << 10 << 11 << 5
+	 * stream << 4 << 8 << 10 << 11 << 5 << finish
 	 * // outputs: 4, 8, 10
 	 */	
 	def static <T> while_(Observable<T> stream, (T)=>boolean untilFn) {
@@ -185,7 +187,7 @@ class StreamExtensions {
 	 * <pre>
 	 * val stream = Integer.stream
 	 * stream.until[ it > 10 ].toList >> [ println(join(', ')) ]
-	 * stream << 4 << 8 << 10 << 11 << 5
+	 * stream << 4 << 8 << 10 << 11 << 5 << finish
 	 * // outputs: 4, 8, 10
 	 */	
 	def static <T> until(Observable<T> stream, (T)=>boolean untilFn) {
@@ -196,6 +198,22 @@ class StreamExtensions {
 			[| newStream.finish ]
 		)
 		newStream
+	}
+
+	// VALIDATION /////////////////////////////////////////////////////////////
+	
+	def static <T> assertTrue(Observable<T> stream, String errorMessage, (T)=>boolean assertFn) {
+		stream.map [
+			if(!assertFn.apply(it)) throw new AssertionError(errorMessage)
+			it
+		]
+	}
+
+	def static <T> assertFalse(Observable<T> stream, String errorMessage, (T)=>boolean assertFn) {
+		stream.map [
+			if(assertFn.apply(it)) throw new AssertionError(errorMessage)
+			it
+		]
 	}
 
 	// RESPOND TO THE STREAM //////////////////////////////////////////////////
@@ -449,16 +467,17 @@ class StreamExtensions {
     }
 
 	/**
-	 * Alias for stream.apply(value)
+	 * Alias for stream.apply(throwable)
 	 */
     def static <T> operator_doubleLessThan(Subject<T, T> stream, Throwable value) {
             stream.apply(value)
     }
 
 	/**
-	 * Alias for stream.apply(value)
+	 * Alias for stream.apply(streamcommand)
 	 */
     def static <T> operator_doubleLessThan(Subject<T, T> stream, StreamCommand value) {
             stream.apply(value)
     }
+
 }

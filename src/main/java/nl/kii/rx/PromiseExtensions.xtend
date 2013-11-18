@@ -136,14 +136,28 @@ class PromiseExtensions {
 	/** 
 	 * When the promise is fulfilled, call the handler. Alias for StreamExtensions.each(..).start.
 	 * If you need error handling, use .each instead, so you can chain it with .onError and .onFinish.
-	 * Do not forget to start it when you do.
 	 * <pre>
 	 * val p = Integer.promise
 	 * p.then [ println('got value ' + it) ]
-	 * p.apply(4) // will print the message above
+	 * p.apply(4) // will print 'got value 4'
 	 */
 	def static <T> then(Observable<T> promise, (T)=>void handler) {
 		promise.each(handler).start
+	}	
+
+	/** 
+	 * Then with an error handler. If an error occurs, the handler will be called, instead of just
+	 * throwing an exception. You could set up a single handler and then pass this handler to
+	 * all your then's, catching errors so they don't bubble up and stop your application.
+	 * <pre>
+	 * val errorFn = [ Throwable it | println('got error: ' + it.message) ]
+	 * val p = Integer.promise
+	 * p.then(errorFn) [ println('got value ' + it ]
+	 * p.apply(4) // will print 'got value 4'
+	 * 
+	 */
+	def static <T> then(Observable<T> promise, (Throwable)=>void errorHandler, (T)=>void handler) {
+		promise.each(handler).onError(errorHandler).start
 	}	
 
 	/** 
