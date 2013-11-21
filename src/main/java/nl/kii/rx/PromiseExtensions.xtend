@@ -142,7 +142,7 @@ class PromiseExtensions {
 	 * p.apply(4) // will print 'got value 4'
 	 */
 	def static <T> then(Observable<T> promise, (T)=>void handler) {
-		promise.each(handler).start
+		promise.each(handler)
 	}	
 
 	/** 
@@ -157,7 +157,7 @@ class PromiseExtensions {
 	 * 
 	 */
 	def static <T> then(Observable<T> promise, (Throwable)=>void errorHandler, (T)=>void handler) {
-		promise.each(handler).onError(errorHandler).start
+		promise.each(handler).onError(errorHandler)
 	}	
 
 	/** 
@@ -170,7 +170,7 @@ class PromiseExtensions {
 	 * p.apply(4) // will print the message above
 	 */
 	def static <T> then(Future<T> future, (T)=>void handler) {
-		future.promise.each(handler).start
+		future.promise.each(handler)
 	}
 	
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////

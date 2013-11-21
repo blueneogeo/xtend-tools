@@ -7,11 +7,11 @@ import java.util.List;
 import nl.kii.rx.Collector;
 import nl.kii.rx.StreamCommand;
 import nl.kii.rx.StreamExtensions;
-import nl.kii.rx.Subscriber;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.InputOutput;
+import org.eclipse.xtext.xbase.lib.IntegerRange;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
@@ -40,28 +40,27 @@ public class TestStreamExtensions {
           InputOutput.<String>println(it);
         }
       };
-    Subscriber<String> _each = StreamExtensions.<String>each(_map, _function_1);
+    Subject<String,String> _each = StreamExtensions.<String>each(_map, _function_1);
     final Procedure1<String> _function_2 = new Procedure1<String>() {
         public void apply(final String it) {
           String _plus = ("printing again: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    Subscriber<String> _each_1 = _each.each(_function_2);
+    Subject<String,String> _each_1 = StreamExtensions.<String>each(_each, _function_2);
     final Procedure1<Object> _function_3 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("we are done!");
         }
       };
-    Subscriber<String> _onFinish = _each_1.onFinish(_function_3);
+    Subject<String,String> _onFinish = StreamExtensions.<String>onFinish(_each_1, _function_3);
     final Procedure1<Throwable> _function_4 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("caught: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    Subscriber<String> _onError = _onFinish.onError(_function_4);
-    _onError.start();
+    StreamExtensions.<String>onError(_onFinish, _function_4);
     Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(2));
     Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(5));
     Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(3));
@@ -87,8 +86,7 @@ public class TestStreamExtensions {
                   InputOutput.<String>println(_plus);
                 }
               };
-            Subscriber<Integer> _each = StreamExtensions.<Integer>each(it, _function);
-            _each.start();
+            StreamExtensions.<Integer>each(it, _function);
           }
         };
       PublishSubject<Integer> _doubleArrow = ObjectExtensions.<PublishSubject<Integer>>operator_doubleArrow(_stream, _function);
@@ -182,5 +180,23 @@ public class TestStreamExtensions {
     Subject<Integer,Integer> _doubleLessThan_4 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(5));
     StreamCommand _finish = StreamExtensions.finish();
     StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, _finish);
+  }
+  
+  public void testLOTSOfItemsForMemoryLeaks() {
+    final PublishSubject<Integer> stream = StreamExtensions.<Integer>stream(Integer.class);
+    final Procedure1<Integer> _function = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          int _modulo = ((it).intValue() % 1000000);
+          boolean _equals = (_modulo == 0);
+          if (_equals) {
+            InputOutput.<Integer>println(it);
+          }
+        }
+      };
+    StreamExtensions.<Integer>operator_doubleGreaterThan(stream, _function);
+    IntegerRange _upTo = new IntegerRange(1, 100000000);
+    for (final Integer i : _upTo) {
+      StreamExtensions.<Integer>operator_doubleLessThan(stream, i);
+    }
   }
 }

@@ -2,7 +2,6 @@ package nl.kii.rx;
 
 import nl.kii.rx.PromiseExtensions;
 import nl.kii.rx.StreamExtensions;
-import nl.kii.rx.Subscriber;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
@@ -10,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import rx.Observable;
 import rx.subjects.ReplaySubject;
+import rx.subjects.Subject;
 import rx.util.functions.Func1;
 
 @SuppressWarnings("all")
@@ -36,21 +36,20 @@ public class TestPromiseStreamExtensions {
           InputOutput.<String>println(it);
         }
       };
-    Subscriber<String> _each = StreamExtensions.<String>each(_map_1, _function_2);
+    Subject<String,String> _each = StreamExtensions.<String>each(_map_1, _function_2);
     final Procedure1<Object> _function_3 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("we are done!");
         }
       };
-    Subscriber<String> _onFinish = _each.onFinish(_function_3);
+    Subject<String,String> _onFinish = StreamExtensions.<String>onFinish(_each, _function_3);
     final Procedure1<Throwable> _function_4 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("caught: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    Subscriber<String> _onError = _onFinish.onError(_function_4);
-    _onError.start();
+    StreamExtensions.<String>onError(_onFinish, _function_4);
     PromiseExtensions.<String>apply(promise, "Hello!");
   }
   
@@ -94,6 +93,7 @@ public class TestPromiseStreamExtensions {
     final Procedure1<String> _function_1 = new Procedure1<String>() {
         public void apply(final String it) {
           Assert.assertEquals(it, "Welcome Christian");
+          InputOutput.<String>println("done!");
         }
       };
     PromiseExtensions.<String>then(_then, _function_1);

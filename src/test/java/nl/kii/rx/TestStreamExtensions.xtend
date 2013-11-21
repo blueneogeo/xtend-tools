@@ -19,7 +19,6 @@ class TestStreamExtensions {
 			.each [println('printing again: ' + it)]
 			.onFinish [println('we are done!')]
 			.onError [println('caught: ' + it)]
-			.start
 
 		stream << 2 << 5 << 3 << new Exception('intentional error') << finish
 
@@ -39,7 +38,7 @@ class TestStreamExtensions {
 	}
 
 	val handler = Integer.stream => [
-		each [println('handler got number: ' + it)].start
+		each [println('handler got number: ' + it)]
 	]
 
 	@Test
@@ -66,6 +65,14 @@ class TestStreamExtensions {
 		val stream = Integer.stream
 		stream.while_[it<=10].map[toString].toList >> [println(join(', '))]
 		stream << 4 << 8 << 10 << 11 << 5 << finish
+	}
+	
+	// @Test
+	def void testLOTSOfItemsForMemoryLeaks() {
+		val stream = Integer.stream
+		stream >> [	if(it % 1000_000 == 0) println(it) ]
+		for(i : 1..100_000_000) 
+			stream << i
 	}
 
 }

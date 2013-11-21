@@ -19,7 +19,6 @@ class TestPromiseStreamExtensions {
 			.each [ println(it) ]
 			.onFinish [ println('we are done!') ]
 			.onError [ println('caught: ' + it)]
-			.start
 		
 		promise.apply('Hello!')
 		
@@ -42,7 +41,9 @@ class TestPromiseStreamExtensions {
 	def void testThen() {
 		String.promise.apply('Christian')
 			.then [ toGreeting$ ]
-			.then [	assertEquals('Welcome Christian') ]
+			.then [	assertEquals('Welcome Christian')
+				println('done!')
+			]
 	}
 	
 	def toGreeting$(String test) {

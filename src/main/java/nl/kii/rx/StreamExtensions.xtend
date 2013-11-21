@@ -10,6 +10,7 @@ import java.util.List
 import java.util.Collection
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1
 import org.eclipse.xtext.xbase.lib.Functions.Function1
+import static extension nl.kii.util.FunctionExtensions.*
 
 enum StreamCommand { finish }
 
@@ -109,14 +110,20 @@ class StreamExtensions {
 	}
 
 	/** Inform a stream that it finished */
-	def static<T> finish(Observer<T> subject) {
+	def static<T> finish(Subject<T, T> subject) {
 		subject.onCompleted
 		subject
 	}
 	
 	/** Inform a stream that an error occurred */
-	def static<T> error(Observer<T> subject, Throwable t) {
+	def static<T> error(Subject<T, T> subject, Throwable t) {
 		subject.onError(t)
+		subject
+	}	
+
+	/** Inform a stream that an error occurred */
+	def static<T> error(Subject<T, T> subject, String errorMessage) {
+		subject.onError(new Exception(errorMessage))
 		subject
 	}	
 
@@ -246,7 +253,7 @@ class StreamExtensions {
 		stream.subscribe(observer)
 	}
 	
-	// SUBSCRIBE SHORTCUTS ////////////////////////////////////////////////////
+	// SUBSCRIBE //////////////////////////////////////////////////////////////
 	
 	/** 
 	 * Respond to each incoming value by calling the passed onValue function. Eg:
@@ -287,42 +294,61 @@ class StreamExtensions {
 	 * </pre>
 	 */
 	def static <T> each(Observable<T> stream, (T)=>void onValue) {
-		stream.subscribe.each(onValue)
+		val Subject<T, T> newStream = newStream
+		stream.subscribe(
+			[ newStream << it; onValue << it ], 
+			[ newStream << it ], 
+			[| newStream << finish ]
+		)
+		newStream
 	}
+
 
 	/** Handle an error occurring on the stream */
 	def static <T> onError(Observable<T> stream, (Throwable)=> void onError) {
-		stream.subscribe.onError(onError)
+		val Subject<T, T> newStream = newStream
+		stream.subscribe(
+			[ newStream << it ], 
+			[ newStream << it; onError << it ], 
+			[| newStream << finish ]
+		)
+		newStream
 	}
-	
+
 	/** Handle the stream completing */
 	def static <T> onFinish(Observable<T> stream, (Object)=>void onFinish) {
-		stream.subscribe.onFinish(onFinish)
+		val Subject<T, T> newStream = newStream
+		stream.subscribe(
+			[ newStream << it ], 
+			[ newStream << it ], 
+			[| newStream << finish; onFinish << null ]
+		)
+		newStream
 	}
 	
 	/** Collect the results in an observed value bucket */
-	def static <T> collect(Observable<T> stream) {
+	def static <T> Collector<T> collect(Observable<T> stream) {
 		val collector = new Collector
 		stream.streamTo(collector)
 		collector
 	}
 	
 	/** At most collect maxSize elements in the bucket, to protect against memory overflow */
-	def static <T> collect(Observable<T> stream, int maxSize) {
+	def static <T> Collector<T> collect(Observable<T> stream, int maxSize) {
 		val collector = new Collector(maxSize)
 		stream.streamTo(collector)
 		collector
 	}
 
 	/** At most collect maxSize elements in the bucket, to protect against memory overflow */
-	def static <T> collect(Observable<T> stream, int maxSize, (Collection<T>)=>void onFinish) {
+	def static <T> Collector<T> collect(Observable<T> stream, int maxSize, (Collection<T>)=>void onFinish) {
 		val collector = new Collector(onFinish, maxSize)
 		stream.streamTo(collector)
 		collector
 	}
 
 	/** At most collect maxSize elements in the bucket, to protect against memory overflow */
-	def static <T> collect(Observable<T> stream, (Collection<T>)=>void onFinish) {
+	def static <T> Collector<T> collect(Observable<T> stream, (Collection<T>)=>void onFinish) {
 		val collector = new Collector(onFinish)
 		stream.streamTo(collector)
 		collector
@@ -353,7 +379,7 @@ class StreamExtensions {
 	 * s >> [ println(it) ] // prints 'Hello' and 'World'
 	 */
     def static <T> operator_doubleGreaterThan(Observable<T> stream, (T)=>void handler) {
-            stream.each(handler).start
+            stream.each(handler)
     }
 
 	/** 

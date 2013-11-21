@@ -2,7 +2,6 @@ package nl.kii.rx;
 
 import nl.kii.rx.OptStreamExtensions;
 import nl.kii.rx.StreamExtensions;
-import nl.kii.rx.Subscriber;
 import nl.kii.util.None;
 import nl.kii.util.Opt;
 import nl.kii.util.OptExtensions;
@@ -63,20 +62,20 @@ public class TestOptStreamExtensions {
           InputOutput.<String>println(_plus);
         }
       };
-    Subscriber<Integer> _each = StreamExtensions.<Integer>each(_or, _function_1);
+    Subject<Integer,Integer> _each = StreamExtensions.<Integer>each(_or, _function_1);
     final Procedure1<Object> _function_2 = new Procedure1<Object>() {
         public void apply(final Object it) {
           InputOutput.<String>println("done");
         }
       };
-    Subscriber<Integer> _onFinish = _each.onFinish(_function_2);
+    Subject<Integer,Integer> _onFinish = StreamExtensions.<Integer>onFinish(_each, _function_2);
     final Procedure1<Throwable> _function_3 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("error: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    _onFinish.onError(_function_3);
+    StreamExtensions.<Integer>onError(_onFinish, _function_3);
     Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(4));
     Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(9));
     Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(3));

@@ -41,15 +41,19 @@ https://github.com/Netflix/RxJava/wiki
 
 I've taken liberty of defining my own naming, which differs from that of RX. To clarify, this is how the concepts translate:
 
-#### rx.Observable
+- Stream: rx.PublishSubject
+- Promise: rx.ReplaySubject, but only intended for a single result
+- ObservedValue: a custom version of rx.BehaviorSubject
 
-In RX, an Observable is an instance that you can listen to, and Observer is something that you can put something into. These two interfaces are separate.
+All implement rx.Observed and rx.Observable. Observed means that you can put things into them at a later time. Observable means that you can listen to these items coming in at a later time.
 
-A problem I found with RX is that the concepts it introduces are unclear and unintuitive. Observables and Subjects are not as intuitive as Streams and Promises. They also do not allow state to be kept.
+This means that when you create a stream, promise or observed, you can put things into them via .apply(value), and you can listen to changes on them via .each [value | ... ].
 
-This is why in this library, I've taken the liberty to define these three new concepts, wrapping the solid RX framework.
+Since they are Observable, you can apply all the rx.Observable methods on them, such as .map, .filter, etc, to create a chain of processing. Each method creates a new observable you can listen to via .each().
 
-#### Xtend-tools Stream
+Each of the stream, promise and observed value is discussed in more detail below.
+
+#### Stream
 
 A stream is like a list that keeps on filling. If you consider a normal List<T> to be something that you 'pull' data from, you can see a stream as a list that has pushed data into it. You never know when a new item is being pushed onto the stream. That is why you subscribe a lambda/closure to a stream to handle an incoming result. 
 
@@ -80,9 +84,8 @@ When a new value is pushed onto a stream, you can create side effects like this:
 
 	stream
 		.each [ println('got value ' + it) ]
-		.start
 
-There is an operator overload as well, which automatically calls start:
+There is an operator overload as well:
 
 	stream >> [ println('got value ' + it) ]
 
@@ -90,15 +93,18 @@ There is an operator overload as well, which automatically calls start:
 
 To complete a stream indicates that a batch of data has finished. To do so, you call the complete method:
 
-	stream.complete
-	stream << none // same thing, see below
+	stream.finish
+
+Or apply finish via .apply or via operator overload:
+
+	stream.apply(finish)
+	stream << finish // same thing
 
 You can also listen for a stream to finish/complete:
 
 	stream
 		.each [ ... ]
 		.onFinish [ ... handle the stream finishing ... ]
-		.start
 
 #### Error Handling
 
@@ -108,29 +114,36 @@ A normal problem in async programming is that if you have an error, this can be 
 		.each [ ... ]
 		.onFinish [ ... ]
 		.onError [ … do error handling … ]
-		.start
 
 You can also manually send an error to a stream:
 
 	stream.error(throwable)
 
+	stream.error('something went wrong')
+
+Or directly apply a Throwable to the stream:
+
+	stream << new Exception('something bad happened!')
+
 #### Stream Operations
 
 Stream operations act very much like the List methods. You can apply mappings, filtering, and more, much like with a list. Much of the strength of stream programming comes from the fact that you can apply many of these transformation functions on data that has not yet arrived, and as needed. This makes streams really well suited for any asynchronous programming. For example:
 
-	val stream = Integer.stream
+	val ints = Integer.stream
 	val printer = String.stream
 
-	stream
+	ints
 		.filter [ it > 5 ]
 		.map [ 'value: ' + it ]
-		.streamTo(printer) // into another stream!
+		.streamTo(printer) // pipe into another stream!
 
 	printer >> [ println(it) ]
 
 These mimic the List/Iterable API. What I call a stream is actually a RXJava Subject, which in turn is an Observable. RX gives you a huge amount of clever manipulations on these streams. To see all of them, visit the RXJava documentation:
 
 http://netflix.github.io/RxJava/javadoc/rx/Observable.html
+
+IMPORTANT: in order to process all items in a stream, you should  set up the handling of stream items BEFORE you start pushing in items with apply or <<, or you may lose items.
 
 ## Promises
 
@@ -189,7 +202,6 @@ Each closure also needs an error closure handler, and nesting makes things compl
 		.then [ findImages$(it) ]
 		.each [ println('image url: ' + it) ]
 		.onError [ println('error occurred : ' + message ]
-		.start
 
 For this to work, the loadUrl$ and findImages$ function need to return a Promise (in the form of an Observable) instead. Notice the $ at the end of the method name. This is a convention, which indicates that the return type is an Observable<T>.
 
@@ -271,7 +283,7 @@ Also, unlike a function, you can put in your own values, as it still is a normal
 
 #### Transforming a Stream into an Observed Value
 
-If you have an observable value, and you apply transformations on it, you will get a stream, and cannot reason about it as a variable anymore:
+If you have an observed value, and you apply transformations on it, you will get a stream, and cannot reason about it as a variable anymore:
 
 	val x = 12.observe // x is an ObservedValue<Integer>
 	val y = x.filter[it > 6] // y is an Observable<Integer>
@@ -327,22 +339,6 @@ If you apply an Opt<T> on a stream (or promise), this has the following effect:
 - if it is an Err<T>, it will tell the stream there was an error
 
 This allows you to create lists of Opt<T> which will fully represent a stream of data.
-
-	Long.stream.apply(4).apply(2).apply(5).apply(none) // none creates a None<Long>
-
-In combination with the operator overloading, it also makes for nice short code:
-
-	val stream = Long.stream << 4 << 2 << 5 << none // end the stream, no need to call stream.complete
-
-Putting all these things together, you can be very succinct in defining stream handling. For example, to create a stream, an error handler and a complete handler:
-
-	// listen to twitter for tweets using async api
-	val tweetStream = twitterAPI.getTweets(userId)
-	// handle incoming tweets
-	tweetStream >> [ processTweet ] .. [ closeConnection ] ?: [ reportError ]
-
-	// push in your own tweet for testing
-	tweetSteam << test1 << test2 << none
 
 #### Listening to a Stream of Opts
 
