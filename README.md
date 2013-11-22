@@ -160,7 +160,7 @@ To respond to it, you can use any normal stream operator:
 
 	p.map[api.getUser(it)]
 		.filter[isLoggedIn]
-		.each[sayWelcome(it)]
+		.then[sayWelcome(it)]
 
 Then to put something into it:
 
@@ -173,7 +173,12 @@ You can also directly convert any Future<T> into a promise. For example:
 
 	Future<User> future = loadUserFromNetwork()
 	val promise = future.promise
-	promise.each [ println('got user ' + it) ]
+	promise.then [ println('got user ' + it) ]
+
+So in short:
+
+	loadUserFromNetwork.promise
+		.then [ println('got user ' + it) ]
 
 There are many more operations. See PromiseExtensions.xtend for more:
 
@@ -200,7 +205,7 @@ Each closure also needs an error closure handler, and nesting makes things compl
 
 	loadUrl$('http://test.com')
 		.then [ findImages$(it) ]
-		.each [ println('image url: ' + it) ]
+		.then [ println('image url: ' + it) ]
 		.onError [ println('error occurred : ' + message ]
 
 For this to work, the loadUrl$ and findImages$ function need to return a Promise (in the form of an Observable) instead. Notice the $ at the end of the method name. This is a convention, which indicates that the return type is an Observable<T>.
