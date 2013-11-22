@@ -12,6 +12,8 @@ import rx.Scheduler
 import rx.subjects.ReplaySubject
 
 import static extension nl.kii.rx.StreamExtensions.*
+import static extension nl.kii.util.FunctionExtensions.*
+import rx.subjects.Subject
 
 /**
  * Promises are like futures, in that they have no value yet, but may be fulfilled later.
@@ -38,8 +40,8 @@ class PromiseExtensions {
 	 * Create a promise which is immediately fulfilled by an item
 	 * <pre>val p = 12.promise</pre>
 	 */
-	def static <T> Observable<T> promise(T item) {
-		Observable.from(item)
+	def static <T> ReplaySubject<T> promise(T item) {
+		Observable.from(item).replayable
 	}
 
 	/**
@@ -49,24 +51,31 @@ class PromiseExtensions {
 	 * val promisedUser = futureUser.promise
 	 * promisedUser.then [ showUser(it) ]
 	 */
-	def static <T> Observable<T> promise(Future<T> future) {
-		Observable.from(future)
+	def static <T> ReplaySubject<T> promise(Future<T> future) {
+		Observable.from(future).replayable
 	}
 
 	/**
 	 * Create a promise from a future and schedule executing it on a passed scheduler
 	 */
-	def static <T> Observable<T> promise(Future<? extends T> future, Scheduler scheduler) {
-		Observable.from(future, scheduler)
+	def static <T> ReplaySubject<T> promise(Future<? extends T> future, Scheduler scheduler) {
+		Observable.from(future, scheduler).replayable
 	}
 
 	/**
 	 * Create a promise from a future and schedule executing it on a passed scheduler, within
 	 * a given timeout period
 	 */
-	def static <T> Observable<T> promise(Future<? extends T> future, long timeout, TimeUnit timeUnit) {
-		Observable.from(future, timeout, timeUnit)
-	}	
+	def static <T> ReplaySubject<T> promise(Future<? extends T> future, long timeout, TimeUnit timeUnit) {
+		Observable.from(future, timeout, timeUnit).replayable
+	}
+
+	/** Normal observables do not replay. This streams a new stream to a replayable observable */	
+	def static <T> ReplaySubject<T> replayable(Observable<T> observable) {
+		val ReplaySubject<T> promise = newPromise
+		observable.streamTo(promise)
+		promise
+	}
 	
 	// SEND DATA TO A PROMISE /////////////////////////////////////////////////
 	
@@ -141,36 +150,25 @@ class PromiseExtensions {
 	 * p.then [ println('got value ' + it) ]
 	 * p.apply(4) // will print 'got value 4'
 	 */
-	def static <T> then(Observable<T> promise, (T)=>void handler) {
-		promise.each(handler)
-	}	
+	def static <T> then(Observable<T> promise, (T)=>void onValue) {
+		val Subject<T, T> newPromise = newPromise
+		promise.subscribe(
+			[ newPromise << it; onValue << it ], 
+			[ newPromise << it ], 
+			[| newPromise << finish ]
+		)
+		newPromise
+	}
 
 	/** 
-	 * Then with an error handler. If an error occurs, the handler will be called, instead of just
-	 * throwing an exception. You could set up a single handler and then pass this handler to
-	 * all your then's, catching errors so they don't bubble up and stop your application.
-	 * <pre>
-	 * val errorFn = [ Throwable it | println('got error: ' + it.message) ]
-	 * val p = Integer.promise
-	 * p.then(errorFn) [ println('got value ' + it ]
-	 * p.apply(4) // will print 'got value 4'
-	 * 
-	 */
-	def static <T> then(Observable<T> promise, (Throwable)=>void errorHandler, (T)=>void handler) {
-		promise.each(handler).onError(errorHandler)
-	}	
-
-	/** 
-	 * When the promise is fulfilled, call the handler. Alias for StreamExtensions.each(..).start.
-	 * If you need error handling, use .each instead, so you can chain it with .onError and .onFinish.
-	 * Do not forget to start it when you do.
+	 * When the promise is fulfilled, call the handler.
 	 * <pre>
 	 * val p = Integer.promise
 	 * p.then [ println('got value ' + it) ]
 	 * p.apply(4) // will print the message above
 	 */
 	def static <T> then(Future<T> future, (T)=>void handler) {
-		future.promise.each(handler)
+		future.promise.then(handler)
 	}
 	
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////

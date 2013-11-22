@@ -38,7 +38,7 @@ class TestPromiseStreamExtensions {
 	}
 	
 	@Test
-	def void testThen() {
+	def void testAsyncThen() {
 		String.promise.apply('Christian')
 			.then [ toGreeting$ ]
 			.then [	assertEquals('Welcome Christian')

@@ -80,7 +80,7 @@ public class TestPromiseStreamExtensions {
   }
   
   @Test
-  public void testThen() {
+  public void testAsyncThen() {
     ReplaySubject<String> _promise = PromiseExtensions.<String>promise(String.class);
     ReplaySubject<String> _apply = PromiseExtensions.<String>apply(_promise, "Christian");
     final Function1<String,Observable<String>> _function = new Function1<String,Observable<String>>() {
