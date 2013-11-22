@@ -93,18 +93,18 @@ There is an operator overload as well:
 
 To complete a stream indicates that a batch of data has finished. To do so, you call the complete method:
 
-	stream.finish
+	stream.complete
 
-Or apply finish via .apply or via operator overload:
+Or apply StreamComand.done via .apply or via operator overload:
 
-	stream.apply(finish)
-	stream << finish // same thing
+	stream.apply(done)
+	stream << done // same thing
 
 You can also listen for a stream to finish/complete:
 
 	stream
 		.each [ ... ]
-		.onFinish [ ... handle the stream finishing ... ]
+		.onComplete [ ... handle the stream completing ... ]
 
 #### Error Handling
 
@@ -124,6 +124,16 @@ You can also manually send an error to a stream:
 Or directly apply a Throwable to the stream:
 
 	stream << new Exception('something bad happened!')
+
+#### Finally
+
+Sometimes you want to know that streaming has ended, either through a complete or an error. To detect this, you can use the .onFinish handler:
+
+	stream
+		.onEach [ ... ]
+		.onFinish [ println('we are done streaming') ]
+
+This handler will be called always when streaming stops. Still, that does not mean it is always called. In case of a promise, this it is also called when the promise was fulfilled. In case of a stream that never calls complete and never has an error however, it will never be called.
 
 #### Stream Operations
 
