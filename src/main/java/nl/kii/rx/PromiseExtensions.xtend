@@ -155,7 +155,7 @@ class PromiseExtensions {
 		promise.subscribe(
 			[ newPromise << it; onValue << it ], 
 			[ newPromise << it ], 
-			[| newPromise << finish ]
+			[| newPromise << done ]
 		)
 		newPromise
 	}

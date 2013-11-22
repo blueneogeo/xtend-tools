@@ -45,7 +45,7 @@ class OptStreamExtensions {
 		optStream.each [
 			switch it {
 				Some<T>: stream << value
-				None<T>: stream.finish
+				None<T>: stream.complete
 				Err<T>: stream.error(exception)
 			}
 		]
@@ -71,7 +71,7 @@ class OptStreamExtensions {
 	def static <T> apply(Subject<T, T> stream, Opt<T> opt) {
 		switch(opt) {
 			Some<T>: stream.apply(opt.value)
-			None<T>: stream.finish
+			None<T>: stream.complete
 			Err<T>: stream.error(opt.exception)
 		}
 		stream

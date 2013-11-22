@@ -1,15 +1,14 @@
 package nl.kii.rx
 
+import java.util.Collection
+import java.util.List
 import org.eclipse.xtext.xbase.lib.Functions
 import rx.Observable
 import rx.Observer
 import rx.observables.ConnectableObservable
 import rx.subjects.PublishSubject
 import rx.subjects.Subject
-import java.util.List
-import java.util.Collection
-import org.eclipse.xtext.xbase.lib.Procedures.Procedure1
-import org.eclipse.xtext.xbase.lib.Functions.Function1
+
 import static extension nl.kii.util.FunctionExtensions.*
 
 enum StreamCommand { finish }
@@ -76,7 +75,7 @@ class StreamExtensions {
 	def static<T> apply(Subject<T, T> stream, T value) {
 		switch value {
 			StreamCommand: switch value {
-				case StreamCommand.finish: stream.finish
+				case StreamCommand.finish: stream.complete
 			}
 			Exception: stream.error(value)
 			default: stream.onNext(value)
@@ -97,20 +96,20 @@ class StreamExtensions {
 	 * <pre>
 	 * stream << 3 << 9 << 12 << finish
 	 */	
-	def static finish() { StreamCommand.finish	}
+	def static done() { StreamCommand.finish	}
 
 	/**
 	 * Send a command to the stream (usually to finish it)
 	 */
 	def static<T> apply(Subject<T, T> stream, StreamCommand cmd) {
 		switch cmd {
-			case StreamCommand.finish: stream.finish
+			case StreamCommand.finish: stream.complete
 		}
 		stream
 	}
 
 	/** Inform a stream that it finished */
-	def static<T> finish(Subject<T, T> subject) {
+	def static<T> complete(Subject<T, T> subject) {
 		subject.onCompleted
 		subject
 	}
@@ -182,9 +181,9 @@ class StreamExtensions {
 	def static <T> while_(Observable<T> stream, (T)=>boolean untilFn) {
 		val Subject<T, T> newStream = newStream
 		stream.subscribe(
-			[ if(!untilFn.apply(it)) newStream.finish else newStream << it ],
+			[ if(!untilFn.apply(it)) newStream.complete else newStream << it ],
 			[ newStream.error(it) ],
-			[| newStream.finish ]
+			[| newStream.complete ]
 		)
 		newStream
 	}
@@ -200,9 +199,9 @@ class StreamExtensions {
 	def static <T> until(Observable<T> stream, (T)=>boolean untilFn) {
 		val Subject<T, T> newStream = newStream
 		stream.subscribe(
-			[ if(untilFn.apply(it)) newStream.finish else newStream << it ],
+			[ if(untilFn.apply(it)) newStream.complete else newStream << it ],
 			[ newStream.error(it) ],
-			[| newStream.finish ]
+			[| newStream.complete ]
 		)
 		newStream
 	}
@@ -298,7 +297,7 @@ class StreamExtensions {
 		stream.subscribe(
 			[ newStream << it; onValue << it ], 
 			[ newStream << it ], 
-			[| newStream << finish ]
+			[| newStream << done ]
 		)
 		newStream
 	}
@@ -310,18 +309,29 @@ class StreamExtensions {
 		stream.subscribe(
 			[ newStream << it ], 
 			[ newStream << it; onError << it ], 
-			[| newStream << finish ]
+			[| newStream << done ]
 		)
 		newStream
 	}
 
 	/** Handle the stream completing */
-	def static <T> onFinish(Observable<T> stream, (Object)=>void onFinish) {
+	def static <T> onComplete(Observable<T> stream, (Object)=>void onComplete) {
 		val Subject<T, T> newStream = newStream
 		stream.subscribe(
 			[ newStream << it ], 
 			[ newStream << it ], 
-			[| newStream << finish; onFinish << null ]
+			[| newStream << done; onComplete << null ]
+		)
+		newStream
+	}
+
+	/** Handle the stream finishing with either an error or completion */
+	def static <T> onFinish(Observable<T> stream, (Object)=>void onFinish) {
+		val Subject<T, T> newStream = newStream
+		stream.subscribe(
+			[ newStream << it ], 
+			[ newStream << it; onFinish << null ], 
+			[| newStream << done; onFinish << null ]
 		)
 		newStream
 	}
@@ -409,7 +419,7 @@ class StreamExtensions {
 	 * s.finish // prints 'done'
 	 */
     def static<T> operator_upTo(ConnectableObservable<T> stream, (Object)=>void handler) {
-            stream.onFinish(handler)
+            stream.onComplete(handler)
     }
     
     /**

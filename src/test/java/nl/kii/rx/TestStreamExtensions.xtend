@@ -17,19 +17,10 @@ class TestStreamExtensions {
 			.map ['got number ' + it]
 			.each [println(it)]
 			.each [println('printing again: ' + it)]
-			.onFinish [println('we are done!')]
 			.onError [println('caught: ' + it)]
+			.onFinish [println('we are done!')]
 
-		stream << 2 << 5 << 3 << new Exception('intentional error') << finish
-
-		// Identical to:
-		//		stream => [
-		//			apply(2)
-		//			apply(5)
-		//			apply(3)
-		//			error(new Exception('this error is intentional'))
-		//			finish
-		//		]
+		stream << 2 << 5 << 3 << new Exception('intentional error') << done
 	}
 
 	@Test
@@ -57,14 +48,14 @@ class TestStreamExtensions {
 	def void testUntil() {
 		val stream = Integer.stream
 		stream.until[it>10].map[toString].toList >> [println(join(', '))]
-		stream << 4 << 8 << 10 << 11 << 5 << finish
+		stream << 4 << 8 << 10 << 11 << 5 << done
 	}
 
 	@Test
 	def void testWhile() {
 		val stream = Integer.stream
 		stream.while_[it<=10].map[toString].toList >> [println(join(', '))]
-		stream << 4 << 8 << 10 << 11 << 5 << finish
+		stream << 4 << 8 << 10 << 11 << 5 << done
 	}
 	
 	// @Test

@@ -57,7 +57,7 @@ class Gatherer<T> implements Streamable<Pair<String, T>> {
 		[ 
 			stream.apply(name -> it)
 			if(count.incrementAndGet == total.get)
-				stream.finish
+				stream.complete
 		]
 	}
 	

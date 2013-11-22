@@ -48,26 +48,26 @@ public class TestStreamExtensions {
         }
       };
     Subject<String,String> _each_1 = StreamExtensions.<String>each(_each, _function_2);
-    final Procedure1<Object> _function_3 = new Procedure1<Object>() {
-        public void apply(final Object it) {
-          InputOutput.<String>println("we are done!");
-        }
-      };
-    Subject<String,String> _onFinish = StreamExtensions.<String>onFinish(_each_1, _function_3);
-    final Procedure1<Throwable> _function_4 = new Procedure1<Throwable>() {
+    final Procedure1<Throwable> _function_3 = new Procedure1<Throwable>() {
         public void apply(final Throwable it) {
           String _plus = ("caught: " + it);
           InputOutput.<String>println(_plus);
         }
       };
-    StreamExtensions.<String>onError(_onFinish, _function_4);
+    Subject<String,String> _onError = StreamExtensions.<String>onError(_each_1, _function_3);
+    final Procedure1<Object> _function_4 = new Procedure1<Object>() {
+        public void apply(final Object it) {
+          InputOutput.<String>println("we are done!");
+        }
+      };
+    StreamExtensions.<String>onFinish(_onError, _function_4);
     Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(2));
     Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(5));
     Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(3));
     Exception _exception = new Exception("intentional error");
     Subject<Integer,Integer> _doubleLessThan_3 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, _exception);
-    StreamCommand _finish = StreamExtensions.finish();
-    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, _finish);
+    StreamCommand _done = StreamExtensions.done();
+    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, _done);
   }
   
   @Test
@@ -144,8 +144,8 @@ public class TestStreamExtensions {
     Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(10));
     Subject<Integer,Integer> _doubleLessThan_3 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, Integer.valueOf(11));
     Subject<Integer,Integer> _doubleLessThan_4 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(5));
-    StreamCommand _finish = StreamExtensions.finish();
-    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, _finish);
+    StreamCommand _done = StreamExtensions.done();
+    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, _done);
   }
   
   @Test
@@ -178,8 +178,8 @@ public class TestStreamExtensions {
     Subject<Integer,Integer> _doubleLessThan_2 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_1, Integer.valueOf(10));
     Subject<Integer,Integer> _doubleLessThan_3 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_2, Integer.valueOf(11));
     Subject<Integer,Integer> _doubleLessThan_4 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_3, Integer.valueOf(5));
-    StreamCommand _finish = StreamExtensions.finish();
-    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, _finish);
+    StreamCommand _done = StreamExtensions.done();
+    StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan_4, _done);
   }
   
   public void testLOTSOfItemsForMemoryLeaks() {
