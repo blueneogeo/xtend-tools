@@ -64,6 +64,13 @@ class StreamExtensions {
 		iterable
 	}
 	
+	/** Transform a Listenable into a stream */
+	def static <T> stream(Listenable<T> listenable) {
+		val Subject<T, T> stream = newStream
+		listenable.onChange [ stream << it ]
+		stream
+	}	
+	
 	// SEND DATA TO A STREAM //////////////////////////////////////////////////
 
 	/**
