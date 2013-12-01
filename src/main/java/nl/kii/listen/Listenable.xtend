@@ -1,4 +1,4 @@
-package nl.kii.rx
+package nl.kii.listen
 
 /**
  * Lets you register listeners that respond to an incoming event of type E

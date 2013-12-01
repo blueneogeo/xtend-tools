@@ -2,6 +2,7 @@ package nl.kii.rx
 
 import java.util.Collection
 import java.util.List
+import nl.kii.listen.Listenable
 import org.eclipse.xtext.xbase.lib.Functions
 import rx.Observable
 import rx.Observer
