@@ -1,39 +1,23 @@
 package nl.kii.listen
 
-import nl.kii.listen.ListenableList
 import org.junit.Test
 
 import static extension nl.kii.rx.StreamExtensions.*
-import static extension nl.kii.util.IterableExtensions.*
-import static extension nl.kii.util.MapExtensions.*
-import nl.kii.listen.ListenableMap
 
 class TestListenable {
 	
 	@Test
-	def void testList() {
-		val list = new ListenableList<String>
+	def void testPublisher() {
+		val p = new Publisher<String>
 		
-		list << 'hi'
-		
-		list.stream.each [ println(it) ]
-		
-		list << 'welcome!' << 'Christian'
-		
-		list.remove('Christian')
+		p.onChange [
+			println('got ' + it)
+		]
+
+		p.stream.each [ println('stream also works, got ' + it) ]
+				
+		p.publishChange('hoi')
 		
 	}
 
-	@Test
-	def void testMap() {
-		val map = new ListenableMap<String, String>
-		
-		map.stream.each [ println(it) ]
-		
-		map << ('hello'->'world')
-		map << ('hello'->'world 2')
-		map.remove('hello')
-		
-	}
-	
 }

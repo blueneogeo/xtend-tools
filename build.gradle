@@ -18,6 +18,8 @@ dependencies{
     testCompile "junit:junit:4.11"
 }
 
+tasks.jar.dependsOn javadoc
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
