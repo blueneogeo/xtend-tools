@@ -40,10 +40,24 @@ class TestPromiseStreamExtensions {
 	@Test
 	def void testAsyncThen() {
 		String.promise.apply('Christian')
-			.then [ toGreeting$ ]
+			.then$ [ return toGreeting$ ]
 			.then [	assertEquals('Welcome Christian')
 				println('done!')
 			]
+	}
+	
+	@Test
+	def void testCatchErrors() {
+		val promise = String.promise
+		promise.map [
+			if(it=='error') new Exception('this should be caught in the stream')
+			else it
+		].then [
+			println('this will never arrive')
+		].onError [
+			println('works correctly!')
+		]
+		promise << 'error'
 	}
 	
 	def toGreeting$(String test) {

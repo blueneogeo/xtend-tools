@@ -50,7 +50,7 @@ class ObservedValue<T> extends BehaviorSubject<T> implements Function0<T> {
 	
 	val AtomicReference<T> current
 	
-    override static <T> ObservedValue<T> createWithDefaultValue(T defaultValue) {
+    def static <T> ObservedValue<T> createWithDefaultValue(T defaultValue) {
         val observers = new ConcurrentHashMap<Subscription, Observer<? super T>>();
 
         val currentValue = new AtomicReference<T>(defaultValue);

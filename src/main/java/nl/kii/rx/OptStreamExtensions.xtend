@@ -85,7 +85,7 @@ class OptStreamExtensions {
 	 */	
 	def static <T> Observable<T> filterEmpty(Observable<Opt<T>> optStream) {
 		val PublishSubject<T> stream = newStream
-		optStream.subscribe [ ifSome [ stream.apply(it) ] ]
+		optStream.subscribe [ ifSome [ return stream.apply(it) ] ]
 		stream
 	}
 	

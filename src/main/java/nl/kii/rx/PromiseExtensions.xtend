@@ -6,14 +6,13 @@ import nl.kii.util.Err
 import nl.kii.util.None
 import nl.kii.util.Opt
 import nl.kii.util.Some
-import org.eclipse.xtext.xbase.lib.Functions
 import rx.Observable
 import rx.Scheduler
 import rx.subjects.ReplaySubject
+import rx.subjects.Subject
 
 import static extension nl.kii.rx.StreamExtensions.*
 import static extension nl.kii.util.FunctionExtensions.*
-import rx.subjects.Subject
 
 /**
  * Promises are like futures, in that they have no value yet, but may be fulfilled later.
@@ -124,32 +123,28 @@ class PromiseExtensions {
 	 * You can now do it like this. Notice how callbacks are no longer used,
 	 * and instead it becomes a normal chain of commands:
 	 * <pre>
-	 * def Promise<User> def loadUserAsync(int userId)
-	 * def Promise<String> def loadWebpageAsync(String url)
+	 * def Observable<User> def loadUser$(int userId)
+	 * def Observable<String> def loadWebpage$(String url)
 	 * 
 	 * loadUserAsync(12)
-	 *    .then [ loadWebpageAsync(it) ]
-	 *    .then [ showWebPage(it) ]
+	 *    .then$ [ loadWebpage$(it) ]
+	 *    .then$ [ showWebPage$(it) ]
+	 *    .then [ println('got page: ' + it) ]
 	 * </pre>
-	 * 
+	 * The last then will not perform an async call and not return a promise, so
+	 * it does not have the $ at the end. It is simply a handler for e
 	 */
-	def static <T, R> Observable<R> then(Observable<T> promise, Functions.Function1<T, ? extends Observable<R>> observableFn) {
+	// Functions.Function1<T, ? extends Observable<R>> observableFn
+	def static <T, R> Observable<R> then$(Observable<T> promise, (T)=>Observable<R> observableFn) {
 		promise.mapAsync(observableFn)
 	}
 
 	/** when the future is fulfilled, call the function which produces a new promise */
-	def static <T, R> Observable<R> then(Future<T> future, Functions.Function1<T, ? extends Observable<R>> observableFn) {
+	def static <T, R> Observable<R> then$(Future<T> future, (T)=>Observable<R> observableFn) {
 		future.promise.mapAsync(observableFn)
 	}
 
-	/** 
-	 * When the promise is fulfilled, call the handler. Alias for StreamExtensions.each(..).start.
-	 * If you need error handling, use .each instead, so you can chain it with .onError and .onFinish.
-	 * <pre>
-	 * val p = Integer.promise
-	 * p.then [ println('got value ' + it) ]
-	 * p.apply(4) // will print 'got value 4'
-	 */
+	/** When the promise is fulfilled, call the handler. */
 	def static <T> then(Observable<T> promise, (T)=>void onValue) {
 		val Subject<T, T> newPromise = newPromise
 		promise.subscribe(
@@ -160,13 +155,7 @@ class PromiseExtensions {
 		newPromise
 	}
 
-	/** 
-	 * When the promise is fulfilled, call the handler.
-	 * <pre>
-	 * val p = Integer.promise
-	 * p.then [ println('got value ' + it) ]
-	 * p.apply(4) // will print the message above
-	 */
+	/** When the future is fulfilled, call the handler. */
 	def static <T> then(Future<T> future, (T)=>void handler) {
 		future.promise.then(handler)
 	}

@@ -45,9 +45,9 @@ public class SyncExtensions {
 		return new Procedure1<T>() {
 
 			@Override
-			public void apply(T p) {
-				synchronized(p) {
-					p2.apply(p);
+			public void apply(T o) {
+				synchronized(o) {
+					p2.apply(o);
 				}
 			}
 			

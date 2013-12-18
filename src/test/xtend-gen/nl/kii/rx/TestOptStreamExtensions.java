@@ -20,23 +20,22 @@ public class TestOptStreamExtensions {
     final PublishSubject<String> stream = StreamExtensions.<String>stream(String.class);
     Observable<Opt<String>> _options = OptStreamExtensions.<String>options(stream);
     final Procedure1<String> _function = new Procedure1<String>() {
-        public void apply(final String it) {
-          String _plus = ("got " + it);
-          InputOutput.<String>println(_plus);
-        }
-      };
+      public void apply(final String it) {
+        InputOutput.<String>println(("got " + it));
+      }
+    };
     Observable<Opt<String>> _onSome = OptStreamExtensions.<String>onSome(_options, _function);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
-        public void apply(final String it) {
-          InputOutput.<String>println("none");
-        }
-      };
+      public void apply(final String it) {
+        InputOutput.<String>println("none");
+      }
+    };
     Observable<Opt<String>> _onNone = OptStreamExtensions.<String>onNone(_onSome, _function_1);
     final Procedure1<Throwable> _function_2 = new Procedure1<Throwable>() {
-        public void apply(final Throwable it) {
-          InputOutput.<String>println("error");
-        }
-      };
+      public void apply(final Throwable it) {
+        InputOutput.<String>println("error");
+      }
+    };
     OptStreamExtensions.<String>onErr(_onNone, _function_2);
     Subject<String,String> _doubleLessThan = StreamExtensions.<String>operator_doubleLessThan(stream, "hey");
     StreamExtensions.<String>operator_doubleLessThan(_doubleLessThan, "hi");
@@ -49,38 +48,35 @@ public class TestOptStreamExtensions {
   public void testConditionalOptStream() {
     final PublishSubject<Integer> stream = StreamExtensions.<Integer>stream(Integer.class);
     final Function1<Integer,Boolean> _function = new Function1<Integer,Boolean>() {
-        public Boolean apply(final Integer it) {
-          boolean _lessThan = ((it).intValue() < 4);
-          return Boolean.valueOf(_lessThan);
-        }
-      };
+      public Boolean apply(final Integer it) {
+        return Boolean.valueOf(((it).intValue() < 4));
+      }
+    };
     Observable<Opt<Integer>> _options = OptStreamExtensions.<Integer>options(stream, _function);
     Observable<Integer> _or = OptStreamExtensions.<Integer>or(_options, Integer.valueOf(10));
     final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
-        public void apply(final Integer it) {
-          String _plus = ("greater than 5: " + it);
-          InputOutput.<String>println(_plus);
-        }
-      };
+      public void apply(final Integer it) {
+        InputOutput.<String>println(("greater than 5: " + it));
+      }
+    };
     Subject<Integer,Integer> _each = StreamExtensions.<Integer>each(_or, _function_1);
     final Procedure1<Throwable> _function_2 = new Procedure1<Throwable>() {
-        public void apply(final Throwable it) {
-          String _plus = ("error: " + it);
-          InputOutput.<String>println(_plus);
-        }
-      };
+      public void apply(final Throwable it) {
+        InputOutput.<String>println(("error: " + it));
+      }
+    };
     Subject<Integer,Integer> _onError = StreamExtensions.<Integer>onError(_each, _function_2);
     final Procedure1<Object> _function_3 = new Procedure1<Object>() {
-        public void apply(final Object it) {
-          InputOutput.<String>println("I do not get called");
-        }
-      };
+      public void apply(final Object it) {
+        InputOutput.<String>println("I do not get called");
+      }
+    };
     Subject<Integer,Integer> _onComplete = StreamExtensions.<Integer>onComplete(_onError, _function_3);
     final Procedure1<Object> _function_4 = new Procedure1<Object>() {
-        public void apply(final Object it) {
-          InputOutput.<String>println("always finish");
-        }
-      };
+      public void apply(final Object it) {
+        InputOutput.<String>println("always finish");
+      }
+    };
     StreamExtensions.<Integer>onFinish(_onComplete, _function_4);
     Subject<Integer,Integer> _doubleLessThan = StreamExtensions.<Integer>operator_doubleLessThan(stream, Integer.valueOf(4));
     Subject<Integer,Integer> _doubleLessThan_1 = StreamExtensions.<Integer>operator_doubleLessThan(_doubleLessThan, Integer.valueOf(9));

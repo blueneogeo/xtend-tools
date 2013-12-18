@@ -17,10 +17,10 @@ public class TestObserveExtensions {
     Integer _apply = counter.apply();
     Assert.assertEquals((_apply).intValue(), 0);
     final Procedure1<Integer> _function = new Procedure1<Integer>() {
-        public void apply(final Integer it) {
-          InputOutput.<String>println("counter was changed! << will be called twice");
-        }
-      };
+      public void apply(final Integer it) {
+        InputOutput.<String>println("counter was changed! << will be called twice");
+      }
+    };
     StreamExtensions.<Integer>each(counter, _function);
     StreamExtensions.<Integer>operator_doubleLessThan(counter, Integer.valueOf(5));
     Integer _get = counter.get();
@@ -32,28 +32,25 @@ public class TestObserveExtensions {
     final ObservedValue<Integer> v1 = ObserveExtensions.<Integer>observe(Integer.valueOf(10));
     final ObservedValue<Integer> v2 = ObserveExtensions.<Integer>observe(Integer.valueOf(40));
     final Function0<Integer> _function = new Function0<Integer>() {
-        public Integer apply() {
-          Integer _get = v1.get();
-          Integer _get_1 = v2.get();
-          int _plus = ((_get).intValue() + (_get_1).intValue());
-          return _plus;
-        }
-      };
+      public Integer apply() {
+        Integer _get = v1.get();
+        Integer _get_1 = v2.get();
+        int _plus = ((_get).intValue() + (_get_1).intValue());
+        return _plus;
+      }
+    };
     final ObservedValue<Integer> v3 = ObserveExtensions.<Integer>observe(_function, v1, v2);
     StreamExtensions.<Integer>operator_doubleLessThan(v1, Integer.valueOf(30));
     Integer _get = v3.get();
-    int _plus = (30 + 40);
-    Assert.assertEquals((_get).intValue(), _plus);
+    Assert.assertEquals((_get).intValue(), (30 + 40));
     final Procedure1<Integer> _function_1 = new Procedure1<Integer>() {
-        public void apply(final Integer it) {
-          String _plus = ("v3 changed to " + it);
-          InputOutput.<String>println(_plus);
-        }
-      };
+      public void apply(final Integer it) {
+        InputOutput.<String>println(("v3 changed to " + it));
+      }
+    };
     StreamExtensions.<Integer>each(v3, _function_1);
     StreamExtensions.<Integer>operator_doubleLessThan(v2, Integer.valueOf(90));
     Integer _get_1 = v3.get();
-    int _plus_1 = (30 + 90);
-    Assert.assertEquals((_get_1).intValue(), _plus_1);
+    Assert.assertEquals((_get_1).intValue(), (30 + 90));
   }
 }

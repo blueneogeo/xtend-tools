@@ -397,7 +397,7 @@ class StreamExtensions {
 	 * s >> [ println(it) ] // prints 'Hello' and 'World'
 	 */
     def static <T> operator_doubleGreaterThan(Observable<T> stream, (T)=>void handler) {
-            stream.each(handler)
+		stream.each(handler)
     }
 
 	/** 
@@ -413,7 +413,7 @@ class StreamExtensions {
 	 * s.apply('World') // prints 'World'
 	 */
     def static <T> operator_doubleGreaterThan(Observable<T> stream, Observer<T> observer) {
-            stream.streamTo(observer)
+		stream.streamTo(observer)
     }
 
 	/**
@@ -427,7 +427,7 @@ class StreamExtensions {
 	 * s.finish // prints 'done'
 	 */
     def static<T> operator_upTo(ConnectableObservable<T> stream, (Object)=>void handler) {
-            stream.onComplete(handler)
+		stream.onComplete(handler)
     }
     
     /**
@@ -440,7 +440,7 @@ class StreamExtensions {
      * s.apply(1) // prints 'error found' (because dividing by 0)
      */
     def static <T> operator_elvis(ConnectableObservable<T> stream, (Throwable)=>void handler) {
-            stream.onError(handler)
+		stream.onError(handler)
     }
 
 	/**
@@ -452,7 +452,7 @@ class StreamExtensions {
 	 * s << 4 << 5 // prints 8 and 10
 	 */	
     def static <T, R> operator_mappedTo(Observable<T> stream, (T)=>R fn) {
-            stream.map(fn)
+		stream.map(fn)
     }
 
 	/**
@@ -476,7 +476,7 @@ class StreamExtensions {
 	 * loadFile$('test.txt') >= [ processResult$(it) ] >> [ printResults(data) ]
 	 */
     def static <T, R> Observable<R> operator_greaterEqualsThan(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
-            stream.mapAsync(observableFn)
+		stream.mapAsync(observableFn)
     }
 
 	/**
@@ -488,7 +488,7 @@ class StreamExtensions {
 	 * s +[ it > 4 ] >> [ println(it) ] // prints 5 and 6
 	 */    
     def static <T> operator_plus(Observable<T> stream, (T)=>boolean fn) {
-            stream.filter(fn)
+		stream.filter(fn)
     }
 
 	/**
@@ -500,28 +500,28 @@ class StreamExtensions {
 	 * s -[ it > 4 ] >> [ println(it) ] // prints 3 and 4
 	 */    
     def static <T> operator_minus(Observable<T> stream, Functions.Function1<? super T, Boolean> predicate) {
-            stream.filter [ !predicate.apply(it) ] // cannot use !predicate, due to bug in Xtend
+		stream.filter [ !predicate.apply(it) ] // cannot use !predicate, due to bug in Xtend
     }
 
 	/**
 	 * Alias for stream.apply(value)
 	 */
     def static <T> operator_doubleLessThan(Subject<T, T> stream, T value) {
-            stream.apply(value)
+		stream.apply(value)
     }
 
 	/**
 	 * Alias for stream.apply(throwable)
 	 */
     def static <T> operator_doubleLessThan(Subject<T, T> stream, Throwable value) {
-            stream.apply(value)
+		stream.apply(value)
     }
 
 	/**
 	 * Alias for stream.apply(streamcommand)
 	 */
     def static <T> operator_doubleLessThan(Subject<T, T> stream, StreamCommand value) {
-            stream.apply(value)
+		stream.apply(value)
     }
 
 }

@@ -14,19 +14,17 @@ public class TestListenable {
     Publisher<String> _publisher = new Publisher<String>();
     final Publisher<String> p = _publisher;
     final Procedure1<String> _function = new Procedure1<String>() {
-        public void apply(final String it) {
-          String _plus = ("got " + it);
-          InputOutput.<String>println(_plus);
-        }
-      };
+      public void apply(final String it) {
+        InputOutput.<String>println(("got " + it));
+      }
+    };
     p.onChange(_function);
     Subject<String,String> _stream = StreamExtensions.<String>stream(p);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
-        public void apply(final String it) {
-          String _plus = ("stream also works, got " + it);
-          InputOutput.<String>println(_plus);
-        }
-      };
+      public void apply(final String it) {
+        InputOutput.<String>println(("stream also works, got " + it));
+      }
+    };
     StreamExtensions.<String>each(_stream, _function_1);
     p.publishChange("hoi");
   }
