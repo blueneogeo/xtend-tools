@@ -68,6 +68,11 @@ class IterableExtensions {
 		iterable.forEach(fn)
 		iterable
 	}
+
+	def static <T> Iterable<T> each(Iterable<T> iterable, (T, int)=>void fn) {
+		iterable.forEach(fn)
+		iterable
+	}
 	
 	/** Triggers the passed or function for each none in the list,
 	 * handy for tracking empty results, for example:
@@ -105,7 +110,17 @@ class IterableExtensions {
 			.groupBy[it]
 			.toPairs
 			.map [ value.head ]
-	} 
+	}
+
+	/** Returns the position/index of the value in the iterable, starting at 0 */	
+	def static <T> int indexOf(Iterable<? extends T> iterable, T value) {
+		var counter = 0
+		for(o : iterable) {
+			if(o == value) return counter
+			counter = counter + 1
+		}
+		return -1
+	}
 
 	// MAPPING ////////////////////////////////////////////////////////////////
 
