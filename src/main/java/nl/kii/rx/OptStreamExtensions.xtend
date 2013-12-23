@@ -108,6 +108,19 @@ class OptStreamExtensions {
 	def static <T> Observable<T> or(Observable<Opt<T>> optStream, T alternative) {
 		optStream.or [ alternative ]
 	}
+	
+	// OPTIONAL MAPPING ///////////////////////////////////////////////////////
+
+	/**
+	 * Apply a mapping on only the defined options, and not on the empty options. Lets
+	 * you perform mappings on option streams like you do with normal streams
+	 */	
+	def static <T, R> Observable<Opt<R>> mapOpt(Observable<Opt<T>> optStream, (T)=>R mapping) {
+		optStream.map [
+			if(it.hasSome) mapping.apply(it.value).option
+			else none
+		]
+	}
 
 	// REACTING TO INCOMING OPTIONS ///////////////////////////////////////////
 
