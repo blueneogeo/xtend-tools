@@ -214,7 +214,7 @@ For example, a fictional 2-level callback problem, where the Async functions req
 Each closure also needs an error closure handler, and nesting makes things complicated. At 3 or more levels, things get much worse. With Promises and PromiseExtensions.then, you can make life a lot better:
 
 	loadUrl$('http://test.com')
-		.then [ findImages$(it) ]
+		.next [ findImages$(it) ]
 		.then [ println('image url: ' + it) ]
 		.onError [ println('error occurred : ' + message ]
 
