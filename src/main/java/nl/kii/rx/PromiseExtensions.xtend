@@ -135,12 +135,12 @@ class PromiseExtensions {
 	 * it does not have the $ at the end. It is simply a handler for e
 	 */
 	// Functions.Function1<T, ? extends Observable<R>> observableFn
-	def static <T, R> Observable<R> then$(Observable<T> promise, (T)=>Observable<R> observableFn) {
+	def static <T, R> Observable<R> next(Observable<T> promise, (T)=>Observable<R> observableFn) {
 		promise.mapAsync(observableFn)
 	}
 
 	/** when the future is fulfilled, call the function which produces a new promise */
-	def static <T, R> Observable<R> then$(Future<T> future, (T)=>Observable<R> observableFn) {
+	def static <T, R> Observable<R> next(Future<T> future, (T)=>Observable<R> observableFn) {
 		future.promise.mapAsync(observableFn)
 	}
 

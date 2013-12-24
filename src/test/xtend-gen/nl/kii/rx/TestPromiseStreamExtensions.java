@@ -84,17 +84,18 @@ public class TestPromiseStreamExtensions {
     ReplaySubject<String> _apply = PromiseExtensions.<String>apply(_promise, "Christian");
     final Function1<String,Observable<String>> _function = new Function1<String,Observable<String>>() {
       public Observable<String> apply(final String it) {
-        return TestPromiseStreamExtensions.this.toGreeting$(it);
+        Observable<String> _greeting$ = TestPromiseStreamExtensions.this.toGreeting$(it);
+        return _greeting$;
       }
     };
-    Observable<String> _then$ = PromiseExtensions.<String, String>then$(_apply, _function);
+    Observable<String> _next = PromiseExtensions.<String, String>next(_apply, _function);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
       public void apply(final String it) {
         Assert.assertEquals(it, "Welcome Christian");
         InputOutput.<String>println("done!");
       }
     };
-    PromiseExtensions.<String>then(_then$, _function_1);
+    PromiseExtensions.<String>then(_next, _function_1);
   }
   
   @Test

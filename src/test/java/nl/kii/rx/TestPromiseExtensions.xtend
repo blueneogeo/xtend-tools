@@ -40,7 +40,7 @@ class TestPromiseStreamExtensions {
 	@Test
 	def void testAsyncThen() {
 		String.promise.apply('Christian')
-			.then$ [ return toGreeting$ ]
+			.next [ toGreeting$ ]
 			.then [	assertEquals('Welcome Christian')
 				println('done!')
 			]
