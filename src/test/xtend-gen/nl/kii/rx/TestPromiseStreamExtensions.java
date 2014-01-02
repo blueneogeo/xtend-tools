@@ -88,7 +88,7 @@ public class TestPromiseStreamExtensions {
         return _greeting$;
       }
     };
-    Observable<String> _next = PromiseExtensions.<String, String>next(_apply, _function);
+    Observable<String> _next = StreamExtensions.<String, String>next(_apply, _function);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
       public void apply(final String it) {
         Assert.assertEquals(it, "Welcome Christian");

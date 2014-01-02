@@ -9,6 +9,7 @@ import rx.subjects.PublishSubject
 import rx.subjects.ReplaySubject
 
 import static extension nl.kii.rx.StreamExtensions.*
+import static extension nl.kii.rx.PromiseExtensions.*
 import static extension nl.kii.util.OptExtensions.*
 import rx.subjects.Subject
 
@@ -96,7 +97,7 @@ class OptStreamExtensions {
 	 */
 	def static <T> Observable<T> or(Observable<Opt<T>> optStream, (Object)=> T alternativeFn) {
 		optStream.map [
-			switch(it) {
+			switch it {
 				Some<T>: value
 				None<T>: alternativeFn.apply(null)
 				Err<T>: throw exception
@@ -108,14 +109,55 @@ class OptStreamExtensions {
 	def static <T> Observable<T> or(Observable<Opt<T>> optStream, T alternative) {
 		optStream.or [ alternative ]
 	}
-	
+
+	/** put an error on the stream if a none was encountered */
+	def static <T> Observable<T> orThrow(Observable<Opt<T>> optStream, (Object)=>Throwable throwFn) {
+		optStream.map [
+			switch it {
+				Some<T>: value
+				None<T>: throw throwFn.apply(null)
+				Err<T>: throw exception
+			}
+		]
+	}
+
+	/** put an error on the stream if a none was encountered */
+	def static <T> Observable<T> orThrow(Observable<Opt<T>> optStream, Throwable error) {
+		optStream.orThrow [ error ]
+	}
+		
+	/** put an error on the stream if a none was encountered */
+	def static <T> Observable<T> orThrow(Observable<Opt<T>> optStream, String errorMessage) {
+		optStream.orThrow [ new Exception(errorMessage) ]
+	}
+
+	/**
+	 * Same as .or, but perform an async call to get the alternative value
+	 */
+	def static <T> Observable<T> otherwise(Observable<Opt<T>> optStream, (Object)=>Observable<T> alternativeFn) {
+		optStream.next [
+			switch it {
+				Some<T>: value.promise
+				None<T>: alternativeFn.apply(null)
+				Err<T>: throw exception
+			}
+		]
+	}
+
 	// OPTIONAL MAPPING ///////////////////////////////////////////////////////
+
+	/**
+	 * true if an incoming value is some value, or false if it is a none value
+	 */
+	def static <T> Observable<Boolean> hasSome(Observable<Opt<T>> optStream) {
+		optStream.map [ hasSome ]
+	}
 
 	/**
 	 * Apply a mapping on only the defined options, and not on the empty options. Lets
 	 * you perform mappings on option streams like you do with normal streams
 	 */	
-	def static <T, R> Observable<Opt<R>> mapSome(Observable<Opt<T>> optStream, (T)=>R mapping) {
+	def static <T, R> Observable<Opt<R>> mapOpt(Observable<Opt<T>> optStream, (T)=>R mapping) {
 		optStream.map [
 			if(it.hasSome) mapping.apply(it.value).option
 			else none

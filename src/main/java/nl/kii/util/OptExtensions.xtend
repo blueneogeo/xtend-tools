@@ -100,7 +100,9 @@ class OptExtensions {
 	 * <pre>api.getUser(userId).option // if getUser returns null, it will be None, otherwise Some<User></pre>
 	 */
 	def static <T> Opt<T> option(T value) {
-		if(value.defined) some(value) else none
+		if(value.defined) some(value) 
+		else if(value instanceof Err<?>) err(value.exception)
+		else none 
 	}
 	
 	def static <T> Some<T> some(T value) {
@@ -189,6 +191,19 @@ class OptExtensions {
 	 */
 	def static <T, I> Opt<T> mapOpt(Opt<I> o, (I)=>T fn) {
 		if(o.defined) fn.apply(o.value).option else none
+	}
+	
+	// FLATTEN ////////////////////////////////////////////////////////////////
+	
+	/**
+	 * Flatten a double wrapped optional back to a single optional
+	 */
+	def static <T> Opt<T> flatten(Opt<Opt<T>> option) {
+		switch option {
+			Some<Opt<T>>: option.value
+			None<Opt<T>>: none
+			Err<Opt<T>>: err(option.exception)
+		}
 	}
 
 	// OPTIONAL FALLBACK EXTENSIONS ///////////////////////////////////////////

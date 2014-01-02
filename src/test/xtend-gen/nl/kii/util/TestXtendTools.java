@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import nl.kii.util.CloseableExtensions;
+import nl.kii.util.Err;
 import nl.kii.util.IterableExtensions;
 import nl.kii.util.Log;
 import nl.kii.util.LogExtensions;
@@ -23,6 +24,7 @@ import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Extension;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
@@ -358,5 +360,21 @@ public class TestXtendTools {
     Integer _get_1 = ((Integer[])Conversions.unwrapArray(mappedList, Integer.class))[1];
     Integer _integer_1 = new Integer(9);
     Assert.assertEquals(_get_1, _integer_1);
+  }
+  
+  @Test
+  public void testFlatten() {
+    Opt<Integer> _option = OptExtensions.<Integer>option(Integer.valueOf(5));
+    final Opt<Opt<Integer>> x = OptExtensions.<Opt<Integer>>option(_option);
+    Opt<Integer> _flatten = OptExtensions.<Integer>flatten(x);
+    boolean _hasSome = _flatten.hasSome();
+    Assert.assertTrue(_hasSome);
+    Exception _exception = new Exception("test");
+    Err<String> _err = OptExtensions.<String>err(_exception);
+    final Opt<Opt<String>> e = OptExtensions.<Opt<String>>option(_err);
+    InputOutput.<Opt<Opt<String>>>println(e);
+    Opt<String> _flatten_1 = OptExtensions.<String>flatten(e);
+    boolean _hasError = _flatten_1.hasError();
+    Assert.assertTrue(_hasError);
   }
 }

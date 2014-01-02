@@ -166,13 +166,13 @@ class StreamExtensions {
 	 * // we can now do this:
 	 * #[4534, 3432, 67] // some user id's
 	 *    .stream
-	 *    .mapAsync [ userId | userAPI.loadUserAsync(userId) ]
-	 *    .mapAsync [ user | profileAPI.loadUserProfileAsync(user) ]
+	 *    .next [ userId | userAPI.loadUserAsync(userId) ]
+	 *    .next [ user | profileAPI.loadUserProfileAsync(user) ]
 	 *    .each [ profile | displayUserProfile(profile) ]
 	 *    .onErr [ println('got error ' + it) ]
 	 * </pre>
 	 */
-	def static <T, R> Observable<R> mapAsync(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
+	def static <T, R> Observable<R> next(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
 		stream
 			.map [ observableFn.apply(it) ]
 			.flatten
@@ -476,7 +476,7 @@ class StreamExtensions {
 	 * loadFile$('test.txt') >= [ processResult$(it) ] >> [ printResults(data) ]
 	 */
     def static <T, R> Observable<R> operator_greaterEqualsThan(Observable<T> stream, Functions.Function1<T, ? extends Observable<R>> observableFn) {
-		stream.mapAsync(observableFn)
+		stream.next(observableFn)
     }
 
 	/**

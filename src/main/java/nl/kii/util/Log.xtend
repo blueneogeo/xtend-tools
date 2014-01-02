@@ -38,6 +38,10 @@ import org.slf4j.Logger
 		if(logger.errorEnabled) logger.error(message.entry)
 	}
 	
+	def error(String message, Throwable t) {
+		if(logger.errorEnabled) logger.error([message].entry, t) 
+	}	
+	
 	// logging function functions
 	
 	def <T> (T)=>void trace() { [ logger.trace(toString) ] }

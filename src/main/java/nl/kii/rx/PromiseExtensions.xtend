@@ -100,51 +100,19 @@ class PromiseExtensions {
 	
 	// REACT TO A PROMISE BEING FULFILLED /////////////////////////////////////
 
-	/**
-	 * Alias for StreamExtensions.mapAsync.
-	 * <p>
-	 * When the promise is fulfilled, call the function which produces a new promise. 
-	 * This allows you to chain promises without having callback hell.
-	 * <p>
-	 * Instead of this:
-	 * <pre>
-	 * 
-	 * def loadUserAsync(int userId, (User)=>void closure)
-	 * def loadWebpageAsync(String url, (String)=>void closure)
-	 * 
-	 * loadUserAsync(12) [
-	 *    // user loaded, load webpage
-	 *    loadWebpageAsync('index.html') [
-	 *       // webpage loaded, show page
-	 *       showWebPage(it)
-	 *    ]
-	 * ]
-	 * </pre>
-	 * You can now do it like this. Notice how callbacks are no longer used,
-	 * and instead it becomes a normal chain of commands:
-	 * <pre>
-	 * def Observable<User> def loadUser$(int userId)
-	 * def Observable<String> def loadWebpage$(String url)
-	 * 
-	 * loadUserAsync(12)
-	 *    .then$ [ loadWebpage$(it) ]
-	 *    .then$ [ showWebPage$(it) ]
-	 *    .then [ println('got page: ' + it) ]
-	 * </pre>
-	 * The last then will not perform an async call and not return a promise, so
-	 * it does not have the $ at the end. It is simply a handler for e
-	 */
-	// Functions.Function1<T, ? extends Observable<R>> observableFn
-	def static <T, R> Observable<R> next(Observable<T> promise, (T)=>Observable<R> observableFn) {
-		promise.mapAsync(observableFn)
-	}
-
 	/** when the future is fulfilled, call the function which produces a new promise */
 	def static <T, R> Observable<R> next(Future<T> future, (T)=>Observable<R> observableFn) {
-		future.promise.mapAsync(observableFn)
+		future.promise.next(observableFn)
 	}
 
-	/** When the promise is fulfilled, call the handler. */
+	/** 
+	 * When the observable gives a value, call the onValue method with the found value.
+	 * <p>
+	 * Note: only use this method if you only expect a single value to be returned.
+	 * It keeps an internal cache of all values being passed, so if you have a stream
+	 * of values it will grow in memory usage. If you  are listening to a stream  of values, 
+	 * use StreamExtensions.each instead.
+	 */
 	def static <T> then(Observable<T> promise, (T)=>void onValue) {
 		val Subject<T, T> newPromise = newPromise
 		promise.subscribe(

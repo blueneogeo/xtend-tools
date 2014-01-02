@@ -169,6 +169,19 @@ class TestXtendTools {
 		mappedList.get(1).assertEquals(new Integer(9))
 	}
 	
+	@Test
+	def void testFlatten() {
+		// test simple value opt unwrapping
+		val x = 5.option.option
+		x.flatten.hasSome.assertTrue
+		// errors should be propagated when flattening
+		val Opt<Opt<String>> e = err(new Exception('test')).option
+		println(e)
+		e.flatten.hasError.assertTrue
+	}
+
+	
+	
 }
 
 @Data class User {
