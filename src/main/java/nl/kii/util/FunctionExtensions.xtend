@@ -34,5 +34,15 @@ class FunctionExtensions {
     	fn.apply(p)
     }
     
+    /** Let the << operator also work on Procedure1.apply */
+    def static <Param> operator_doubleGreaterThan(Param p, (Param)=>void fn) {
+    	fn.apply(p)
+    }
+    
+    /** Let the << operator also work on Function1.apply */
+    def static <Param, T> operator_doubleGreaterThan(Param p, (Param)=>T fn) {
+    	fn.apply(p)
+    }
+
 }
 
