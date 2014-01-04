@@ -31,12 +31,12 @@ import rx.Observable
  * The awaited functions often work great as closures. For example:
  * <p>
  * <pre>
- * val c = new Collector<JSON>
+ * val c = new Gatherer<JSON>
  * // perform slow async calls
  * API.loadUser(12, c.await('user'))
  * API.loadRights(45, c.await('rights'))
  * // listen to the results
- * c.listen.onFinish [
+ * c.stream.onFinish [
  * 		val it = c.result
  * 		println('loaded user: ' + get('user'))
  * 		println('loaded rights: ' + get('rights'))
