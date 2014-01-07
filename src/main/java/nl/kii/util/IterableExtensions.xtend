@@ -94,6 +94,10 @@ class IterableExtensions {
 
 	// FILTERING //////////////////////////////////////////////////////////////
 
+	def static <T> T last(Iterable<? extends T> values) {
+		values.toList.reverse.head
+	}
+
 	/** Convert a list of options into actual values, filtering out the none and error values.
 		Like filterNull, but then for a list of Options */
 	def static <T> Iterable<T> filterEmpty(Iterable<? extends Opt<T>> iterable) {

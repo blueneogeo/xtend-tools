@@ -6,7 +6,9 @@ import org.eclipse.xtext.xbase.lib.Pair
 import rx.subjects.PublishSubject
 
 import static extension nl.kii.rx.StreamExtensions.*
+import static extension nl.kii.util.FunctionExtensions.*
 import rx.Observable
+import java.util.Map
 
 /**
  * Gatherer can collect data from various asynchronous sources.
@@ -75,6 +77,10 @@ class Gatherer<T> implements Streamable<Pair<String, T>> {
 
 	def isFinished() {
 		count.get == total.get
+	}
+	
+	def onFinish((Map<String, T>)=>void closure) {
+		stream.onFinish [ result >> closure ]
 	}
 	
 }
