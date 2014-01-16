@@ -35,8 +35,7 @@ public class TestObserveExtensions {
       public Integer apply() {
         Integer _get = v1.get();
         Integer _get_1 = v2.get();
-        int _plus = ((_get).intValue() + (_get_1).intValue());
-        return _plus;
+        return ((_get).intValue() + (_get_1).intValue());
       }
     };
     final ObservedValue<Integer> v3 = ObserveExtensions.<Integer>observe(_function, v1, v2);

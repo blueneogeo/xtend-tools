@@ -15,8 +15,7 @@ import rx.subjects.Subject;
 public class TestCollector {
   @Test
   public void testCountDown() {
-    Countdown _countdown = new Countdown();
-    final Countdown countdown = _countdown;
+    final Countdown countdown = new Countdown();
     final Procedure1<? super Boolean> c1 = countdown.await();
     final Procedure1<? super Boolean> c2 = countdown.await();
     final Procedure1<? super Boolean> c3 = countdown.await();
@@ -42,8 +41,7 @@ public class TestCollector {
   
   @Test
   public void testGatherer() {
-    Gatherer<String> _gatherer = new Gatherer<String>();
-    final Gatherer<String> collector = _gatherer;
+    final Gatherer<String> collector = new Gatherer<String>();
     final Procedure1<? super String> cuser = collector.await("user");
     final Procedure1<? super String> cname = collector.await("name");
     final Procedure1<? super String> cage = collector.await("age");

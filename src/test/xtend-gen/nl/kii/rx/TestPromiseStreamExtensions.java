@@ -21,8 +21,7 @@ public class TestPromiseStreamExtensions {
     final ReplaySubject<String> promise = PromiseExtensions.<String>promise(String.class);
     final Func1<String,String> _function = new Func1<String,String>() {
       public String call(final String it) {
-        String _lowerCase = it.toLowerCase();
-        return _lowerCase;
+        return it.toLowerCase();
       }
     };
     Observable<String> _map = promise.<String>map(_function);
@@ -58,8 +57,7 @@ public class TestPromiseStreamExtensions {
     final ReplaySubject<String> promise = PromiseExtensions.<String>promise(String.class);
     final Function1<String,String> _function = new Function1<String,String>() {
       public String apply(final String it) {
-        String _lowerCase = it.toLowerCase();
-        return _lowerCase;
+        return it.toLowerCase();
       }
     };
     Observable<String> _mappedTo = StreamExtensions.<String, String>operator_mappedTo(promise, _function);
@@ -84,8 +82,7 @@ public class TestPromiseStreamExtensions {
     ReplaySubject<String> _apply = PromiseExtensions.<String>apply(_promise, "Christian");
     final Function1<String,Observable<String>> _function = new Function1<String,Observable<String>>() {
       public Observable<String> apply(final String it) {
-        Observable<String> _greeting$ = TestPromiseStreamExtensions.this.toGreeting$(it);
-        return _greeting$;
+        return TestPromiseStreamExtensions.this.toGreeting$(it);
       }
     };
     Observable<String> _next = StreamExtensions.<String, String>next(_apply, _function);
@@ -106,8 +103,7 @@ public class TestPromiseStreamExtensions {
         Serializable _xifexpression = null;
         boolean _equals = Objects.equal(it, "error");
         if (_equals) {
-          Exception _exception = new Exception("this should be caught in the stream");
-          _xifexpression = _exception;
+          _xifexpression = new Exception("this should be caught in the stream");
         } else {
           _xifexpression = it;
         }
@@ -138,7 +134,6 @@ public class TestPromiseStreamExtensions {
         return ("Welcome " + it);
       }
     };
-    Observable<String> _map = _apply.<String>map(_function);
-    return _map;
+    return _apply.<String>map(_function);
   }
 }

@@ -8,7 +8,6 @@ import nl.kii.rx.Collector;
 import nl.kii.rx.StreamCommand;
 import nl.kii.rx.StreamExtensions;
 import org.eclipse.xtext.xbase.lib.Conversions;
-import org.eclipse.xtext.xbase.lib.Functions.Function0;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.IntegerRange;
@@ -72,23 +71,16 @@ public class TestStreamExtensions {
     StreamExtensions.<Integer>streamTo(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3)), this.handler);
   }
   
-  private final PublishSubject<Integer> handler = new Function0<PublishSubject<Integer>>() {
-    public PublishSubject<Integer> apply() {
-      PublishSubject<Integer> _stream = StreamExtensions.<Integer>stream(Integer.class);
-      final Procedure1<PublishSubject<Integer>> _function = new Procedure1<PublishSubject<Integer>>() {
-        public void apply(final PublishSubject<Integer> it) {
-          final Procedure1<Integer> _function = new Procedure1<Integer>() {
-            public void apply(final Integer it) {
-              InputOutput.<String>println(("handler got number: " + it));
-            }
-          };
-          StreamExtensions.<Integer>each(it, _function);
+  private final PublishSubject<Integer> handler = ObjectExtensions.<PublishSubject<Integer>>operator_doubleArrow(StreamExtensions.<Integer>stream(Integer.class), new Procedure1<PublishSubject<Integer>>() {
+    public void apply(final PublishSubject<Integer> it) {
+      final Procedure1<Integer> _function = new Procedure1<Integer>() {
+        public void apply(final Integer it) {
+          InputOutput.<String>println(("handler got number: " + it));
         }
       };
-      PublishSubject<Integer> _doubleArrow = ObjectExtensions.<PublishSubject<Integer>>operator_doubleArrow(_stream, _function);
-      return _doubleArrow;
+      StreamExtensions.<Integer>each(it, _function);
     }
-  }.apply();
+  });
   
   @Test
   public void testCollector() {
@@ -121,8 +113,7 @@ public class TestStreamExtensions {
     Subject<Integer,Integer> _until = StreamExtensions.<Integer>until(stream, _function);
     final Func1<Integer,String> _function_1 = new Func1<Integer,String>() {
       public String call(final Integer it) {
-        String _string = it.toString();
-        return _string;
+        return it.toString();
       }
     };
     Observable<String> _map = _until.<String>map(_function_1);
@@ -154,8 +145,7 @@ public class TestStreamExtensions {
     Subject<Integer,Integer> _while_ = StreamExtensions.<Integer>while_(stream, _function);
     final Func1<Integer,String> _function_1 = new Func1<Integer,String>() {
       public String call(final Integer it) {
-        String _string = it.toString();
-        return _string;
+        return it.toString();
       }
     };
     Observable<String> _map = _while_.<String>map(_function_1);

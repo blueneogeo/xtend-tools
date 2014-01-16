@@ -9,8 +9,7 @@ public class Readable implements Closeable {
   public boolean isClosed = true;
   
   public boolean open() {
-    boolean _isClosed = this.isClosed = false;
-    return _isClosed;
+    return this.isClosed = false;
   }
   
   public String hello() {
@@ -18,8 +17,7 @@ public class Readable implements Closeable {
       String _xblockexpression = null;
       {
         if (this.isClosed) {
-          Exception _exception = new Exception("cannot hello when closed");
-          throw _exception;
+          throw new Exception("cannot hello when closed");
         }
         _xblockexpression = ("hello, I am open!");
       }

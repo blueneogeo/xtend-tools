@@ -11,8 +11,7 @@ import rx.subjects.Subject;
 public class TestListenable {
   @Test
   public void testPublisher() {
-    Publisher<String> _publisher = new Publisher<String>();
-    final Publisher<String> p = _publisher;
+    final Publisher<String> p = new Publisher<String>();
     final Procedure1<String> _function = new Procedure1<String>() {
       public void apply(final String it) {
         InputOutput.<String>println(("got " + it));

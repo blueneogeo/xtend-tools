@@ -54,8 +54,7 @@ public class TestXtendTools {
   public void testAttempt() {
     final Function1<Object,None<Object>> _function = new Function1<Object,None<Object>>() {
       public None<Object> apply(final Object it) {
-        None<Object> _none = OptExtensions.<Object>none();
-        return _none;
+        return OptExtensions.<Object>none();
       }
     };
     Opt<None<Object>> _attempt = OptExtensions.<None<Object>>attempt(_function);
@@ -63,8 +62,7 @@ public class TestXtendTools {
     final Function1<TestXtendTools,Object> _function_1 = new Function1<TestXtendTools,Object>() {
       public Object apply(final TestXtendTools it) {
         try {
-          Exception _exception = new Exception();
-          throw _exception;
+          throw new Exception();
         } catch (Throwable _e) {
           throw Exceptions.sneakyThrow(_e);
         }
@@ -143,16 +141,15 @@ public class TestXtendTools {
       Some<String> _some_2 = OptExtensions.<String>some("hi");
       final Function1<Object,Exception> _function_2 = new Function1<Object,Exception>() {
         public Exception apply(final Object it) {
-          Exception _exception = new Exception();
-          return _exception;
+          return new Exception();
         }
       };
       OptExtensions.<String>orThrow(_some_2, _function_2);
     } catch (final Throwable _t) {
       if (_t instanceof Exception) {
         final Exception c = (Exception)_t;
-        Some<String> _some_3 = OptExtensions.<String>some("hello");
-        OptExtensions.<String>assertSome(_some_3, "hi");
+        OptExtensions.<String>assertSome(
+          OptExtensions.<String>some("hello"), "hi");
       } else {
         throw Exceptions.sneakyThrow(_t);
       }
@@ -160,16 +157,15 @@ public class TestXtendTools {
     try {
       final Function1<Object,Exception> _function_3 = new Function1<Object,Exception>() {
         public Exception apply(final Object it) {
-          Exception _exception = new Exception();
-          return _exception;
+          return new Exception();
         }
       };
       OptExtensions.<Class<None>>orThrow(None.class, _function_3);
     } catch (final Throwable _t_1) {
       if (_t_1 instanceof Exception) {
         final Exception c_1 = (Exception)_t_1;
-        Some<String> _some_4 = OptExtensions.<String>some("hello");
-        OptExtensions.<String>assertSome(_some_4, "hello");
+        OptExtensions.<String>assertSome(
+          OptExtensions.<String>some("hello"), "hello");
       } else {
         throw Exceptions.sneakyThrow(_t_1);
       }
@@ -246,8 +242,7 @@ public class TestXtendTools {
     final List<User> users = Collections.<User>unmodifiableList(Lists.<User>newArrayList(_user, _user_1, _user_2));
     final Function1<User,Integer> _function = new Function1<User,Integer>() {
       public Integer apply(final User it) {
-        int _age = it.getAge();
-        return Integer.valueOf(_age);
+        return Integer.valueOf(it.getAge());
       }
     };
     Map<Integer,List<User>> _groupBy = IterableExtensions.<Integer, User>groupBy(users, _function);
@@ -256,16 +251,14 @@ public class TestXtendTools {
     Assert.assertEquals(_length, 2);
     final Function1<User,Integer> _function_1 = new Function1<User,Integer>() {
       public Integer apply(final User it) {
-        int _age = it.getAge();
-        return Integer.valueOf(_age);
+        return Integer.valueOf(it.getAge());
       }
     };
     Map<User,Integer> _countBy = IterableExtensions.<Integer, User>countBy(users, _function_1);
     final Function1<User,Boolean> _function_2 = new Function1<User,Boolean>() {
       public Boolean apply(final User it) {
         int _age = it.getAge();
-        boolean _equals = (_age == 23);
-        return Boolean.valueOf(_equals);
+        return Boolean.valueOf((_age == 23));
       }
     };
     User _findFirst = org.eclipse.xtext.xbase.lib.IterableExtensions.<User>findFirst(users, _function_2);
@@ -276,8 +269,7 @@ public class TestXtendTools {
     Assert.assertEquals((_get_2).intValue(), 4);
     final Function1<User,Integer> _function_3 = new Function1<User,Integer>() {
       public Integer apply(final User it) {
-        int _age = it.getAge();
-        return Integer.valueOf(_age);
+        return Integer.valueOf(it.getAge());
       }
     };
     Map<Integer,User> _index = IterableExtensions.<Integer, User>index(users, _function_3);
@@ -288,8 +280,7 @@ public class TestXtendTools {
       public Integer apply(final User it) {
         int _age = it.getAge();
         int _minus = (_age - 45);
-        int _divide = (1 / _minus);
-        return Integer.valueOf(_divide);
+        return Integer.valueOf((1 / _minus));
       }
     };
     Iterable<Opt<Integer>> _attemptMap = IterableExtensions.<User, Integer>attemptMap(users, _function_4);
@@ -300,13 +291,11 @@ public class TestXtendTools {
   
   @Test
   public void testUsing() {
-    Readable _readable = new Readable();
-    final Readable closeable = _readable;
+    final Readable closeable = new Readable();
     closeable.open();
     final Function1<Readable,String> _function = new Function1<Readable,String>() {
       public String apply(final Readable it) {
-        String _hello = it.hello();
-        return _hello;
+        return it.hello();
       }
     };
     Opt<String> _attemptUsing = CloseableExtensions.<Readable, String>attemptUsing(closeable, _function);
@@ -317,8 +306,7 @@ public class TestXtendTools {
       public Object apply(final Readable it) {
         try {
           Assert.assertFalse(closeable.isClosed);
-          Exception _exception = new Exception();
-          throw _exception;
+          throw new Exception();
         } catch (Throwable _e) {
           throw Exceptions.sneakyThrow(_e);
         }
