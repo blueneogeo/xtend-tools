@@ -4,24 +4,25 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply from: 'gradle/xtend.gradle'
  
-repositories{
+repositories {
 	mavenLocal()
     mavenCentral()
 }
 
-dependencies{
-    compile 'com.netflix.rxjava:rxjava-core:0.14.2'
-	compile 'commons-lang:commons-lang:2.6'
-    compile 'junit:junit:4.11'
+dependencies {
+
+    compile 'com.netflix.rxjava:rxjava-core:0.14.2' // 0.16 breaks ObservedValue, BehaviorSubject is made final
+	compile 'commons-lang:commons-lang:+'
+    compile 'junit:junit:4.+'
+    
+    compile 'ch.qos.logback:logback-classic:+'
     
     // compile 'org.slf4j:slf4j-log4j12:1.7.5'
-    compile 'ch.qos.logback:logback-classic:1.0.13'
-    
     // compile 'org.apache.logging.log4j:log4j-api:2.0-beta9'
-    
     // testCompile 'com.fasterxml.jackson.core:jackson-core:2.2.2'
     // testCompile 'com.fasterxml.jackson.core:jackson-databind:2.2.2'
     // testCompile 'com.googlecode.disruptor:disruptor:2.7.1'
+    
 }
 
 tasks.jar.dependsOn javadoc
