@@ -51,7 +51,7 @@ class DateExtensions {
 
 }
 
-package class Period {
+class Period {
 	val long time
 	
 	new(long time) { this.time = time	} 

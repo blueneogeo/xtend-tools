@@ -226,7 +226,7 @@ class IterableExtensions {
 
 // OPERATORS //////////////////////////////////////////////////////////////
         
-    // adding items to a list using <<
+    // adding items to a list using << or +
     
     def static <T> operator_doubleLessThan(List<T> list, T value) {
             if(list instanceof ImmutableList<?>) {
@@ -237,6 +237,21 @@ class IterableExtensions {
             }
     }
                     
+    def static <T> operator_plus(List<T> list, T value) {
+    	list.addSafe(value)
+    }
+
+    def static <T> operator_minus(List<T> list, T value) {
+    	
+    	
+    	
+            if(list instanceof ImmutableList<?>) {
+                    list.addSafe(value)
+            } else {
+                    list.add(value)
+                    list
+            }
+    }
     // iterating through items using >> closure
 
     def static <T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
