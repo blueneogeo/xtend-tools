@@ -16,7 +16,7 @@ class TestListenable {
 
 		p.stream.each [ println('stream also works, got ' + it) ]
 				
-		p.publishChange('hoi')
+		p.publish('hoi')
 		
 	}
 

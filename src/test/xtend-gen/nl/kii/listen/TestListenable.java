@@ -25,6 +25,6 @@ public class TestListenable {
       }
     };
     StreamExtensions.<String>each(_stream, _function_1);
-    p.publishChange("hoi");
+    p.publish("hoi");
   }
 }

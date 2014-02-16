@@ -74,9 +74,9 @@ class Subscriber<T> {
 	 */
 	def Subscription start() {
 		// create the handlers
-		val Action1<T> onEach = [ value | eachHandlers >> [ apply(value) ] ]
-		val Action1<Throwable> onError = [ error | errorHandlers >> [ apply(error) ]]
-		val Action0 onFinish = [| finishHandlers >> [ apply(null) ] ]
+		val Action1<T> onEach = [ value | eachHandlers.each [ apply(value) ] ]
+		val Action1<Throwable> onError = [ error | errorHandlers.each [ apply(error) ]]
+		val Action0 onFinish = [| finishHandlers.each [ apply(null) ] ]
 		// perform the subscription, based on if we have a scheduler
 		if(scheduler.defined) stream.subscribe(onEach, onError, onFinish, scheduler)
 		else stream.subscribe(onEach, onError, onFinish)

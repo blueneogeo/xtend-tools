@@ -241,23 +241,12 @@ class IterableExtensions {
     	list.addSafe(value)
     }
 
-    def static <T> operator_minus(List<T> list, T value) {
-    	
-    	
-    	
-            if(list instanceof ImmutableList<?>) {
-                    list.addSafe(value)
-            } else {
-                    list.add(value)
-                    list
-            }
-    }
     // iterating through items using >> closure
 
-    def static <T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
-            iterable.forEach(fn)
-            iterable
-    }
+//    def static <T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
+//            iterable.forEach(fn)
+//            iterable
+//    }
 
     // mapping, filtering
 

@@ -28,7 +28,7 @@ class Publisher<E> implements Listenable<E> {
 		_listeners.put(listener, '')
 	}
 	
-	def publishChange(E change) {
+	def publish(E change) {
 		if(_listeners == null || !isPublishing) return;
 		for(listener : _listeners.keySet)
 			listener << change
