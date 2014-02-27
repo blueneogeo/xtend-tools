@@ -3,3 +3,8 @@
 /.TestOptStreamExtensions.java._trace
 /.TestPromiseStreamExtensions.java._trace
 /.TestStreamExtensions.java._trace
+/TestCollector.java
+/TestObserveExtensions.java
+/TestOptStreamExtensions.java
+/TestPromiseStreamExtensions.java
+/TestStreamExtensions.java
