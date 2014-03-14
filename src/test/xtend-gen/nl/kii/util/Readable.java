@@ -19,7 +19,7 @@ public class Readable implements Closeable {
         if (this.isClosed) {
           throw new Exception("cannot hello when closed");
         }
-        _xblockexpression = ("hello, I am open!");
+        _xblockexpression = "hello, I am open!";
       }
       return _xblockexpression;
     } catch (Throwable _e) {

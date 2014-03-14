@@ -19,13 +19,13 @@ public class TestPromiseStreamExtensions {
   @Test
   public void testRXPromise() {
     final ReplaySubject<String> promise = PromiseExtensions.<String>promise(String.class);
-    final Func1<String,String> _function = new Func1<String,String>() {
+    final Func1<String, String> _function = new Func1<String, String>() {
       public String call(final String it) {
         return it.toLowerCase();
       }
     };
     Observable<String> _map = promise.<String>map(_function);
-    final Func1<String,String> _function_1 = new Func1<String,String>() {
+    final Func1<String, String> _function_1 = new Func1<String, String>() {
       public String call(final String it) {
         return ("Hey cool I got this text: " + it);
       }
@@ -36,13 +36,13 @@ public class TestPromiseStreamExtensions {
         InputOutput.<String>println(it);
       }
     };
-    Subject<String,String> _each = StreamExtensions.<String>each(_map_1, _function_2);
+    Subject<String, String> _each = StreamExtensions.<String>each(_map_1, _function_2);
     final Procedure1<Object> _function_3 = new Procedure1<Object>() {
       public void apply(final Object it) {
         InputOutput.<String>println("we are done!");
       }
     };
-    Subject<String,String> _onFinish = StreamExtensions.<String>onFinish(_each, _function_3);
+    Subject<String, String> _onFinish = StreamExtensions.<String>onFinish(_each, _function_3);
     final Procedure1<Throwable> _function_4 = new Procedure1<Throwable>() {
       public void apply(final Throwable it) {
         InputOutput.<String>println(("caught: " + it));
@@ -55,13 +55,13 @@ public class TestPromiseStreamExtensions {
   @Test
   public void testRXPromiseOperators() {
     final ReplaySubject<String> promise = PromiseExtensions.<String>promise(String.class);
-    final Function1<String,String> _function = new Function1<String,String>() {
+    final Function1<String, String> _function = new Function1<String, String>() {
       public String apply(final String it) {
         return it.toLowerCase();
       }
     };
     Observable<String> _mappedTo = StreamExtensions.<String, String>operator_mappedTo(promise, _function);
-    final Function1<String,String> _function_1 = new Function1<String,String>() {
+    final Function1<String, String> _function_1 = new Function1<String, String>() {
       public String apply(final String it) {
         return ("Hey cool I got this text: " + it);
       }
@@ -80,7 +80,7 @@ public class TestPromiseStreamExtensions {
   public void testAsyncThen() {
     ReplaySubject<String> _promise = PromiseExtensions.<String>promise(String.class);
     ReplaySubject<String> _apply = PromiseExtensions.<String>apply(_promise, "Christian");
-    final Function1<String,Observable<String>> _function = new Function1<String,Observable<String>>() {
+    final Function1<String, Observable<String>> _function = new Function1<String, Observable<String>>() {
       public Observable<String> apply(final String it) {
         return TestPromiseStreamExtensions.this.toGreeting$(it);
       }
@@ -98,7 +98,7 @@ public class TestPromiseStreamExtensions {
   @Test
   public void testCatchErrors() {
     final ReplaySubject<String> promise = PromiseExtensions.<String>promise(String.class);
-    final Func1<String,Serializable> _function = new Func1<String,Serializable>() {
+    final Func1<String, Serializable> _function = new Func1<String, Serializable>() {
       public Serializable call(final String it) {
         Serializable _xifexpression = null;
         boolean _equals = Objects.equal(it, "error");
@@ -116,7 +116,7 @@ public class TestPromiseStreamExtensions {
         InputOutput.<String>println("this will never arrive");
       }
     };
-    Subject<Serializable,Serializable> _then = PromiseExtensions.<Serializable>then(_map, _function_1);
+    Subject<Serializable, Serializable> _then = PromiseExtensions.<Serializable>then(_map, _function_1);
     final Procedure1<Throwable> _function_2 = new Procedure1<Throwable>() {
       public void apply(final Throwable it) {
         InputOutput.<String>println("works correctly!");
@@ -129,7 +129,7 @@ public class TestPromiseStreamExtensions {
   public Observable<String> toGreeting$(final String test) {
     ReplaySubject<String> _promise = PromiseExtensions.<String>promise(String.class);
     ReplaySubject<String> _apply = PromiseExtensions.<String>apply(_promise, test);
-    final Func1<String,String> _function = new Func1<String,String>() {
+    final Func1<String, String> _function = new Func1<String, String>() {
       public String call(final String it) {
         return ("Welcome " + it);
       }

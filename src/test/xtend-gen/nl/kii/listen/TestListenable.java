@@ -18,7 +18,7 @@ public class TestListenable {
       }
     };
     p.onChange(_function);
-    Subject<String,String> _stream = StreamExtensions.<String>stream(p);
+    Subject<String, String> _stream = StreamExtensions.<String>stream(p);
     final Procedure1<String> _function_1 = new Procedure1<String>() {
       public void apply(final String it) {
         InputOutput.<String>println(("stream also works, got " + it));
