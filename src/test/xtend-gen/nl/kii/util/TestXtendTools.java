@@ -52,14 +52,14 @@ public class TestXtendTools {
   
   @Test
   public void testAttempt() {
-    final Function1<Object, None<Object>> _function = new Function1<Object, None<Object>>() {
+    final Function1<Object,None<Object>> _function = new Function1<Object,None<Object>>() {
       public None<Object> apply(final Object it) {
         return OptExtensions.<Object>none();
       }
     };
     Opt<None<Object>> _attempt = OptExtensions.<None<Object>>attempt(_function);
     OptExtensions.<None<Object>>assertNone(_attempt);
-    final Function1<TestXtendTools, Object> _function_1 = new Function1<TestXtendTools, Object>() {
+    final Function1<TestXtendTools,Object> _function_1 = new Function1<TestXtendTools,Object>() {
       public Object apply(final TestXtendTools it) {
         try {
           throw new Exception();
@@ -70,7 +70,7 @@ public class TestXtendTools {
     };
     Opt<Object> _attempt_1 = OptExtensions.<TestXtendTools, Object>attempt(this, _function_1);
     OptExtensions.<Object>assertNone(_attempt_1);
-    final Function1<Object, String> _function_2 = new Function1<Object, String>() {
+    final Function1<Object,String> _function_2 = new Function1<Object,String>() {
       public String apply(final Object it) {
         return "hello";
       }
@@ -81,14 +81,14 @@ public class TestXtendTools {
   
   @Test
   public void testIfValue() {
-    final Function1<Object, String> _function = new Function1<Object, String>() {
+    final Function1<Object,String> _function = new Function1<Object,String>() {
       public String apply(final Object it) {
         return "hello";
       }
     };
     Opt<String> _ifTrue = OptExtensions.<String, Object>ifTrue(true, _function);
     OptExtensions.<String>assertSome(_ifTrue, "hello");
-    final Function1<Object, String> _function_1 = new Function1<Object, String>() {
+    final Function1<Object,String> _function_1 = new Function1<Object,String>() {
       public String apply(final Object it) {
         return "hello";
       }
@@ -96,7 +96,7 @@ public class TestXtendTools {
     Opt<String> _ifTrue_1 = OptExtensions.<String, Object>ifTrue(false, _function_1);
     OptExtensions.<String>assertNone(_ifTrue_1);
     Some<String> _some = OptExtensions.<String>some("test");
-    final Function1<String, String> _function_2 = new Function1<String, String>() {
+    final Function1<String,String> _function_2 = new Function1<String,String>() {
       public String apply(final String it) {
         return "hello";
       }
@@ -104,7 +104,7 @@ public class TestXtendTools {
     Opt<String> _ifSome = OptExtensions.<String, String>ifSome(_some, _function_2);
     OptExtensions.<String>assertSome(_ifSome, "hello");
     None<Object> _none = OptExtensions.<Object>none();
-    final Function1<Object, String> _function_3 = new Function1<Object, String>() {
+    final Function1<Object,String> _function_3 = new Function1<Object,String>() {
       public String apply(final Object it) {
         return "hello";
       }
@@ -122,7 +122,7 @@ public class TestXtendTools {
     String _or_1 = OptExtensions.<String>or(_none, "hello");
     Assert.assertEquals(_or_1, "hello");
     Some<String> _some_1 = OptExtensions.<String>some("hi");
-    final Function1<Object, String> _function = new Function1<Object, String>() {
+    final Function1<Object,String> _function = new Function1<Object,String>() {
       public String apply(final Object it) {
         return ("a" + "b");
       }
@@ -130,7 +130,7 @@ public class TestXtendTools {
     String _or_2 = OptExtensions.<String>or(_some_1, _function);
     Assert.assertEquals(_or_2, "hi");
     None<String> _none_1 = OptExtensions.<String>none();
-    final Function1<Object, String> _function_1 = new Function1<Object, String>() {
+    final Function1<Object,String> _function_1 = new Function1<Object,String>() {
       public String apply(final Object it) {
         return ("a" + "b");
       }
@@ -139,7 +139,7 @@ public class TestXtendTools {
     Assert.assertEquals(_or_3, "ab");
     try {
       Some<String> _some_2 = OptExtensions.<String>some("hi");
-      final Function1<Object, Exception> _function_2 = new Function1<Object, Exception>() {
+      final Function1<Object,Exception> _function_2 = new Function1<Object,Exception>() {
         public Exception apply(final Object it) {
           return new Exception();
         }
@@ -155,7 +155,7 @@ public class TestXtendTools {
       }
     }
     try {
-      final Function1<Object, Exception> _function_3 = new Function1<Object, Exception>() {
+      final Function1<Object,Exception> _function_3 = new Function1<Object,Exception>() {
         public Exception apply(final Object it) {
           return new Exception();
         }
@@ -211,25 +211,25 @@ public class TestXtendTools {
     Set<Integer> _set = IterableExtensions.<Integer>toSet(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3)));
     int _length_1 = ((Object[])Conversions.unwrapArray(_set, Object.class)).length;
     Assert.assertEquals(_length_1, 3);
-    Map<String, Integer> _xsetliteral = null;
-    Map<String, Integer> _tempMap = Maps.<String, Integer>newHashMap();
+    Map<String,Integer> _xsetliteral = null;
+    Map<String,Integer> _tempMap = Maps.<String, Integer>newHashMap();
     _tempMap.put("john", Integer.valueOf(23));
     _tempMap.put("mary", Integer.valueOf(45));
     _xsetliteral = Collections.<String, Integer>unmodifiableMap(_tempMap);
-    Iterable<Pair<String, Integer>> _pairs = IterableExtensions.<String, Integer>toPairs(_xsetliteral);
-    Pair<String, Integer> _get = ((Pair<String, Integer>[])Conversions.unwrapArray(_pairs, Pair.class))[1];
-    final Procedure1<Pair<String, Integer>> _function = new Procedure1<Pair<String, Integer>>() {
-      public void apply(final Pair<String, Integer> it) {
+    Iterable<Pair<String,Integer>> _pairs = IterableExtensions.<String, Integer>toPairs(_xsetliteral);
+    Pair<String,Integer> _get = ((Pair<String,Integer>[])Conversions.unwrapArray(_pairs, Pair.class))[1];
+    final Procedure1<Pair<String,Integer>> _function = new Procedure1<Pair<String,Integer>>() {
+      public void apply(final Pair<String,Integer> it) {
         String _key = it.getKey();
         Assert.assertEquals(_key, "mary");
         Integer _value = it.getValue();
         Assert.assertEquals((_value).intValue(), 45);
       }
     };
-    ObjectExtensions.<Pair<String, Integer>>operator_doubleArrow(_get, _function);
-    Pair<String, Integer> _mappedTo = Pair.<String, Integer>of("john", Integer.valueOf(23));
-    Pair<String, Integer> _mappedTo_1 = Pair.<String, Integer>of("mary", Integer.valueOf(45));
-    Map<String, Integer> _map = IterableExtensions.<String, Integer>toMap(Collections.<Pair<String, Integer>>unmodifiableList(Lists.<Pair<String, Integer>>newArrayList(_mappedTo, _mappedTo_1)));
+    ObjectExtensions.<Pair<String,Integer>>operator_doubleArrow(_get, _function);
+    Pair<String,Integer> _mappedTo = Pair.<String, Integer>of("john", Integer.valueOf(23));
+    Pair<String,Integer> _mappedTo_1 = Pair.<String, Integer>of("mary", Integer.valueOf(45));
+    Map<String,Integer> _map = IterableExtensions.<String, Integer>toMap(Collections.<Pair<String, Integer>>unmodifiableList(Lists.<Pair<String, Integer>>newArrayList(_mappedTo, _mappedTo_1)));
     Integer _get_1 = _map.get("mary");
     Assert.assertEquals((_get_1).intValue(), 45);
   }
@@ -240,22 +240,22 @@ public class TestXtendTools {
     User _user_1 = new User("mary", 45);
     User _user_2 = new User("jim", 23);
     final List<User> users = Collections.<User>unmodifiableList(Lists.<User>newArrayList(_user, _user_1, _user_2));
-    final Function1<User, Integer> _function = new Function1<User, Integer>() {
+    final Function1<User,Integer> _function = new Function1<User,Integer>() {
       public Integer apply(final User it) {
         return Integer.valueOf(it.getAge());
       }
     };
-    Map<Integer, List<User>> _groupBy = IterableExtensions.<Integer, User>groupBy(users, _function);
+    Map<Integer,List<User>> _groupBy = IterableExtensions.<Integer, User>groupBy(users, _function);
     List<User> _get = _groupBy.get(Integer.valueOf(23));
     int _length = ((Object[])Conversions.unwrapArray(_get, Object.class)).length;
     Assert.assertEquals(_length, 2);
-    final Function1<User, Integer> _function_1 = new Function1<User, Integer>() {
+    final Function1<User,Integer> _function_1 = new Function1<User,Integer>() {
       public Integer apply(final User it) {
         return Integer.valueOf(it.getAge());
       }
     };
-    Map<User, Integer> _countBy = IterableExtensions.<Integer, User>countBy(users, _function_1);
-    final Function1<User, Boolean> _function_2 = new Function1<User, Boolean>() {
+    Map<User,Integer> _countBy = IterableExtensions.<Integer, User>countBy(users, _function_1);
+    final Function1<User,Boolean> _function_2 = new Function1<User,Boolean>() {
       public Boolean apply(final User it) {
         int _age = it.getAge();
         return Boolean.valueOf((_age == 23));
@@ -264,19 +264,19 @@ public class TestXtendTools {
     User _findFirst = org.eclipse.xtext.xbase.lib.IterableExtensions.<User>findFirst(users, _function_2);
     Integer _get_1 = _countBy.get(_findFirst);
     Assert.assertEquals((_get_1).intValue(), 2);
-    Map<Integer, Integer> _count = IterableExtensions.<Integer>count(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 3, 3, 3, 3, 4)));
+    Map<Integer,Integer> _count = IterableExtensions.<Integer>count(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 3, 3, 3, 3, 4)));
     Integer _get_2 = _count.get(Integer.valueOf(3));
     Assert.assertEquals((_get_2).intValue(), 4);
-    final Function1<User, Integer> _function_3 = new Function1<User, Integer>() {
+    final Function1<User,Integer> _function_3 = new Function1<User,Integer>() {
       public Integer apply(final User it) {
         return Integer.valueOf(it.getAge());
       }
     };
-    Map<Integer, User> _index = IterableExtensions.<Integer, User>index(users, _function_3);
+    Map<Integer,User> _index = IterableExtensions.<Integer, User>index(users, _function_3);
     User _get_3 = _index.get(Integer.valueOf(45));
     String _name = _get_3.getName();
     Assert.assertEquals(_name, "mary");
-    final Function1<User, Integer> _function_4 = new Function1<User, Integer>() {
+    final Function1<User,Integer> _function_4 = new Function1<User,Integer>() {
       public Integer apply(final User it) {
         int _age = it.getAge();
         int _minus = (_age - 45);
@@ -293,7 +293,7 @@ public class TestXtendTools {
   public void testUsing() {
     final Readable closeable = new Readable();
     closeable.open();
-    final Function1<Readable, String> _function = new Function1<Readable, String>() {
+    final Function1<Readable,String> _function = new Function1<Readable,String>() {
       public String apply(final Readable it) {
         return it.hello();
       }
@@ -302,7 +302,7 @@ public class TestXtendTools {
     OptExtensions.<String>assertSome(_attemptUsing, "hello, I am open!");
     Assert.assertTrue(closeable.isClosed);
     closeable.open();
-    final Function1<Readable, Object> _function_1 = new Function1<Readable, Object>() {
+    final Function1<Readable,Object> _function_1 = new Function1<Readable,Object>() {
       public Object apply(final Readable it) {
         try {
           Assert.assertFalse(closeable.isClosed);

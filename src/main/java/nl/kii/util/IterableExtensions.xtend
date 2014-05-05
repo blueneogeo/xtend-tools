@@ -24,6 +24,35 @@ class IterableExtensions {
 		newImmutableList(objects)
 	}
 	
+	// REFLECTION /////////////////////////////////////////////////////////////
+	
+	/** 
+	 * Returns if a list is of a certain value type by looking at the first value. 
+	 * @returns true if the list is not empty and the type matches
+	 * <pre>
+	 * #[1, 2, 3].isListOf(Integer) // true
+	 * #[1, 2, 3].isListOf(String) // false
+	 * #[].isListOf(Integer) // false
+	 */
+	def static boolean isListOf(List<?> list, Class<?> type) {
+		if(list.empty) return false
+		list.get(0).class.isAssignableFrom(type)
+	}
+	
+	/** 
+	 * Returns if a map is of a certain key and value type by looking at the first value. 
+	 * @returns true if the map is not empty and the types match
+	 * <pre>
+	 * #{1->'A', 5->'C'}.isMapOf(Integer, String) // true
+	 * #{1->'A', 5->'C'}.isMapOf(Integer, Integer) // false
+	 * #{}.isMapOf(Integer, String) // false
+	 */
+	def static boolean isMapOf(Map<?, ?> map, Class<?> keyType, Class<?> valueType) {
+		if(map.empty) return false
+		val key0 = map.keySet.get(0)
+		key0.class.isAssignableFrom(keyType) && map.get(key0).class.isAssignableFrom(valueType)
+	}	
+	
 	// CONVERTING (immutable) /////////////////////////////////////////////////
 	
 	/** Always returns an immutable list, even if a null result is passed. handy when chaining, eliminates null checks

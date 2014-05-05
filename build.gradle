@@ -11,12 +11,11 @@ repositories {
 
 dependencies {
 
-    compile 'com.netflix.rxjava:rxjava-core:0.14.2' // 0.16 breaks ObservedValue, BehaviorSubject is made final
 	compile 'commons-lang:commons-lang:+'
+    compile 'ch.qos.logback:logback-classic:+'
     compile 'junit:junit:4.+'
     
-    compile 'ch.qos.logback:logback-classic:+'
-    
+    // compile 'com.netflix.rxjava:rxjava-core:0.14.2' // 0.16 breaks ObservedValue, BehaviorSubject is made final
     // compile 'org.slf4j:slf4j-log4j12:1.7.5'
     // compile 'org.apache.logging.log4j:log4j-api:2.0-beta9'
     // testCompile 'com.fasterxml.jackson.core:jackson-core:2.2.2'
