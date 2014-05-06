@@ -34,11 +34,9 @@ class IterableExtensions {
 	 * #[1, 2, 3].isListOf(String) // false
 	 * #[].isListOf(Integer) // false
 	 */
-	def static boolean isListOf(Object list, Class<?> type) {
-		if(list instanceof List<?>) {
-			if(list.empty) return false
-			list.get(0).class.isAssignableFrom(type)
-		} else false
+	def static boolean isListOf(List<?> list, Class<?> type) {
+		if(list.empty) return false
+		list.get(0).class.isAssignableFrom(type)
 	}
 	
 	/** 
@@ -50,11 +48,9 @@ class IterableExtensions {
 	 * #{}.isMapOf(Integer, String) // false
 	 */
 	def static boolean isMapOf(Map<?, ?> map, Class<?> keyType, Class<?> valueType) {
-		if(map instanceof Map<?, ?>) {
-			if(map.empty) return false
-			val key0 = map.keySet.get(0)
-			key0.class.isAssignableFrom(keyType) && map.get(key0).class.isAssignableFrom(valueType)
-		} else false
+		if(map.empty) return false
+		val key0 = map.keySet.get(0)
+		key0.class.isAssignableFrom(keyType) && map.get(key0).class.isAssignableFrom(valueType)
 	}	
 	
 	// CONVERTING (immutable) /////////////////////////////////////////////////
