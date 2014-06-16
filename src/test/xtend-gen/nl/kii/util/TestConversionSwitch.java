@@ -14,13 +14,13 @@ import org.junit.Test;
 public class TestConversionSwitch {
   @Test
   public void testSwitch() {
-    final List<Integer> list = Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(1, 2, 3));
-    Map<Integer,String> _xsetliteral = null;
-    Map<Integer,String> _tempMap = Maps.<Integer, String>newHashMap();
+    final List<Integer> list = Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)));
+    Map<Integer, String> _xsetliteral = null;
+    Map<Integer, String> _tempMap = Maps.<Integer, String>newHashMap();
     _tempMap.put(Integer.valueOf(1), "A");
     _tempMap.put(Integer.valueOf(2), "B");
     _xsetliteral = Collections.<Integer, String>unmodifiableMap(_tempMap);
-    final Map<Integer,String> map = _xsetliteral;
+    final Map<Integer, String> map = _xsetliteral;
     boolean _matched = false;
     if (!_matched) {
       boolean _isListOf = IterableExtensions.isListOf(list, Integer.class);
