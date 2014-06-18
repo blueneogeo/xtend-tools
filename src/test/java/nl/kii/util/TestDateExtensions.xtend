@@ -15,8 +15,12 @@ class TestDateExtensions {
 		println(n)
 		
 		println((y - x) > 3.days)
-		
-		
+	}
+	
+	@Test
+	def void testUTCZone() {
+		println(now)
+		println(now.toUTC)
 	}
 	
 }

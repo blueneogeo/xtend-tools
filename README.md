@@ -3,6 +3,8 @@
 Some tools and Xtend extensions that make life with the Xtend programming language better:
 
 - Options: helps avoid NullpointerExceptions
+- Easy date/time manipulation
+- List operations and shortcuts
 - SL4J Logging wrapper: allows more efficient and compact logging
 
 Note: Promising and Streaming have been moved to the xtend-stream. For more information about the Xtend language:
@@ -92,7 +94,29 @@ This is just a selection. For more extensions, check the source of OptExtensions
 
 https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/OptExtensions.xtend
 
+## Easy Date Manipulating
 
+	import static extension nl.kii.util.DateExtensions.*
+
+Date manipulation becomes very natural with these extensions, since they overload the common operators + - < <= > and =>. Some code examples:
+
+	// does what it says:
+	println(now + 4.mins + 2.secs)
+
+	// easily calculate moments and periods
+	val Date yesterday = now - 24.hours
+	val Date tomorrow = now + 1.days
+	val Date in1Hour = now + 1.hour
+	val Period oneHour30Minutes = 1.hour + 30.mins
+
+	// calculate newest and oldest between values
+	println(newest(tomorrow, in1Hour, yesterday)) // prints the value of tomorrow
+	println(oldest(tomorrow, in1Hour)) // prints the value of in1Hour
+
+	println((now - yesterday).days) // prints 1
+	println(now > yesterday) // prints true
+	println(2.mins.secs) // prints 120
+	
 ## List Operations
 
 	import static extension nl.kii.util.IterableExtensions.*

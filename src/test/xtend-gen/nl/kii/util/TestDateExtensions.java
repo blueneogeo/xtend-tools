@@ -28,4 +28,13 @@ public class TestDateExtensions {
     boolean _greaterThan = DateExtensions.operator_greaterThan(_minus_1, _days_1);
     InputOutput.<Boolean>println(Boolean.valueOf(_greaterThan));
   }
+  
+  @Test
+  public void testUTCZone() {
+    Date _now = DateExtensions.now();
+    InputOutput.<Date>println(_now);
+    Date _now_1 = DateExtensions.now();
+    Date _uTC = DateExtensions.toUTC(_now_1);
+    InputOutput.<Date>println(_uTC);
+  }
 }

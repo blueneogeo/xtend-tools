@@ -1,12 +1,28 @@
 package nl.kii.util
 
+import java.text.SimpleDateFormat
 import java.util.Date
 
 class DateExtensions {
 
+	val static standardDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+
 	/** The current date */
 	def static now() { new Date }
+	
+	/** Convert a date to UTC timezone */
+	def static toUTC(Date date) {
+		date + date.timezoneOffset.mins
+	}
 
+	/** quickly format a date to the standard "yyyy-MM-dd'T'HH:mm:ss" format. */
+	def static format(Date date) { standardDateFormat.format(date) }
+	/** 
+	 * quickly format a date to a specified format. see all formatting options at 
+	 * http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+	 */
+	def static format(Date date, String format) { new SimpleDateFormat(format).format(date) } 
+	
 	/** Return the most recent date */
 	def static newest(Date... dates) { dates.filter[it!=null].sortBy[time].reverse.head }
 
