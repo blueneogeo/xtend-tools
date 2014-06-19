@@ -74,11 +74,14 @@ class Period {
 	
 	def long time() { time }
 	
+	def ms() { time }
 	def secs() { time / 1000 }
 	def mins() { time / 1000 / 60 }
 	def hours() { time / 1000 / 60 / 60 }
 	def days() { time / 1000 / 60 / 60 / 24 }
 	def years() { time / 1000 / 60 / 60 / 24 / 356 }
+	
+	override toString() '''«time» milliseconds'''
 	
 	override equals(Object obj) {
 		if(obj instanceof Period) obj.time == time else false

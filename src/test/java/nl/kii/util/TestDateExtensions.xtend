@@ -1,6 +1,7 @@
 package nl.kii.util
 
 import org.junit.Test
+
 import static extension nl.kii.util.DateExtensions.*
 
 class TestDateExtensions {
