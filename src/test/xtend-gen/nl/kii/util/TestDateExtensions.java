@@ -6,7 +6,7 @@ import nl.kii.util.Days;
 import nl.kii.util.Minutes;
 import nl.kii.util.Period;
 import nl.kii.util.Years;
-import org.eclipse.xtext.xbase.lib.InputOutput;
+import org.junit.Assert;
 import org.junit.Test;
 
 @SuppressWarnings("all")
@@ -21,20 +21,19 @@ public class TestDateExtensions {
     Date _now_1 = DateExtensions.now();
     Days _days = DateExtensions.days(4);
     final Date y = DateExtensions.operator_plus(_now_1, _days);
-    final Date n = DateExtensions.newest(x, y);
-    InputOutput.<Date>println(n);
     Period _minus_1 = DateExtensions.operator_minus(y, x);
     Days _days_1 = DateExtensions.days(3);
     boolean _greaterThan = DateExtensions.operator_greaterThan(_minus_1, _days_1);
-    InputOutput.<Boolean>println(Boolean.valueOf(_greaterThan));
+    Assert.assertTrue(_greaterThan);
   }
   
   @Test
   public void testUTCZone() {
     Date _now = DateExtensions.now();
-    InputOutput.<Date>println(_now);
     Date _now_1 = DateExtensions.now();
     Date _uTC = DateExtensions.toUTC(_now_1);
-    InputOutput.<Date>println(_uTC);
+    Period _minus = DateExtensions.operator_minus(_now, _uTC);
+    long _hours = _minus.hours();
+    Assert.assertEquals(2, _hours);
   }
 }
