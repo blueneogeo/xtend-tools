@@ -186,6 +186,11 @@ public class TestXtendTools {
     Assert.assertFalse(_in_4);
     boolean _in_5 = IterableExtensions.<Boolean>in(Boolean.valueOf(false), Boolean.valueOf(false));
     Assert.assertTrue(_in_5);
+    final User u1 = new User("a", 12);
+    final User u2 = new User("a", 12);
+    final User u3 = new User("b", 13);
+    boolean _in_6 = IterableExtensions.<User>in(u2, ((Iterable<User>) Collections.<User>unmodifiableList(Lists.<User>newArrayList(u1, u3))));
+    Assert.assertTrue(_in_6);
   }
   
   @Test

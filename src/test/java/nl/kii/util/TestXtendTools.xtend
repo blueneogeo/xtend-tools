@@ -76,6 +76,10 @@ class TestXtendTools {
 		6.in(1, 2, 3).assertFalse
 		null.in(1, 2, 3).assertFalse
 		false.in(false).assertTrue
+		val u1 = new User('a', 12)
+		val u2 = new User('a', 12)
+		val u3 = new User('b', 13)
+		u2.in(#[u1, u3] as Iterable<User>).assertTrue
 	}
 	
 	@Test def void testFilters() {
