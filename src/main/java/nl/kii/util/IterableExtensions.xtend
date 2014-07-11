@@ -61,7 +61,7 @@ class IterableExtensions {
 	/** Always returns an immutable set, even if a null result was passed. handy when chaining, eliminates null checks.	
 	 * note: double values will be removed!
 	 */
-	def static <T> Set<T> toSet(Iterable<T> iterable) {
+	def static <T> Set<T> toSet(Iterable<? extends T> iterable) {
 		if (!iterable.defined)
 			newHashSet
 		else {
@@ -71,7 +71,7 @@ class IterableExtensions {
 	}
 
 	// ADDING (immutable) /////////////////////////////////////////////////////
-	def static <T> concat(Iterable<T> list, T value) {
+	def static <T> concat(Iterable<? extends T> list, T value) {
 		ImmutableList.builder.addAll(list).add(value).build
 	}
 
@@ -88,12 +88,12 @@ class IterableExtensions {
 	}
 
 	// SIDEEFFECTS ////////////////////////////////////////////////////////////
-	def static <T> Iterable<T> each(Iterable<T> iterable, (T)=>void fn) {
+	def static <T> each(Iterable<? extends T> iterable, (T)=>void fn) {
 		iterable.forEach(fn)
 		iterable
 	}
 
-	def static <T> Iterable<T> each(Iterable<T> iterable, (T, int)=>void fn) {
+	def static <T> each(Iterable<? extends T> iterable, (T, int)=>void fn) {
 		iterable.forEach(fn)
 		iterable
 	}
@@ -127,12 +127,12 @@ class IterableExtensions {
 		iterable.map[orNull].filterNull
 	}
 
-	def static <T> Iterable<? extends Opt<T>> filterError(Iterable<? extends Opt<T>> iterable) {
+	def static <T> filterError(Iterable<? extends Opt<T>> iterable) {
 		iterable.filter[!hasError]
 	}
 
 	/** Remove all double values in a list, turning it into a list of unique values */
-	def static <T> Iterable<T> distinct(Iterable<T> values) {
+	def static <T> distinct(Iterable<? extends T> values) {
 		values.groupBy[it].toPairs.map[value.head]
 	}
 
@@ -147,12 +147,12 @@ class IterableExtensions {
 	}
 
 	// MAPPING ////////////////////////////////////////////////////////////////
-	def static <T, R> Iterable<Opt<R>> mapOpt(Iterable<Opt<T>> iterable, (T)=>R fn) {
+	def static <T, R> Iterable<Opt<R>> mapOpt(Iterable<? extends Opt<T>> iterable, (T)=>R fn) {
 		iterable.map[mapOpt(fn)]
 	}
 
 	// try to map the values in the iterable, and give back a list of options instead of direct values
-	def static <T, R> Iterable<Opt<R>> attemptMap(Iterable<T> iterable, (T)=>R fn) {
+	def static <T, R> attemptMap(Iterable<? extends T> iterable, (T)=>R fn) {
 		iterable.map [
 			val o = it
 			attempt [fn.apply(o)]
@@ -160,7 +160,7 @@ class IterableExtensions {
 	}
 
 	// transforms a map into a list of pairs
-	def static <K, V> Iterable<Pair<K, V>> toPairs(Map<K, V> map) {
+	def static <K, V> toPairs(Map<K, V> map) {
 		map.entrySet.map[it.key -> it.value]
 	}
 
@@ -173,7 +173,7 @@ class IterableExtensions {
 
 	// create a grouped index for a list of items. if the keys are unique, use toMap instead!
 	// example: val groups = levels.groupBy [ difficulty ] // creates a map with per difficulty level a list of levels 
-	def static <K, V> Map<K, List<V>> groupBy(Iterable<V> list, (V)=>K indexFn) {
+	def static <K, V> Map<K, List<V>> groupBy(Iterable<? extends V> list, (V)=>K indexFn) {
 		val map = new HashMap<K, List<V>>
 		list.forEach [
 			val index = indexFn.apply(it)
@@ -199,22 +199,22 @@ class IterableExtensions {
 	// REDUCTION //////////////////////////////////////////////////////////////
 	// count for each value how often it occurs
 	// example: #[1, 1, 3, 2].count == #[1->2, 3->1, 2->1]
-	def static <V> Map<V, Integer> count(Iterable<V> values) {
+	def static <V> Map<V, Integer> count(Iterable<? extends V> values) {
 		values.countBy[it]
 	}
 
 	// count the occurance of values, but you can tell how to identify doubles using the index/identity function
 	// example: #[user1, user2, user3].countBy [ userId ]
-	def static <K, V> Map<V, Integer> countBy(Iterable<V> values, (V)=>K indexFn) {
+	def static <K, V> Map<V, Integer> countBy(Iterable<? extends V> values, (V)=>K indexFn) {
 		values.groupBy(indexFn).toPairs.map[value.head -> value.size].toMap
 	}
 
 	// alias for toMap for indexing a list of values	
-	def static <K, V> Map<K, V> index(Iterable<V> iterable, (V)=>K indexFn) {
+	def static <K, V> Map<K, V> index(Iterable<? extends V> iterable, (V)=>K indexFn) {
 		iterable.toMap[indexFn.apply(it)]
 	}
 
-	def static <T extends Number> sum(Iterable<T> values) {
+	def static <T extends Number> sum(Iterable<? extends T> values) {
 		var double total = 0
 		for (T value : values) {
 			total = total + value.doubleValue
@@ -222,28 +222,29 @@ class IterableExtensions {
 		total
 	}
 
-	def static <T extends Number> average(Iterable<T> values) {
+	def static <T extends Number> average(Iterable<? extends T> values) {
 		values.sum / values.length
 	}
 
 	// IN CHECKS //////////////////////////////////////////////////////////////
-	// check if an object is one of the following
-	// example 12.in(#[3, 4, 12, 6]) == true
-	def static <T> boolean in(T instance, List<T> objects) {
-		instance.defined && objects.defined && objects.contains(instance)
-	}
+//	// check if an object is one of the following
+//	// example 12.in(#[3, 4, 12, 6]) == true
+//	def static <T> boolean in(T instance, List<T> objects) {
+//		instance.defined && objects.defined && objects.contains(instance)
+//	}
 
 	// check if an object is one of the following
 	// example: 12.in(3, 4, 12, 6) == true
-	def static <T> boolean in(T instance, Object... objects) {
+	def static <T> boolean in(T instance, T... objects) {
 		instance.defined && objects.defined && objects.contains(instance)
 	}
-
-	def static <T> boolean in(T instance, Iterable<T> objects) {
-		instance.defined && objects.defined && objects.toList.contains(instance)
+	
+	def static <T> boolean in(T instance, Iterable<? extends T> objects) {
+		// instance.defined && objects.defined && 
+		objects.toList.contains(instance)
 	}
-
-	def static <T> boolean in(T instance, Iterator<T> objects) {
+	
+	def static <T> boolean in(T instance, Iterator<? extends T> objects) {
 		instance.defined && objects.defined && objects.toList.contains(instance)
 	}
 
@@ -255,7 +256,7 @@ class IterableExtensions {
 	}
 	
 	/** Create a new immutable list from a list and a value */
-	def static <T> + (Iterable<T> list, T value) {
+	def static <T> + (Iterable<? extends T> list, T value) {
 		list.concat(value)
 	}
 
@@ -271,18 +272,20 @@ class IterableExtensions {
 	//    }
 	// mapping, filtering
 	// map with ->
-	def static <T, R> -> (Iterable<T> original, Functions.Function1<? super T, ? extends R> transformation) {
+	def static <T, R> -> (Iterable<? extends T> original, Functions.Function1<? super T, ? extends R> transformation) {
 		original.map(transformation)
 	}
 
 	// filter with +
-	def static <T>  + (Iterable<T> unfiltered, Functions.Function1<? super T, Boolean> predicate) {
+	def static <T>  + (Iterable<? extends T> unfiltered, Functions.Function1<? super T, Boolean> predicate) {
 		unfiltered.filter(predicate)
 	}
 
 	// remove with -
-	def static <T> - (Iterable<T> unfiltered, Functions.Function1<? super T, Boolean> predicate) {
-		unfiltered.filter(!predicate)
+	def static <T> - (Iterable<? extends T> unfiltered, Functions.Function1<? super T, Boolean> predicate) {
+		unfiltered.filter [
+			!predicate.apply(it)
+		]
 	}
 
 	// negating a filter with !

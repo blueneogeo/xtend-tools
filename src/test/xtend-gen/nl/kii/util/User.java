@@ -1,6 +1,7 @@
 package nl.kii.util;
 
 import org.eclipse.xtend.lib.Data;
+import org.eclipse.xtext.xbase.lib.Pure;
 import org.eclipse.xtext.xbase.lib.util.ToStringHelper;
 
 @Data
@@ -8,15 +9,7 @@ import org.eclipse.xtext.xbase.lib.util.ToStringHelper;
 public class User {
   private final String _name;
   
-  public String getName() {
-    return this._name;
-  }
-  
   private final int _age;
-  
-  public int getAge() {
-    return this._age;
-  }
   
   public User(final String name, final int age) {
     super();
@@ -25,6 +18,7 @@ public class User {
   }
   
   @Override
+  @Pure
   public int hashCode() {
     final int prime = 31;
     int result = 1;
@@ -34,6 +28,7 @@ public class User {
   }
   
   @Override
+  @Pure
   public boolean equals(final Object obj) {
     if (this == obj)
       return true;
@@ -53,8 +48,19 @@ public class User {
   }
   
   @Override
+  @Pure
   public String toString() {
     String result = new ToStringHelper().toString(this);
     return result;
+  }
+  
+  @Pure
+  public String getName() {
+    return this._name;
+  }
+  
+  @Pure
+  public int getAge() {
+    return this._age;
   }
 }

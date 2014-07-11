@@ -1,12 +1,12 @@
 package nl.kii.util;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import nl.kii.util.IterableExtensions;
+import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.InputOutput;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,13 +14,10 @@ import org.junit.Test;
 public class TestConversionSwitch {
   @Test
   public void testSwitch() {
-    final List<Integer> list = Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)));
-    Map<Integer, String> _xsetliteral = null;
-    Map<Integer, String> _tempMap = Maps.<Integer, String>newHashMap();
-    _tempMap.put(Integer.valueOf(1), "A");
-    _tempMap.put(Integer.valueOf(2), "B");
-    _xsetliteral = Collections.<Integer, String>unmodifiableMap(_tempMap);
-    final Map<Integer, String> map = _xsetliteral;
+    final List<Integer> list = Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)));
+    Pair<Integer, String> _mappedTo = Pair.<Integer, String>of(Integer.valueOf(1), "A");
+    Pair<Integer, String> _mappedTo_1 = Pair.<Integer, String>of(Integer.valueOf(2), "B");
+    final Map<Integer, String> map = Collections.<Integer, String>unmodifiableMap(CollectionLiterals.<Integer, String>newHashMap(_mappedTo, _mappedTo_1));
     boolean _matched = false;
     if (!_matched) {
       boolean _isListOf = IterableExtensions.isListOf(list, Integer.class);

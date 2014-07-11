@@ -1,8 +1,5 @@
 package nl.kii.util;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -174,22 +171,22 @@ public class TestXtendTools {
   
   @Test
   public void testIn() {
-    boolean _in = IterableExtensions.<Integer>in(Integer.valueOf(2), Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))));
+    boolean _in = IterableExtensions.<Integer>in(Integer.valueOf(2), Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))));
     Assert.assertTrue(_in);
     boolean _in_1 = IterableExtensions.<Integer>in(Integer.valueOf(2), Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3));
     Assert.assertTrue(_in_1);
-    boolean _in_2 = IterableExtensions.<Integer>in(Integer.valueOf(6), Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))));
+    boolean _in_2 = IterableExtensions.<Integer>in(Integer.valueOf(6), Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))));
     Assert.assertFalse(_in_2);
     boolean _in_3 = IterableExtensions.<Integer>in(Integer.valueOf(6), Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3));
     Assert.assertFalse(_in_3);
-    boolean _in_4 = IterableExtensions.<Object>in(null, Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3));
+    boolean _in_4 = IterableExtensions.<Integer>in(null, Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3));
     Assert.assertFalse(_in_4);
     boolean _in_5 = IterableExtensions.<Boolean>in(Boolean.valueOf(false), Boolean.valueOf(false));
     Assert.assertTrue(_in_5);
     final User u1 = new User("a", 12);
     final User u2 = new User("a", 12);
     final User u3 = new User("b", 13);
-    boolean _in_6 = IterableExtensions.<User>in(u2, ((Iterable<User>) Collections.<User>unmodifiableList(Lists.<User>newArrayList(u1, u3))));
+    boolean _in_6 = IterableExtensions.<User>in(u2, ((Iterable<User>) Collections.<User>unmodifiableList(CollectionLiterals.<User>newArrayList(u1, u3))));
     Assert.assertTrue(_in_6);
   }
   
@@ -200,28 +197,25 @@ public class TestXtendTools {
     Some<Integer> _some_1 = OptExtensions.<Integer>some(Integer.valueOf(2));
     None<Integer> _none_1 = OptExtensions.<Integer>none();
     None<Integer> _none_2 = OptExtensions.<Integer>none();
-    Iterable<Integer> _filterEmpty = IterableExtensions.<Integer>filterEmpty(Collections.<Opt<Integer>>unmodifiableSet(Sets.<Opt<Integer>>newHashSet(_some, _none, _some_1, _none_1, _none_2)));
+    Iterable<Integer> _filterEmpty = IterableExtensions.<Integer>filterEmpty(Collections.<Opt<Integer>>unmodifiableSet(CollectionLiterals.<Opt<Integer>>newHashSet(_some, _none, _some_1, _none_1, _none_2)));
     int _length = ((Object[])Conversions.unwrapArray(_filterEmpty, Object.class)).length;
     Assert.assertEquals(_length, 2);
-    Iterable<Integer> _distinct = IterableExtensions.<Integer>distinct(Collections.<Integer>unmodifiableSet(Sets.<Integer>newHashSet(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(1))));
+    Iterable<Integer> _distinct = IterableExtensions.<Integer>distinct(Collections.<Integer>unmodifiableSet(CollectionLiterals.<Integer>newHashSet(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(1))));
     int _length_1 = ((Object[])Conversions.unwrapArray(_distinct, Object.class)).length;
     Assert.assertEquals(_length_1, 3);
   }
   
   @Test
   public void testConversions() {
-    List<Integer> _list = IterableExtensions.<Integer>toList(Collections.<Integer>unmodifiableSet(Sets.<Integer>newHashSet(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))));
+    List<Integer> _list = IterableExtensions.<Integer>toList(Collections.<Integer>unmodifiableSet(CollectionLiterals.<Integer>newHashSet(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))));
     int _length = ((Object[])Conversions.unwrapArray(_list, Object.class)).length;
     Assert.assertEquals(_length, 3);
-    Set<Integer> _set = IterableExtensions.<Integer>toSet(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))));
+    Set<Integer> _set = org.eclipse.xtext.xbase.lib.IterableExtensions.<Integer>toSet(Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3))));
     int _length_1 = ((Object[])Conversions.unwrapArray(_set, Object.class)).length;
     Assert.assertEquals(_length_1, 3);
-    Map<String, Integer> _xsetliteral = null;
-    Map<String, Integer> _tempMap = Maps.<String, Integer>newHashMap();
-    _tempMap.put("john", Integer.valueOf(23));
-    _tempMap.put("mary", Integer.valueOf(45));
-    _xsetliteral = Collections.<String, Integer>unmodifiableMap(_tempMap);
-    Iterable<Pair<String, Integer>> _pairs = IterableExtensions.<String, Integer>toPairs(_xsetliteral);
+    Pair<String, Integer> _mappedTo = Pair.<String, Integer>of("john", Integer.valueOf(23));
+    Pair<String, Integer> _mappedTo_1 = Pair.<String, Integer>of("mary", Integer.valueOf(45));
+    Iterable<Pair<String, Integer>> _pairs = IterableExtensions.<String, Integer>toPairs(Collections.<String, Integer>unmodifiableMap(CollectionLiterals.<String, Integer>newHashMap(_mappedTo, _mappedTo_1)));
     Pair<String, Integer> _get = ((Pair<String, Integer>[])Conversions.unwrapArray(_pairs, Pair.class))[1];
     final Procedure1<Pair<String, Integer>> _function = new Procedure1<Pair<String, Integer>>() {
       public void apply(final Pair<String, Integer> it) {
@@ -232,9 +226,9 @@ public class TestXtendTools {
       }
     };
     ObjectExtensions.<Pair<String, Integer>>operator_doubleArrow(_get, _function);
-    Pair<String, Integer> _mappedTo = Pair.<String, Integer>of("john", Integer.valueOf(23));
-    Pair<String, Integer> _mappedTo_1 = Pair.<String, Integer>of("mary", Integer.valueOf(45));
-    Map<String, Integer> _map = IterableExtensions.<String, Integer>toMap(Collections.<Pair<String, Integer>>unmodifiableList(Lists.<Pair<String, Integer>>newArrayList(_mappedTo, _mappedTo_1)));
+    Pair<String, Integer> _mappedTo_2 = Pair.<String, Integer>of("john", Integer.valueOf(23));
+    Pair<String, Integer> _mappedTo_3 = Pair.<String, Integer>of("mary", Integer.valueOf(45));
+    Map<String, Integer> _map = IterableExtensions.<String, Integer>toMap(Collections.<Pair<String, Integer>>unmodifiableList(CollectionLiterals.<Pair<String, Integer>>newArrayList(_mappedTo_2, _mappedTo_3)));
     Integer _get_1 = _map.get("mary");
     Assert.assertEquals((_get_1).intValue(), 45);
   }
@@ -244,7 +238,7 @@ public class TestXtendTools {
     User _user = new User("john", 23);
     User _user_1 = new User("mary", 45);
     User _user_2 = new User("jim", 23);
-    final List<User> users = Collections.<User>unmodifiableList(Lists.<User>newArrayList(_user, _user_1, _user_2));
+    final List<User> users = Collections.<User>unmodifiableList(CollectionLiterals.<User>newArrayList(_user, _user_1, _user_2));
     final Function1<User, Integer> _function = new Function1<User, Integer>() {
       public Integer apply(final User it) {
         return Integer.valueOf(it.getAge());
@@ -269,7 +263,7 @@ public class TestXtendTools {
     User _findFirst = org.eclipse.xtext.xbase.lib.IterableExtensions.<User>findFirst(users, _function_2);
     Integer _get_1 = _countBy.get(_findFirst);
     Assert.assertEquals((_get_1).intValue(), 2);
-    Map<Integer, Integer> _count = IterableExtensions.<Integer>count(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(4))));
+    Map<Integer, Integer> _count = IterableExtensions.<Integer>count(Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(4))));
     Integer _get_2 = _count.get(Integer.valueOf(3));
     Assert.assertEquals((_get_2).intValue(), 4);
     final Function1<User, Integer> _function_3 = new Function1<User, Integer>() {
@@ -323,19 +317,19 @@ public class TestXtendTools {
   
   @Test
   public void testSum() {
-    double _sum = IterableExtensions.<Integer>sum(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(3), Integer.valueOf(2), Integer.valueOf(5), Integer.valueOf(7))));
+    double _sum = IterableExtensions.<Integer>sum(Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(3), Integer.valueOf(2), Integer.valueOf(5), Integer.valueOf(7))));
     Assert.assertEquals(_sum, 18, 0);
   }
   
   @Test
   public void testAvg() {
-    double _average = IterableExtensions.<Integer>average(Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(4))));
+    double _average = IterableExtensions.<Integer>average(Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(4))));
     Assert.assertEquals(_average, 2.5, 0);
   }
   
   @Test
   public void testLogging() {
-    final List<Integer> list = Collections.<Integer>unmodifiableList(Lists.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)));
+    final List<Integer> list = Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)));
     LogExtensions.<Integer>printEach(list);
     LogExtensions.<Integer>printEach(list, "got list:");
     LogExtensions.<Integer>info(list, this.logger);
