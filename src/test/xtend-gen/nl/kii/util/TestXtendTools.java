@@ -21,7 +21,6 @@ import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Extension;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
-import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.ObjectExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
@@ -328,14 +327,6 @@ public class TestXtendTools {
   }
   
   @Test
-  public void testLogging() {
-    final List<Integer> list = Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3)));
-    LogExtensions.<Integer>printEach(list);
-    LogExtensions.<Integer>printEach(list, "got list:");
-    LogExtensions.<Integer>info(list, this.logger);
-  }
-  
-  @Test
   public void testMapTo() {
     final List<Object> list = CollectionLiterals.<Object>newLinkedList();
     list.add(Integer.valueOf(4));
@@ -359,7 +350,6 @@ public class TestXtendTools {
     Exception _exception = new Exception("test");
     Err<String> _err = OptExtensions.<String>err(_exception);
     final Opt<Opt<String>> e = OptExtensions.<Opt<String>>option(_err);
-    InputOutput.<Opt<Opt<String>>>println(e);
     Opt<String> _flatten_1 = OptExtensions.<String>flatten(e);
     boolean _hasError = _flatten_1.hasError();
     Assert.assertTrue(_hasError);

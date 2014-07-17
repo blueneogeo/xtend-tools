@@ -157,12 +157,12 @@ class TestXtendTools {
 		#[1, 2, 3, 4].average.assertEquals(2.5, 0)
 	}
 		
-	@Test def void testLogging() {
-		val list = #[1, 2, 3]
-		list.printEach
-		list.printEach('got list:')
-		list.info(logger)
-	}
+//	@Test def void testLogging() {
+//		val list = #[1, 2, 3]
+//		list.printEach
+//		list.printEach('got list:')
+//		list.info(logger)
+//	}
 	
 	@Test def void testMapTo() {
 		val List<Object> list = newLinkedList
@@ -180,7 +180,7 @@ class TestXtendTools {
 		x.flatten.hasSome.assertTrue
 		// errors should be propagated when flattening
 		val Opt<Opt<String>> e = err(new Exception('test')).option
-		println(e)
+		// println(e)
 		e.flatten.hasError.assertTrue
 	}
 

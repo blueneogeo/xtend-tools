@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import nl.kii.util.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
-import org.eclipse.xtext.xbase.lib.InputOutput;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +22,6 @@ public class TestConversionSwitch {
       boolean _isListOf = IterableExtensions.isListOf(list, Integer.class);
       if (_isListOf) {
         _matched=true;
-        InputOutput.<String>println("list ok");
       }
     }
     if (!_matched) {
@@ -41,7 +39,6 @@ public class TestConversionSwitch {
       boolean _isMapOf = IterableExtensions.isMapOf(map, Integer.class, String.class);
       if (_isMapOf) {
         _matched_1=true;
-        InputOutput.<String>println("map ok");
       }
     }
     if (!_matched_1) {

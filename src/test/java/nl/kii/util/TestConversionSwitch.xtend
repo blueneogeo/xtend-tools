@@ -15,13 +15,13 @@ class TestConversionSwitch {
 		val map = #{ 1->'A', 2->'B' }
 		
 		switch list {
-			case list.isListOf(Integer): println('list ok')
+			case list.isListOf(Integer): {}
 			case list.isListOf(String): fail('not a list of a string')
 			default: fail('no match found for list')
 		}
 		
 		switch map {
-			case map.isMapOf(Integer, String): println('map ok')
+			case map.isMapOf(Integer, String): {}
 			case map.isMapOf(String, String): fail('not map of string->string')
 			default: fail('no match found for map')
 		}
