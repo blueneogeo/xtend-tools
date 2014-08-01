@@ -3,16 +3,18 @@ package nl.kii.util
 class ThrowableExtensions {
 	
 	def static print(Throwable it) {
-		it.toString(null)
+		it.print(null)
 	}
 	
-	def static toString(Throwable it, (Throwable)=>String descriptionFn) '''
-		«IF descriptionFn != null»Error: «descriptionFn.apply(it)»«ENDIF»
-		Thrown: «class.name» - «message»:
+	def static String print(Throwable it, String message) '''
+		«IF message != null»Thrown: «message»«ENDIF»
+		Thrown «class.simpleName» - «message»:
+			«it.message»
 			«FOR trace : stackTrace.map[toString]»
 			- «trace»
 			«ENDFOR»
-		Caused by: «cause.class.name» - «cause.message»
+		Caused by «cause.class.simpleName»:
+			«cause.message»
 			«FOR trace : cause.stackTrace.map[toString]»
 			- «trace»
 			«ENDFOR»

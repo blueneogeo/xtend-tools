@@ -175,15 +175,6 @@ class OptExtensions {
 
 	// MAPPING ////////////////////////////////////////////////////////////////
 
-	def static <I, T> I apply(I input, (I)=>void fn) {
-		fn.apply(input)
-		input
-	}
-
-	def static <I, T> Opt<I> apply(Opt<I> input, (I)=>void fn) {
-		ifSome(input) [ fn.apply(it) ]
-	}
-
 	/** 
 	 * Transform an option into a new option using a function.
 	 * The function allows you to transform the value of the passed option,
