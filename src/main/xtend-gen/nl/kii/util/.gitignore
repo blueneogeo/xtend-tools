@@ -49,3 +49,5 @@
 /.T.java._trace
 /.InstanceMatcher.java._trace
 /.Matchable.java._trace
+/InstanceMatcher.java
+/Matcher.java
