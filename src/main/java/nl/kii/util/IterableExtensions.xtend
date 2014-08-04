@@ -140,13 +140,14 @@ class IterableExtensions {
 	def static <T> int indexOf(Iterable<? extends T> iterable, T value) {
 		var counter = 0
 		for (o : iterable) {
-			if(o == value) return counter
+			if(o.equals(value)) return counter
 			counter = counter + 1
 		}
 		return -1
 	}
 
 	// MAPPING ////////////////////////////////////////////////////////////////
+	
 	def static <T, R> Iterable<Opt<R>> mapOpt(Iterable<? extends Opt<T>> iterable, (T)=>R fn) {
 		iterable.map[mapOpt(fn)]
 	}

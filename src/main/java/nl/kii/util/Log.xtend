@@ -1,6 +1,7 @@
 package nl.kii.util
 
 import org.slf4j.Logger
+import org.eclipse.xtend.lib.annotations.Data
 
 /**
  * Better logging for Xtend. Usage:
