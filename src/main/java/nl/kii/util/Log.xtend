@@ -27,16 +27,20 @@ import org.eclipse.xtend.lib.annotations.Data
 		if(logger.debugEnabled) logger.debug(message.entry)
 	}
 
+	def info(String message) {
+		if(logger.infoEnabled) logger.info(message.entry)
+	}
+
 	def info((Object)=>String message) {
 		if(logger.infoEnabled) logger.info(message.entry)
 	}
 
-	def warn((Object)=>String message) {
+	def warn(String message) {
 		if(logger.warnEnabled) logger.warn(message.entry)
 	}
-	
-	def error((Object)=>String message) {
-		if(logger.errorEnabled) logger.error(message.entry)
+
+	def warn((Object)=>String message) {
+		if(logger.warnEnabled) logger.warn(message.entry)
 	}
 	
 	def error(String message, Throwable t) {
@@ -57,9 +61,13 @@ import org.eclipse.xtend.lib.annotations.Data
 
 	// protected helper methods
 
+	def protected getEntry(String message) {
+		if(name != null) '''«name»: «message»'''.toString
+		else message
+	}
+
 	def protected getEntry((Object)=>String message) {
-		if(name != null) '''«name»: «message.apply(null)»'''.toString
-		else message.apply(null)
+		message.apply(null).entry
 	}
 	
 }
