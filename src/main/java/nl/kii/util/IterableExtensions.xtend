@@ -162,7 +162,7 @@ class IterableExtensions {
 
 	// transforms a map into a list of pairs
 	def static <K, V> toPairs(Map<K, V> map) {
-		map.entrySet.map[it.key -> it.value]
+		map.entrySet.map[it.key -> it.value].toList
 	}
 
 	// convert a list of pairs to a map
@@ -262,9 +262,9 @@ class IterableExtensions {
 	}
 
 	/** Create a new immutable list from a value and a list */
-	def static <T> + (T value, Iterable<T> list) {
-		value.concat(list)
-	}
+//	def static <T> + (T value, Iterable<T> list) {
+//		value.concat(list)
+//	}
 
 	// iterating through items using >> closure
 	//    def static <T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {

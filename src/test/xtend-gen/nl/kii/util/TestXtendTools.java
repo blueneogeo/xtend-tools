@@ -199,7 +199,7 @@ public class TestXtendTools {
     Iterable<Integer> _filterEmpty = IterableExtensions.<Integer>filterEmpty(Collections.<Opt<Integer>>unmodifiableSet(CollectionLiterals.<Opt<Integer>>newHashSet(_some, _none, _some_1, _none_1, _none_2)));
     int _length = ((Object[])Conversions.unwrapArray(_filterEmpty, Object.class)).length;
     Assert.assertEquals(_length, 2);
-    Iterable<Integer> _distinct = IterableExtensions.<Integer>distinct(Collections.<Integer>unmodifiableSet(CollectionLiterals.<Integer>newHashSet(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(1))));
+    List<Integer> _distinct = IterableExtensions.<Integer>distinct(Collections.<Integer>unmodifiableSet(CollectionLiterals.<Integer>newHashSet(Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(1))));
     int _length_1 = ((Object[])Conversions.unwrapArray(_distinct, Object.class)).length;
     Assert.assertEquals(_length_1, 3);
   }
@@ -214,8 +214,8 @@ public class TestXtendTools {
     Assert.assertEquals(_length_1, 3);
     Pair<String, Integer> _mappedTo = Pair.<String, Integer>of("john", Integer.valueOf(23));
     Pair<String, Integer> _mappedTo_1 = Pair.<String, Integer>of("mary", Integer.valueOf(45));
-    Iterable<Pair<String, Integer>> _pairs = IterableExtensions.<String, Integer>toPairs(Collections.<String, Integer>unmodifiableMap(CollectionLiterals.<String, Integer>newHashMap(_mappedTo, _mappedTo_1)));
-    Pair<String, Integer> _get = ((Pair<String, Integer>[])Conversions.unwrapArray(_pairs, Pair.class))[1];
+    List<Pair<String, Integer>> _pairs = IterableExtensions.<String, Integer>toPairs(Collections.<String, Integer>unmodifiableMap(CollectionLiterals.<String, Integer>newHashMap(_mappedTo, _mappedTo_1)));
+    Pair<String, Integer> _get = _pairs.get(1);
     final Procedure1<Pair<String, Integer>> _function = new Procedure1<Pair<String, Integer>>() {
       public void apply(final Pair<String, Integer> it) {
         String _key = it.getKey();
