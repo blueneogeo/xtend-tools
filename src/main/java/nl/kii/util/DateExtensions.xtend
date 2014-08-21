@@ -39,32 +39,32 @@ class DateExtensions {
 	/** See if a date is older than a given period (since right now) */
 	def static isOlderThan(Date date, Period period) { now - date > period }
 	/** the date is more than [period] old */	
-	def static operator_greaterThan(Date date, Period period) { now - date > period }
+	def static > (Date date, Period period) { now - date > period }
 	/** the date is more or equals than [period] old */	
-	def static operator_greaterEqualsThan(Date date, Period period) { now - date >= period }
+	def static >= (Date date, Period period) { now - date >= period }
 	/** the date is less than [period] old */	
-	def static operator_lessThan(Date date, Period period) { now - date < period }
+	def static < (Date date, Period period) { now - date < period }
 	/** the date is less or equals than [period] old */	
-	def static operator_lessEqualsThan(Date date, Period period) { now - date <= period }
+	def static <= (Date date, Period period) { now - date <= period }
 
 	/** Difference between dates, largest first */
 	def static diff(Date d1, Date d2) { new Period(d1.time - d2.time) }
-	def static operator_minus(Date d1, Date d2) { diff(d1, d2) }
+	def static - (Date d1, Date d2) { diff(d1, d2) }
 
 	def static add(Period p1, Period p2) {	new Period(p1.time + p2.time) }
 	def static subtract(Period p1, Period p2) { new Period(p1.time - p2.time) }
-	def static operator_plus(Period p1, Period p2) { add(p1, p2) }
-	def static operator_minus(Period p1, Period p2) { subtract(p1, p2) }
+	def static + (Period p1, Period p2) { add(p1, p2) }
+	def static - (Period p1, Period p2) { subtract(p1, p2) }
 	
 	def static add(Date date, Period p) { new Date(date.time + p.time) }
 	def static subtract(Date date, Period p) { new Date(date.time - p.time) }
-	def static operator_plus(Date date, Period p) { add(date, p) }
-	def static operator_minus(Date date, Period p) { subtract(date, p) }
+	def static + (Date date, Period p) { add(date, p) }
+	def static - (Date date, Period p) { subtract(date, p) }
 
-	def static operator_greaterThan(Period p1, Period p2) { p1.time > p2.time }
-	def static operator_greaterEqualsThan(Period p1, Period p2) { p1.time >= p2.time }
-	def static operator_lessThan(Period p1, Period p2) { p1.time < p2.time }
-	def static operator_lessEqualsThan(Period p1, Period p2) { p1.time <= p2.time }
+	def static > (Period p1, Period p2) { p1.time > p2.time }
+	def static >= (Period p1, Period p2) { p1.time >= p2.time }
+	def static < (Period p1, Period p2) { p1.time < p2.time }
+	def static <= (Period p1, Period p2) { p1.time <= p2.time }
 
 	def static secs(long value) { new Seconds(value) }
 	def static mins(long value) { new Minutes(value) }
