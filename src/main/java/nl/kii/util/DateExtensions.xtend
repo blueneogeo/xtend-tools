@@ -3,6 +3,7 @@ package nl.kii.util
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Calendar
+import static java.util.Calendar.*
 import static extension java.util.TimeZone.*
 
 class DateExtensions {
@@ -14,12 +15,20 @@ class DateExtensions {
 	
 	/** Convert a date to UTC timezone */
 	def static toUTC(Date date) {
-		val cal = Calendar.instance => [ time = date ]
-		date - new Period(cal.get(Calendar.DST_OFFSET) + cal.get(Calendar.ZONE_OFFSET))
+		val cal = date.toCalendar
+		date - new Period(cal.get(DST_OFFSET) + cal.get(ZONE_OFFSET))
 	}
 
 	def static toTimeZone(Date date, String zone) {
 		date.toUTC + new Period(zone.timeZone.rawOffset)
+	}
+
+	def static getHourOfDay(Date date) {
+		date.toCalendar.get(HOUR_OF_DAY)
+	}
+	
+	def static toCalendar(Date date) {
+		Calendar.instance => [ time = date ]
 	}
 
 	/** quickly format a date to the standard "yyyy-MM-dd'T'HH:mm:ss" format. */
