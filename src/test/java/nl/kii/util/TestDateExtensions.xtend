@@ -17,6 +17,7 @@ class TestDateExtensions {
 	@Test
 	def void testUTCZone() {
 		assertEquals(2, (now - now.toUTC).hours)
+		assertEquals(0, (now - now.toTimeZone('GMT+2')).hours)
 	}
 	
 }
