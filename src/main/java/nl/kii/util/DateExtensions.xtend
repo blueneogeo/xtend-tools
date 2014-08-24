@@ -64,6 +64,9 @@ class DateExtensions {
 	def static subtract(Period p1, Period p2) { new Period(p1.time - p2.time) }
 	def static + (Period p1, Period p2) { add(p1, p2) }
 	def static - (Period p1, Period p2) { subtract(p1, p2) }
+
+	def static divide(Period p1, int amount) { new Period(p1.time / amount) }
+	def static / (Period p1, int amount) { divide(p1, amount) }
 	
 	def static add(Date date, Period p) { new Date(date.time + p.time) }
 	def static subtract(Date date, Period p) { new Date(date.time - p.time) }

@@ -100,11 +100,6 @@ class OptExtensions {
 		else fallback
 	}
 	
-	def static <T> T ?:(Opt<T> option, =>T fallback) {
-		if(option.hasSome) option.value
-		else fallback.apply
-	}
-	
 	def static <T> T ?:(Opt<T> option, (Void)=>T fallback) {
 		if(option.hasSome) option.value
 		else fallback.apply(null)
@@ -197,7 +192,7 @@ class OptExtensions {
 	 * The function allows you to transform the value of the passed option,
 	 * saving you the need to unwrap it yourself
 	 */
-	def static <T, I> Opt<T> mapOpt(Opt<I> o, (I)=>T fn) {
+	def static <T, I> Opt<T> map(Opt<I> o, (I)=>T fn) {
 		if(o.defined) fn.apply(o.value).option else none
 	}
 	

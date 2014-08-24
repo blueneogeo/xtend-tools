@@ -149,7 +149,7 @@ class IterableExtensions {
 	// MAPPING ////////////////////////////////////////////////////////////////
 	
 	def static <T, R> Iterable<Opt<R>> mapOpt(Iterable<? extends Opt<T>> iterable, (T)=>R fn) {
-		iterable.map[mapOpt(fn)]
+		iterable.map[map(fn)]
 	}
 
 	// try to map the values in the iterable, and give back a list of options instead of direct values
