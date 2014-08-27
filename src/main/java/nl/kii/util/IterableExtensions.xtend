@@ -72,19 +72,19 @@ class IterableExtensions {
 
 	// ADDING (immutable) /////////////////////////////////////////////////////
 	def static <T> concat(Iterable<? extends T> list, T value) {
-		ImmutableList.builder.addAll(list).add(value).build
+		if(value != null) ImmutableList.builder.addAll(list).add(value).build
 	}
 
 	def static <T> concat(T value, Iterable<T> list) {
-		ImmutableList.builder.add(value).addAll(list).build
+		if(list != null) ImmutableList.builder.add(value).addAll(list).build
 	}
 
 	def static <T> concat(Set<T> set, T value) {
-		ImmutableSet.builder.addAll(set).add(value).build
+		if(value != null) ImmutableSet.builder.addAll(set).add(value).build
 	}
 
 	def static <T> concat(T value, Set<T> set) {
-		ImmutableSet.builder.add(value).addAll(set).build
+		if(set != null) ImmutableSet.builder.add(value).addAll(set).build
 	}
 
 	// SIDEEFFECTS ////////////////////////////////////////////////////////////
