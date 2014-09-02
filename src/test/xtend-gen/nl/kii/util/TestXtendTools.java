@@ -151,12 +151,13 @@ public class TestXtendTools {
       }
     }
     try {
+      None<Object> _none_2 = new None<Object>();
       final Function1<Object, Exception> _function_3 = new Function1<Object, Exception>() {
         public Exception apply(final Object it) {
           return new Exception();
         }
       };
-      OptExtensions.<Class<None>>orThrow(None.class, _function_3);
+      OptExtensions.<Object>orThrow(_none_2, _function_3);
     } catch (final Throwable _t_1) {
       if (_t_1 instanceof Exception) {
         final Exception c_1 = (Exception)_t_1;

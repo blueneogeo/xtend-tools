@@ -5,6 +5,8 @@ import java.util.Map.Entry
 
 class MapExtensions {
 
+	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
+
 	def static <K, V> += (Map<K, V> map, Pair<K, V> pair) {
 		map.put(pair.key, pair.value)
 		map
@@ -15,19 +17,25 @@ class MapExtensions {
 		map
 	}
 
+	// MAP<MAP> METHODS ///////////////////////////////////////////////////////
+
 	def static <K, K2, V> add(Map<K, Map<K2, V>> map, Pair<K, Pair<K2, V>> pairPair) {
-		map.put(pairPair.key, pairPair.value)
+		map.put(pairPair.key, pairPair.value.key, pairPair.value.value)
 	}
 
-	def static <K, K2, V> put(Map<K, Map<K2, V>> map, K key, Pair<K2, V> value) {
-		val valueMap = {
-			val existing = map.get(value.key)
-			if(existing != null) existing
-			else map.put(key, newHashMap)
-		}
-		valueMap.put(value.key, value.value)
+	def static <K, K2, V> put(Map<K, Map<K2, V>> map, K key1, K2 key2, V value) {
+		val valueMap = if(map.containsKey(key1)) map.get(key1) else newHashMap
+		valueMap.put(key2, value)
 	}
 	
+	def static <K, K2, V> remove(Map<K, Map<K2, V>> map, K key1, K2 key2) {
+		val valueMap = map.get(key1)
+		if(valueMap != null) valueMap.remove(key2)
+	}
+	
+	// ITERATIONS /////////////////////////////////////////////////////////////
+	
+	/** Iterate through a map as if it were a list, but with key and value */
 	def static <K, V> forEach(Map<K, V> map, (K, V)=>void fn) {
 		map.entrySet.map[key -> value].forEach[fn.apply(key, value)]
 		map

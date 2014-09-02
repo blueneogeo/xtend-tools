@@ -63,7 +63,7 @@ class TestXtendTools {
 		}.assertSome('hi')
 		// same for none
 		try {
-			None.orThrow [ new Exception ]
+			(new None).orThrow [ new Exception ]
 		} catch(Exception c) {
 			some('hello')
 		}.assertSome('hello')

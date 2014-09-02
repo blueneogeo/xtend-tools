@@ -255,24 +255,17 @@ class OptExtensions {
 		}
 	}
 
-	// throw the result of the exceptionFn if o is not defined
-	// example: val user = api.getUser(12).orThrow [ new UserNotFoundException ] // getUser can return null
-	def static <T> T orThrow(T o, (Object)=>Throwable exceptionFn) {
-		if(o.defined) o else throw exceptionFn.apply(null)
-	}
-
-	// throw a standard exception with the passed message
-	// example: val user = api.getUser(12).orThrow('user not found')
-	def static <T> T orThrow(T o, String message) {
-		if(o.defined) o else throw new Exception(message)
+	// try to unwrap an option, and if there is nothing, throws an exception
+	// example: val user = api.getUser(12).orThrow('could not find user') // getUser returns an option
+	def static <T> T orThrow(Opt<T> o, String s) {
+		if(o.defined) o.value else throw new NoneException(s)
 	}
 
 	// try to unwrap an option, and if there is nothing, calls the exceptionFn to get a exception to throw
 	// example: val user = api.getUser(12).orThrow [ new UserNotFoundException ] // getUser returns an option
 	def static <T> T orThrow(Opt<T> o, (Object)=>Throwable exceptionFn) {
 		if(o.defined) o.value else throw exceptionFn.apply(null)
-	}	
-	
+	}
 	
 	// ASSERTIONS /////////////////////////////////////////////////////////////
 	

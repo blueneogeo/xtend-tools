@@ -59,4 +59,7 @@ class Some<T> extends Opt<T> implements Function0<T> {
 	
 }
 
-class NoneException extends Exception { }
+class NoneException extends Exception { 
+	new() { }
+	new(String message) { super(message) }
+}
