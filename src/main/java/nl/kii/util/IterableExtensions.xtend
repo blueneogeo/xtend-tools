@@ -148,11 +148,12 @@ class IterableExtensions {
 
 	// MAPPING ////////////////////////////////////////////////////////////////
 	
+	/** map all the some's, leaving alone the none's */
 	def static <T, R> Iterable<Opt<R>> mapOpt(Iterable<? extends Opt<T>> iterable, (T)=>R fn) {
 		iterable.map[map(fn)]
 	}
 
-	// try to map the values in the iterable, and give back a list of options instead of direct values
+	/** try to map the values in the iterable, and give back a list of options instead of direct values */
 	def static <T, R> attemptMap(Iterable<? extends T> iterable, (T)=>R fn) {
 		iterable.map [
 			val o = it
@@ -160,20 +161,23 @@ class IterableExtensions {
 		]
 	}
 
-	// transforms a map into a list of pairs
+	/** transforms a map into a list of pairs */
 	def static <K, V> toPairs(Map<K, V> map) {
 		map.entrySet.map[it.key -> it.value].toList
 	}
 
-	// convert a list of pairs to a map
+	/** Convert a list of pairs to a map */
 	def static <K, V> Map<K, V> toMap(Iterable<Pair<K, V>> pairs) {
 		val map = newHashMap
 		if(pairs.defined) pairs.forEach[map.put(key, value)]
 		map
 	}
 
-	// create a grouped index for a list of items. if the keys are unique, use toMap instead!
-	// example: val groups = levels.groupBy [ difficulty ] // creates a map with per difficulty level a list of levels 
+	/** 
+	 * Create a grouped index for a list of items. if the keys are unique, use toMap instead!
+	 * <p>
+	 * Example: val groups = levels.groupBy [ difficulty ] // creates a map with per difficulty level a list of levels
+	 */
 	def static <K, V> Map<K, List<V>> groupBy(Iterable<? extends V> list, (V)=>K indexFn) {
 		val map = new HashMap<K, List<V>>
 		list.forEach [
@@ -189,6 +193,11 @@ class IterableExtensions {
 		map
 	}
 
+	/** Lets you map a pair using  */
+	def static <K, V, R> map(List<Pair<K, V>> list, (K, V)=>R mapFn) {
+		list.map [ mapFn.apply(key, value) ]
+	}
+
 	/** 
 	 * Convert to a different type. will throw a class cast exception at runtime
 	 * if you convert to the wrong type!
@@ -198,6 +207,7 @@ class IterableExtensions {
 	}
 
 	// REDUCTION //////////////////////////////////////////////////////////////
+	
 	// count for each value how often it occurs
 	// example: #[1, 1, 3, 2].count == #[1->2, 3->1, 2->1]
 	def static <V> Map<V, Integer> count(Iterable<? extends V> values) {
@@ -228,11 +238,6 @@ class IterableExtensions {
 	}
 
 	// IN CHECKS //////////////////////////////////////////////////////////////
-//	// check if an object is one of the following
-//	// example 12.in(#[3, 4, 12, 6]) == true
-//	def static <T> boolean in(T instance, List<T> objects) {
-//		instance.defined && objects.defined && objects.contains(instance)
-//	}
 
 	// check if an object is one of the following
 	// example: 12.in(3, 4, 12, 6) == true
