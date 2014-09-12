@@ -5,10 +5,8 @@ repositories {
 }
 
 dependencies {
-	// compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.6.2'
-	// compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.6.2'
-	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.7.0-SNAPSHOT'
-  	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.7.0-SNAPSHOT'
+	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.7.0'
+  	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.7.0'
 }
 
 def xtendGenTargetDir = file('src/main/xtend-gen')
@@ -26,4 +24,3 @@ sourceSets {
 		}
 	}
 }
-
