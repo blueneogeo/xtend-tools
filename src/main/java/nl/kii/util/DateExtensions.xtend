@@ -78,6 +78,7 @@ class DateExtensions {
 	def static < (Period p1, Period p2) { p1.time < p2.time }
 	def static <= (Period p1, Period p2) { p1.time <= p2.time }
 
+	def static ms(long value) { new MilliSeconds(value) }
 	def static secs(long value) { new Seconds(value) }
 	def static mins(long value) { new Minutes(value) }
 	def static hours(long value) { new Hours(value) }
