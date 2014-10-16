@@ -5,6 +5,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import static java.util.regex.Pattern.*
 
 import static extension nl.kii.util.IterableExtensions.*
+import java.net.MalformedURLException
 
 /**
  * This URL implementation is more flexible than the standard Java URL, it allows for incomplete URLs
@@ -12,7 +13,7 @@ import static extension nl.kii.util.IterableExtensions.*
  * creating relative urls.
  */
 @Accessors
-class URL {
+class PartialURL {
 	
 	val static pattern = compile("^(?=[^&])(?:(?<scheme>[^:/?#]+):)?(?://(?<authority>[^/?#]*))?(?<path>[^?#]*)(?:\\?(?<query>[^#]*))?(?:#(?<fragment>.*))?")
 	val static validate = compile('^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]')
@@ -31,23 +32,24 @@ class URL {
 			path = matcher.group('path')
 			query = matcher.group('query')
 			hash = matcher.group('fragment')
-		}
+		} else throw new MalformedURLException
 	}
 
 	def getParameters() {
 		query
 			?.split('&')
 			?.map [ split('=') ]
-			?.map [ get(0) -> get(1) ]
-			.toMap
+			?.map [ if(length==2) get(0)->get(1) ]
+			?.filterNull
+			?.toMap
 	}
 	
 	def static isValid(String url) {
 		validate.matcher(url).matches
 	}
 
-	def static isValid(URL url) {
-		validate.matcher(url.toString).matches
+	def isValid() {
+		validate.matcher(toString).matches
 	}
 
 	override toString()

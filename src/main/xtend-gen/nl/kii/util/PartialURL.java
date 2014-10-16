@@ -1,15 +1,17 @@
 package nl.kii.util;
 
 import com.google.common.base.Objects;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import nl.kii.util.IterableExtensions;
 import org.eclipse.xtend.lib.annotations.Accessors;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.Conversions;
+import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.ListExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Pure;
@@ -21,7 +23,7 @@ import org.eclipse.xtext.xbase.lib.Pure;
  */
 @Accessors
 @SuppressWarnings("all")
-public class URL {
+public class PartialURL {
   private final static Pattern pattern = Pattern.compile("^(?=[^&])(?:(?<scheme>[^:/?#]+):)?(?://(?<authority>[^/?#]*))?(?<path>[^?#]*)(?:\\?(?<query>[^#]*))?(?:#(?<fragment>.*))?");
   
   private final static Pattern validate = Pattern.compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
@@ -36,20 +38,26 @@ public class URL {
   
   private String hash;
   
-  public URL(final String url) {
-    final Matcher matcher = URL.pattern.matcher(url);
-    boolean _matches = matcher.matches();
-    if (_matches) {
-      String _group = matcher.group("scheme");
-      this.protocol = _group;
-      String _group_1 = matcher.group("authority");
-      this.domain = _group_1;
-      String _group_2 = matcher.group("path");
-      this.path = _group_2;
-      String _group_3 = matcher.group("query");
-      this.query = _group_3;
-      String _group_4 = matcher.group("fragment");
-      this.hash = _group_4;
+  public PartialURL(final String url) {
+    try {
+      final Matcher matcher = PartialURL.pattern.matcher(url);
+      boolean _matches = matcher.matches();
+      if (_matches) {
+        String _group = matcher.group("scheme");
+        this.protocol = _group;
+        String _group_1 = matcher.group("authority");
+        this.domain = _group_1;
+        String _group_2 = matcher.group("path");
+        this.path = _group_2;
+        String _group_3 = matcher.group("query");
+        this.query = _group_3;
+        String _group_4 = matcher.group("fragment");
+        this.hash = _group_4;
+      } else {
+        throw new MalformedURLException();
+      }
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
     }
   }
   
@@ -71,24 +79,38 @@ public class URL {
     if (_map!=null) {
       final Function1<String[], Pair<String, String>> _function_1 = new Function1<String[], Pair<String, String>>() {
         public Pair<String, String> apply(final String[] it) {
-          String _get = it[0];
-          String _get_1 = it[1];
-          return Pair.<String, String>of(_get, _get_1);
+          Pair<String, String> _xifexpression = null;
+          int _length = it.length;
+          boolean _equals = (_length == 2);
+          if (_equals) {
+            String _get = it[0];
+            String _get_1 = it[1];
+            _xifexpression = Pair.<String, String>of(_get, _get_1);
+          }
+          return _xifexpression;
         }
       };
       _map_1=ListExtensions.<String[], Pair<String, String>>map(_map, _function_1);
     }
-    return IterableExtensions.<String, String>toMap(_map_1);
+    Iterable<Pair<String, String>> _filterNull = null;
+    if (_map_1!=null) {
+      _filterNull=IterableExtensions.<Pair<String, String>>filterNull(_map_1);
+    }
+    Map<String, String> _map_2 = null;
+    if (_filterNull!=null) {
+      _map_2=nl.kii.util.IterableExtensions.<String, String>toMap(_filterNull);
+    }
+    return _map_2;
   }
   
   public static boolean isValid(final String url) {
-    Matcher _matcher = URL.validate.matcher(url);
+    Matcher _matcher = PartialURL.validate.matcher(url);
     return _matcher.matches();
   }
   
-  public static boolean isValid(final URL url) {
-    String _string = url.toString();
-    Matcher _matcher = URL.validate.matcher(_string);
+  public boolean isValid() {
+    String _string = this.toString();
+    Matcher _matcher = PartialURL.validate.matcher(_string);
     return _matcher.matches();
   }
   
