@@ -2,6 +2,7 @@ package nl.kii.util
 
 import java.util.Map
 import java.util.Map.Entry
+import java.util.List
 
 class MapExtensions {
 
@@ -33,6 +34,17 @@ class MapExtensions {
 		if(valueMap != null) valueMap.remove(key2)
 	}
 	
+	// MAP<LIST> METHODS //////////////////////////////////////////////////////
+	
+	/** Add a value to a multimap structure */
+	def static <K, V> void add(Map<K, List<V>> map, K key, V value) {
+		if(map.containsKey(key)) map.get(key).add(value)
+		else {
+			map.put(key, newLinkedList)
+			map.add(key, value) // recurse
+		}
+	}
+
 	// ITERATIONS /////////////////////////////////////////////////////////////
 	
 	/** Iterate through a map as if it were a list, but with key and value */

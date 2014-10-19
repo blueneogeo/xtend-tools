@@ -328,6 +328,12 @@ public class TestXtendTools {
   }
   
   @Test
+  public void testLogging() {
+    Exception _exception = new Exception("ooo!");
+    this.logger.error("hello error!", _exception);
+  }
+  
+  @Test
   public void testMapTo() {
     final List<Object> list = CollectionLiterals.<Object>newLinkedList();
     list.add(Integer.valueOf(4));

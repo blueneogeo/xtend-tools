@@ -157,12 +157,9 @@ class TestXtendTools {
 		#[1, 2, 3, 4].average.assertEquals(2.5, 0)
 	}
 		
-//	@Test def void testLogging() {
-//		val list = #[1, 2, 3]
-//		list.printEach
-//		list.printEach('got list:')
-//		list.info(logger)
-//	}
+	@Test def void testLogging() {
+		error('hello error!', new Exception('ooo!'))
+	}
 	
 	@Test def void testMapTo() {
 		val List<Object> list = newLinkedList
