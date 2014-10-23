@@ -55,3 +55,5 @@
 /.URI.java._trace
 /URL.java
 /.PartialURL.java._trace
+/.SessionIDGenerator.java._trace
+/.SessionIdentifierGenerator.java._trace
