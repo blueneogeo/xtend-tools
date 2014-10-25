@@ -14,6 +14,7 @@ import java.util.Iterator
 class IterableExtensions {
 
 	// CREATING (immutable) ///////////////////////////////////////////////////
+	
 	def static <T> List<T> list(Class<T> cls) {
 		newImmutableList
 	}
@@ -23,6 +24,7 @@ class IterableExtensions {
 	}
 
 	// REFLECTION /////////////////////////////////////////////////////////////
+	
 	/** 
 	 * Returns if a list is of a certain value type by looking at the first value. 
 	 * @returns true if the list is not empty and the type matches
@@ -51,6 +53,7 @@ class IterableExtensions {
 	}
 
 	// CONVERTING (immutable) /////////////////////////////////////////////////
+	
 	/** Always returns an immutable list, even if a null result is passed. handy when chaining, eliminates null checks
 	 * <pre>example: getUsers.filter[age>20].list</pre>
 	 */
@@ -71,6 +74,7 @@ class IterableExtensions {
 	}
 
 	// ADDING (immutable) /////////////////////////////////////////////////////
+	
 	def static <T> concat(Iterable<? extends T> list, T value) {
 		if(value != null) ImmutableList.builder.addAll(list).add(value).build
 	}
@@ -88,12 +92,13 @@ class IterableExtensions {
 	}
 
 	// SIDEEFFECTS ////////////////////////////////////////////////////////////
-	def static <T> each(Iterable<? extends T> iterable, (T)=>void fn) {
+	
+	def static <T> effect(Iterable<? extends T> iterable, (T)=>void fn) {
 		iterable.forEach(fn)
 		iterable
 	}
 
-	def static <T> each(Iterable<? extends T> iterable, (T, int)=>void fn) {
+	def static <T> effect(Iterable<? extends T> iterable, (T, int)=>void fn) {
 		iterable.forEach(fn)
 		iterable
 	}
@@ -103,7 +108,7 @@ class IterableExtensions {
 	 * <pre>usersIds.map [ get user ].onNone [ println('could not find user') ].filterNone</pre>
 	 */
 	def static <T> Iterable<? extends Opt<T>> onNone(Iterable<? extends Opt<T>> iterable, (None<T>)=>void noneHandler) {
-		iterable.filter[hasNone].each[noneHandler.apply(it as None<T>)]
+		iterable.filter[hasNone].effect[noneHandler.apply(it as None<T>)]
 		iterable
 	}
 
@@ -112,11 +117,12 @@ class IterableExtensions {
 	 * <pre>usersIds.attemptMap [ get user ].onError [ error handling ].filterEmpty</pre>
 	 */
 	def static <T> Iterable<? extends Opt<T>> onError(Iterable<? extends Opt<T>> iterable, (Err<T>)=>void errorHandler) {
-		iterable.filter[hasError].each[errorHandler.apply(it as Err<T>)]
+		iterable.filter[hasError].effect[errorHandler.apply(it as Err<T>)]
 		iterable
 	}
 
 	// FILTERING //////////////////////////////////////////////////////////////
+	
 	def static <T> T last(Iterable<? extends T> values) {
 		values.toList.reverse.head
 	}
@@ -205,6 +211,15 @@ class IterableExtensions {
 	 */
 	def static <T> Iterable<T> mapAs(Iterable<?> iterable, Class<T> type) {
 		iterable.map[it as T]
+	}
+	
+	/**
+	 * Flatten a list of keys -> list of pair values into more key->value pairs
+	 */
+	def static <K, V> Iterable<Pair<K, V>> flattenValues(Iterable<Pair<K, List<V>>> pairs) {
+		val newList = newLinkedList
+		pairs.forEach [ pair | pair.value?.forEach [ newList.add(pair.key->it) ] ]
+		newList
 	}
 
 	// REDUCTION //////////////////////////////////////////////////////////////

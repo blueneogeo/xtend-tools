@@ -1,7 +1,7 @@
 package nl.kii.util
 
 import org.slf4j.Logger
-import static extension nl.kii.util.IterableExtensions.*
+
 import static extension nl.kii.util.OptExtensions.*
 
 class LogExtensions {
@@ -53,32 +53,32 @@ class LogExtensions {
 	
 	def static <T> printEach(Iterable<T> list, String msg) {
 		if(msg.defined) println(msg)
-		list.each [ println(logEntry) ]
+		list.forEach [ println(logEntry) ]
 	}
 
 	def static <T> trace(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.trace(msg)
-		list.each [ log.logger.trace(logEntry) ]
+		list.forEach [ log.logger.trace(logEntry) ]
 	}
 	
 	def static <T> debug(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.debug(msg)
-		list.each [ log.logger.debug(logEntry) ]
+		list.forEach [ log.logger.debug(logEntry) ]
 	}
 	
 	def static <T> info(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.info(msg)
-		list.each [ log.logger.info(logEntry) ]
+		list.forEach [ log.logger.info(logEntry) ]
 	}
 	
 	def static <T> warn(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.warn(msg)
-		list.each [ log.logger.warn(logEntry) ]
+		list.forEach [ log.logger.warn(logEntry) ]
 	}
 	
 	def static <T> error(Iterable<T> list, String msg, Log log) { 
 		if(msg.defined) log.logger.error(msg)
-		list.each [ log.logger.error(logEntry) ]
+		list.forEach [ log.logger.error(logEntry) ]
 	}
 	
 	def protected static getLogEntry(Object o) { ' - ' + o.toString }

@@ -135,8 +135,8 @@ public class TestXtendTools {
     Assert.assertEquals(_or_3, "ab");
     try {
       Some<String> _some_2 = OptExtensions.<String>some("hi");
-      final Function1<Object, Exception> _function_2 = new Function1<Object, Exception>() {
-        public Exception apply(final Object it) {
+      final Function1<Object, Throwable> _function_2 = new Function1<Object, Throwable>() {
+        public Throwable apply(final Object it) {
           return new Exception();
         }
       };
@@ -152,8 +152,8 @@ public class TestXtendTools {
     }
     try {
       None<Object> _none_2 = new None<Object>();
-      final Function1<Object, Exception> _function_3 = new Function1<Object, Exception>() {
-        public Exception apply(final Object it) {
+      final Function1<Object, Throwable> _function_3 = new Function1<Object, Throwable>() {
+        public Throwable apply(final Object it) {
           return new Exception();
         }
       };
