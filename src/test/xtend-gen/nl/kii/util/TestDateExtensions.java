@@ -34,10 +34,10 @@ public class TestDateExtensions {
     Date _uTC = DateExtensions.toUTC(_now_1);
     Period _minus = DateExtensions.operator_minus(_now, _uTC);
     long _hours = _minus.hours();
-    Assert.assertEquals(2, _hours);
+    Assert.assertEquals(1, _hours);
     Date _now_2 = DateExtensions.now();
     Date _now_3 = DateExtensions.now();
-    Date _timeZone = DateExtensions.toTimeZone(_now_3, "GMT+2");
+    Date _timeZone = DateExtensions.toTimeZone(_now_3, "GMT+1");
     Period _minus_1 = DateExtensions.operator_minus(_now_2, _timeZone);
     long _hours_1 = _minus_1.hours();
     Assert.assertEquals(0, _hours_1);
