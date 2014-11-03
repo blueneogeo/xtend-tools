@@ -90,6 +90,16 @@ class IterableExtensions {
 	def static <T> concat(T value, Set<T> set) {
 		if(set != null) ImmutableSet.builder.add(value).addAll(set).build
 	}
+	
+	// REMOVING (immutable) ///////////////////////////////////////////////////
+	
+	def static <T> uncat(List<? extends T> list, T value) {
+		ImmutableList.builder.addAll(list.filter[it != value]).build
+	}
+
+	def static <T> uncat(List<? extends T> list, List<? extends T> list2) {
+		ImmutableList.builder.addAll(list.filter[!list2.contains(it)]).build
+	}
 
 	// SIDEEFFECTS ////////////////////////////////////////////////////////////
 	
@@ -272,14 +282,19 @@ class IterableExtensions {
 
 	// OPERATORS //////////////////////////////////////////////////////////////
 
-	/** Add a value to a mutable list */
-	def static <T> += (List<T> list, T value) {
-		list.add(value)
+	/** Create a new immutable list from this list that does not contain the value */
+	def static <T> - (List<? extends T> list, T value) {
+		list.uncat(value)
 	}
-	
+
 	/** Create a new immutable list from a list and a value */
 	def static <T> + (Iterable<? extends T> list, T value) {
 		list.concat(value)
+	}
+
+	/** Create a new immutable list from this list that does not contain the value */
+	def static <T> - (List<? extends T> list, List<? extends T> list2) {
+		list.uncat(list2)
 	}
 
 	/** Create a new immutable list from a value and a list */
