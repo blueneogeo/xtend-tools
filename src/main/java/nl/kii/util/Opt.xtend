@@ -23,7 +23,7 @@ class None<T> extends Opt<T> {
 class Err<T> extends Opt<T> implements Function0<Throwable> {
 	val Throwable exception
 
-	new() {	try { throw new Exception } catch(Exception e) { exception = e } }
+	new() {	exception = new Exception }
 	new(Throwable exception) { this.exception = exception }
 	
 	def getException() { exception }
