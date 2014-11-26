@@ -185,7 +185,6 @@ class IterableExtensions {
 	/** Convert a list of pairs to a map */
 	def static <K, V> Map<K, V> toMap(Iterable<Pair<K, V>> pairs) {
 		val map = newHashMap
-		println(pairs)
 		if(pairs.defined) pairs.forEach[map.put(key, value)]
 		map
 	}
