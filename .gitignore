@@ -1,7 +1,7 @@
 .DS_Store
 .gradle
 .idea
-.classpath
+*.classpath
 .project
 .settings
 .yardoc

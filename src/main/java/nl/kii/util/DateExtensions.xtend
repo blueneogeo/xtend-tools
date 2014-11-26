@@ -8,7 +8,7 @@ import static extension java.util.TimeZone.*
 
 class DateExtensions {
 
-	val static standardDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+	val static standardDateFormat = "yyyy-MM-dd'T'HH:mm:ss"
 
 	/** The current date */
 	def static now() { new Date }
@@ -32,7 +32,7 @@ class DateExtensions {
 	}
 
 	/** quickly format a date to the standard "yyyy-MM-dd'T'HH:mm:ss" format. */
-	def static format(Date date) { standardDateFormat.format(date) }
+	def static format(Date date) { new SimpleDateFormat(standardDateFormat).format(date) }
 	/** 
 	 * quickly format a date to a specified format. see all formatting options at 
 	 * http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
