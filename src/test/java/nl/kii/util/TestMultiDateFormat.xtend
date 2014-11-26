@@ -16,7 +16,6 @@ class TestMultiDateFormat {
 	
 	@Test
 	def void textMultipleInputs() {
-		//println('hey')
 		someDateStrings.forEach [ 
 			val date = toDate('EEE, d MMM yyyy HH:mm:ss z; EEE, d MMM yyyy HH:mm:ss X')
 			println(date)
@@ -34,7 +33,6 @@ class TestMultiDateFormat {
 	
 	
 	def Date toDate(String s, String dateFormat) {
-		//println(s)
 		new MultiDateFormat(dateFormat, Locale.ENGLISH).parse(s)
 	}
 }
