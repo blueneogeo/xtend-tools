@@ -138,7 +138,9 @@ class IterableExtensions {
 		values.toList.reverse.head
 	}
 
+	/** Returns a random entry of the {@code Iterable} it is performed on. In case of an empty list, {@code null} is returned.  */
 	def static <T> T any(Iterable<? extends T> values) {
+		if (values.size == 0) return null
 		val rand = new Random().nextInt(values.size)
 		values.toList.get(rand)
 	}

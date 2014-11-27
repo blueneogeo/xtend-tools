@@ -16,7 +16,7 @@ class MultiDateFormat {
 		this.dateFormats = dateFormat.split('\\;\\s').map [ new SimpleDateFormat(it, Locale.ENGLISH) ]
 		this.locale = locale
 	}
-	
+
 	def parse(String string) {
 		dateFormats
 			.findFirst [ string.matches(it) ]
