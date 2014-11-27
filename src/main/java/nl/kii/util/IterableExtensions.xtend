@@ -138,7 +138,7 @@ class IterableExtensions {
 		values.toList.reverse.head
 	}
 
-	def static <T> T random(Iterable<? extends T> values) {
+	def static <T> T any(Iterable<? extends T> values) {
 		val rand = new Random().nextInt(values.size)
 		values.toList.get(rand)
 	}
