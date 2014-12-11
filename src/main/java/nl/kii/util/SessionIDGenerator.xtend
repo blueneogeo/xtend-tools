@@ -2,8 +2,18 @@ package nl.kii.util
 
 import java.math.BigInteger
 import java.security.SecureRandom
+import static extension java.util.UUID.*
 
-public final class SessionIDGenerator {
+/** got collisions when using the old version, now using official Java random ids to see if that fixes the issue. */
+class SessionIDGenerator {
+
+	def String nextSessionId() {
+		randomUUID.toString
+	}
+
+}
+
+class SessionIDGeneratorOLD {
 
 	val random = new SecureRandom
 

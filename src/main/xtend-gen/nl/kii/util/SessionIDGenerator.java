@@ -1,14 +1,14 @@
 package nl.kii.util;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
+import java.util.UUID;
 
+/**
+ * got collisions when using the old version, now using official Java random ids to see if that fixes the issue.
+ */
 @SuppressWarnings("all")
-public final class SessionIDGenerator {
-  private final SecureRandom random = new SecureRandom();
-  
+public class SessionIDGenerator {
   public String nextSessionId() {
-    BigInteger _bigInteger = new BigInteger(130, this.random);
-    return _bigInteger.toString(32);
+    UUID _randomUUID = UUID.randomUUID();
+    return _randomUUID.toString();
   }
 }
