@@ -5,7 +5,7 @@ import nl.kii.util.Opt;
 
 @SuppressWarnings("all")
 public class InstanceMatcher<T extends java.lang.Object> /* implements Matcher<Object, T>  */{
-  private /* type is 'null' */ types;
+  private Object/* type is 'null' */ types;
   
   public InstanceMatcher(final /* Class<? extends T> */Object... types) {
     this.types = types;

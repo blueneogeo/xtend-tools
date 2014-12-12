@@ -185,6 +185,20 @@ public class IterableExtensions {
   }
   
   /**
+   * Returns a random entry of the {@code Iterable} it is performed on. In case of an empty list, {@code null} is returned.
+   */
+  public static <T extends java.lang.Object> T any(final /* Iterable<? extends T> */Object values) {
+    throw new Error("Unresolved compilation problems:"
+      + "\nRandom cannot be resolved."
+      + "\nsize cannot be resolved"
+      + "\n== cannot be resolved"
+      + "\nnextInt cannot be resolved"
+      + "\nsize cannot be resolved"
+      + "\ntoList cannot be resolved"
+      + "\nget cannot be resolved");
+  }
+  
+  /**
    * Convert a list of options into actual values, filtering out the none and error values.
    * Like filterNull, but then for a list of Options
    */
