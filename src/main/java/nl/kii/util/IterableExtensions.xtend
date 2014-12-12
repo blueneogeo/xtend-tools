@@ -4,12 +4,13 @@ import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableSet
 import java.util.HashMap
 import java.util.HashSet
+import java.util.Iterator
 import java.util.List
 import java.util.Map
+import java.util.Random
 import java.util.Set
 
 import static extension nl.kii.util.OptExtensions.*
-import java.util.Iterator
 
 class IterableExtensions {
 
@@ -136,6 +137,14 @@ class IterableExtensions {
 	def static <T> T last(Iterable<? extends T> values) {
 		values.toList.reverse.head
 	}
+
+	/** Returns a random entry of the {@code Iterable} it is performed on. In case of an empty list, {@code null} is returned.  */
+	def static <T> T any(Iterable<? extends T> values) {
+		if (values.size == 0) return null
+		val rand = new Random().nextInt(values.size)
+		values.toList.get(rand)
+	}
+
 
 	/** Convert a list of options into actual values, filtering out the none and error values.
 		Like filterNull, but then for a list of Options */
