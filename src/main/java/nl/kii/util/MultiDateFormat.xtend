@@ -1,14 +1,14 @@
 package nl.kii.util
 
-import java.util.List
-import java.util.Locale
-import java.text.SimpleDateFormat
-import java.util.Date
-import static extension nl.kii.util.IterableExtensions.*
 import java.text.DateFormat
 import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.List
+import java.util.Locale
 
 class MultiDateFormat {
+	
 	val List<DateFormat> dateFormats
 	val Locale locale
 	

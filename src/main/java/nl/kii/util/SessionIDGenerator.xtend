@@ -13,7 +13,7 @@ class SessionIDGenerator {
 
 }
 
-class SessionIDGeneratorOLD {
+class RandomIDGenerator {
 
 	val random = new SecureRandom
 
