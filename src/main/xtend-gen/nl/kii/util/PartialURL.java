@@ -69,6 +69,7 @@ public class PartialURL {
     List<String[]> _map = null;
     if (((List<String>)Conversions.doWrapArray(_split))!=null) {
       final Function1<String, String[]> _function = new Function1<String, String[]>() {
+        @Override
         public String[] apply(final String it) {
           return it.split("=");
         }
@@ -78,6 +79,7 @@ public class PartialURL {
     List<Pair<String, String>> _map_1 = null;
     if (_map!=null) {
       final Function1<String[], Pair<String, String>> _function_1 = new Function1<String[], Pair<String, String>>() {
+        @Override
         public Pair<String, String> apply(final String[] it) {
           Pair<String, String> _xifexpression = null;
           int _length = it.length;
@@ -114,6 +116,7 @@ public class PartialURL {
     return _matcher.matches();
   }
   
+  @Override
   public String toString() {
     StringConcatenation _builder = new StringConcatenation();
     {
