@@ -1,29 +1,28 @@
 package nl.kii.util;
 
-import org.eclipse.xtend.lib.Data;
+import org.eclipse.xtend.lib.annotations.Data;
 import org.eclipse.xtext.xbase.lib.Pure;
-import org.eclipse.xtext.xbase.lib.util.ToStringHelper;
+import org.eclipse.xtext.xbase.lib.util.ToStringBuilder;
 
 @Data
 @SuppressWarnings("all")
 public class User {
-  private final String _name;
-  
-  private final int _age;
-  
   public User(final String name, final int age) {
-    super();
-    this._name = name;
-    this._age = age;
+    this.name = name;
+    this.age = age;
   }
+  
+  public final String name;
+  
+  public final int age;
   
   @Override
   @Pure
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((this._name== null) ? 0 : this._name.hashCode());
-    result = prime * result + this._age;
+    result = prime * result + ((this.name== null) ? 0 : this.name.hashCode());
+    result = prime * result + this.age;
     return result;
   }
   
@@ -37,12 +36,12 @@ public class User {
     if (getClass() != obj.getClass())
       return false;
     User other = (User) obj;
-    if (this._name == null) {
-      if (other._name != null)
+    if (this.name == null) {
+      if (other.name != null)
         return false;
-    } else if (!this._name.equals(other._name))
+    } else if (!this.name.equals(other.name))
       return false;
-    if (other._age != this._age)
+    if (other.age != this.age)
       return false;
     return true;
   }
@@ -50,17 +49,19 @@ public class User {
   @Override
   @Pure
   public String toString() {
-    String result = new ToStringHelper().toString(this);
-    return result;
+    ToStringBuilder b = new ToStringBuilder(this);
+    b.add("name", this.name);
+    b.add("age", this.age);
+    return b.toString();
   }
   
   @Pure
   public String getName() {
-    return this._name;
+    return this.name;
   }
   
   @Pure
   public int getAge() {
-    return this._age;
+    return this.age;
   }
 }

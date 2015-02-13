@@ -179,14 +179,39 @@ public class IterableExtensions {
     return _xifexpression;
   }
   
-  public static <T extends Object> ImmutableList<? extends T> uncat(final List<? extends T> list, final T value) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nType mismatch: cannot convert from Iterable<? extends T> to Iterable<? extends ? extends T>");
+  public static <T extends Object> ImmutableList<T> uncat(final List<? extends T> list, final T value) {
+    ImmutableList<T> _xblockexpression = null;
+    {
+      final Function1<T, Boolean> _function = new Function1<T, Boolean>() {
+        @Override
+        public Boolean apply(final T it) {
+          return Boolean.valueOf((!Objects.equal(it, value)));
+        }
+      };
+      final Iterable<? extends T> filtered = org.eclipse.xtext.xbase.lib.IterableExtensions.filter(list, _function);
+      ImmutableList.Builder<T> _builder = ImmutableList.<T>builder();
+      ImmutableList.Builder<T> _addAll = _builder.addAll(filtered);
+      _xblockexpression = _addAll.build();
+    }
+    return _xblockexpression;
   }
   
-  public static <T extends Object> ImmutableList<? extends T> uncat(final List<? extends T> list, final List<? extends T> list2) {
-    throw new Error("Unresolved compilation problems:"
-      + "\nType mismatch: cannot convert from Iterable<? extends T> to Iterable<? extends ? extends T>");
+  public static <T extends Object> ImmutableList<T> uncat(final List<? extends T> list, final List<? extends T> list2) {
+    ImmutableList<T> _xblockexpression = null;
+    {
+      final Function1<T, Boolean> _function = new Function1<T, Boolean>() {
+        @Override
+        public Boolean apply(final T it) {
+          boolean _contains = list2.contains(it);
+          return Boolean.valueOf((!_contains));
+        }
+      };
+      final Iterable<? extends T> filtered = org.eclipse.xtext.xbase.lib.IterableExtensions.filter(list, _function);
+      ImmutableList.Builder<T> _builder = ImmutableList.<T>builder();
+      ImmutableList.Builder<T> _addAll = _builder.addAll(filtered);
+      _xblockexpression = _addAll.build();
+    }
+    return _xblockexpression;
   }
   
   public static <T extends Object> Iterable<? extends T> effect(final Iterable<? extends T> iterable, final Procedure1<? super T> fn) {
@@ -622,7 +647,7 @@ public class IterableExtensions {
   /**
    * Create a new immutable list from this list that does not contain the value
    */
-  public static <T extends Object> ImmutableList<? extends T> operator_minus(final List<? extends T> list, final T value) {
+  public static <T extends Object> ImmutableList<T> operator_minus(final List<? extends T> list, final T value) {
     return IterableExtensions.<T>uncat(list, value);
   }
   
@@ -636,7 +661,7 @@ public class IterableExtensions {
   /**
    * Create a new immutable list from this list that does not contain the value
    */
-  public static <T extends Object> ImmutableList<? extends T> operator_minus(final List<? extends T> list, final List<? extends T> list2) {
+  public static <T extends Object> ImmutableList<T> operator_minus(final List<? extends T> list, final List<? extends T> list2) {
     return IterableExtensions.<T>uncat(list, list2);
   }
   

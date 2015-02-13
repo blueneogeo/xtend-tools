@@ -5,8 +5,8 @@ repositories {
 }
 
 dependencies {
-	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.7.0'
-  	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.7.0'
+	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.8.0-SNAPSHOT'
+  	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.8.0-SNAPSHOT'
 }
 
 def xtendGenTargetDir = file('src/main/xtend-gen')

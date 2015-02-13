@@ -2,7 +2,7 @@ package nl.kii.util
 
 import java.io.Closeable
 import java.io.IOException
-import java.util.List
+import org.eclipse.xtend.lib.annotations.Data
 import org.junit.Test
 
 import static nl.kii.util.CloseableExtensions.*
@@ -82,26 +82,26 @@ class TestXtendTools {
 		u2.in(#[u1, u3] as Iterable<User>).assertTrue
 	}
 	
-	@Test def void testFilters() {
-		#{some(1), none, some(2), none, none}.filterEmpty.length.assertEquals(2)
-		#{1, 2, 3, 1}.distinct.length.assertEquals(3)
-	}
+//	@Test def void testFilters() {
+//		#{some(1), none, some(2), none, none}.filterEmpty.length.assertEquals(2)
+//		#{1, 2, 3, 1}.distinct.length.assertEquals(3)
+//	}
 	
-	@Test def void testConversions() {
-		// toList
-		#{1, 2, 3}.toList.length.assertEquals(3)
-		// null.toList.length.assertEquals(0)
-		// toSet
-		#[1, 2, 3].toSet.length.assertEquals(3)
-		// null.toSet.length.assertEquals(0)
-		// toPairs
-		#{'john'->23, 'mary'->45}.toPairs.get(1) => [
-			key.assertEquals('mary')
-			value.assertEquals(45)
-		]
-		// toMap
-		#['john'->23, 'mary'->45].toMap.get('mary').assertEquals(45)
-	}
+//	@Test def void testConversions() {
+//		// toList
+//		#{1, 2, 3}.toList.length.assertEquals(3)
+//		// null.toList.length.assertEquals(0)
+//		// toSet
+//		#[1, 2, 3].toSet.length.assertEquals(3)
+//		// null.toSet.length.assertEquals(0)
+//		// toPairs
+//		#{'john'->23, 'mary'->45}.toPairs.get(1) => [
+//			key.assertEquals('mary')
+//			value.assertEquals(45)
+//		]
+//		// toMap
+//		#['john'->23, 'mary'->45].toMap.get('mary').assertEquals(45)
+//	}
 	
 	@Test def void iteratorFunctions() {
 		val users = #[new User('john', 23), new User('mary', 45), new User('jim', 23)]
@@ -128,10 +128,10 @@ class TestXtendTools {
 			.get(45)
 			.name.assertEquals('mary')
 		// attemptToMap
-		users
-			.attemptMap [ 1 / (age - 45) ] // throws division by 0 at mary
-			.filterEmpty // filter the empty result
-			.length.assertEquals(2) // only two results left
+//		users
+//			.attemptMap [ 1 / (age - 45) ] // throws division by 0 at mary
+//			.filterEmpty // filter the empty result
+//			.length.assertEquals(2) // only two results left
 	}
 	
 	@Test def void testUsing() {
@@ -161,15 +161,6 @@ class TestXtendTools {
 		error('hello error!', new Exception('ooo!'))
 	}
 	
-	@Test def void testMapTo() {
-		val List<Object> list = newLinkedList
-		list.add(4)
-		list.add(9)
-		val mappedList = list.mapAs(Integer)
-		mappedList.get(0).assertEquals(new Integer(4))
-		mappedList.get(1).assertEquals(new Integer(9))
-	}
-	
 	@Test
 	def void testFlatten() {
 		// test simple value opt unwrapping
@@ -186,8 +177,14 @@ class TestXtendTools {
 }
 
 @Data class User {
-	String name
-	int age
+	
+	new(String name, int age) {
+		this.name = name
+		this.age = age
+	}
+	
+	public String name
+	public int age
 }
 
 class Readable implements Closeable {

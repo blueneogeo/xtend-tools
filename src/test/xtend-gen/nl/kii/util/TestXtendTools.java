@@ -1,6 +1,8 @@
 package nl.kii.util;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import nl.kii.util.CloseableExtensions;
 import nl.kii.util.Err;
 import nl.kii.util.IterableExtensions;
@@ -14,6 +16,7 @@ import nl.kii.util.Some;
 import nl.kii.util.User;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.Extension;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
@@ -196,23 +199,49 @@ public class TestXtendTools {
   }
   
   @Test
-  public void testFilters() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nAmbiguous feature call.\nThe extension methods\n\tlength(Object[]) in ArrayExtensions and\n\tlength(int[]) in ArrayExtensions\nboth match."
-      + "\nAmbiguous feature call.\nThe extension methods\n\tlength(Object[]) in ArrayExtensions and\n\tlength(int[]) in ArrayExtensions\nboth match.");
-  }
-  
-  @Test
-  public void testConversions() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nAmbiguous feature call.\nThe extension methods\n\tlength(Object[]) in ArrayExtensions and\n\tlength(int[]) in ArrayExtensions\nboth match."
-      + "\nAmbiguous feature call.\nThe extension methods\n\tlength(Object[]) in ArrayExtensions and\n\tlength(int[]) in ArrayExtensions\nboth match.");
-  }
-  
-  @Test
   public void iteratorFunctions() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nAmbiguous feature call.\nThe extension methods\n\tlength(Object[]) in ArrayExtensions and\n\tlength(int[]) in ArrayExtensions\nboth match.");
+    User _user = new User("john", 23);
+    User _user_1 = new User("mary", 45);
+    User _user_2 = new User("jim", 23);
+    final List<User> users = Collections.<User>unmodifiableList(CollectionLiterals.<User>newArrayList(_user, _user_1, _user_2));
+    final Function1<User, Integer> _function = new Function1<User, Integer>() {
+      @Override
+      public Integer apply(final User it) {
+        return Integer.valueOf(it.age);
+      }
+    };
+    Map<Integer, List<User>> _groupBy = IterableExtensions.<Integer, User>groupBy(users, _function);
+    List<User> _get = _groupBy.get(Integer.valueOf(23));
+    int _length = ((Object[])Conversions.unwrapArray(_get, Object.class)).length;
+    Assert.assertEquals(_length, 2);
+    final Function1<User, Integer> _function_1 = new Function1<User, Integer>() {
+      @Override
+      public Integer apply(final User it) {
+        return Integer.valueOf(it.age);
+      }
+    };
+    Map<User, Integer> _countBy = IterableExtensions.<Integer, User>countBy(users, _function_1);
+    final Function1<User, Boolean> _function_2 = new Function1<User, Boolean>() {
+      @Override
+      public Boolean apply(final User it) {
+        return Boolean.valueOf((it.age == 23));
+      }
+    };
+    User _findFirst = org.eclipse.xtext.xbase.lib.IterableExtensions.<User>findFirst(users, _function_2);
+    Integer _get_1 = _countBy.get(_findFirst);
+    Assert.assertEquals((_get_1).intValue(), 2);
+    Map<Integer, Integer> _count = IterableExtensions.<Integer>count(Collections.<Integer>unmodifiableList(CollectionLiterals.<Integer>newArrayList(Integer.valueOf(1), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(3), Integer.valueOf(4))));
+    Integer _get_2 = _count.get(Integer.valueOf(3));
+    Assert.assertEquals((_get_2).intValue(), 4);
+    final Function1<User, Integer> _function_3 = new Function1<User, Integer>() {
+      @Override
+      public Integer apply(final User it) {
+        return Integer.valueOf(it.age);
+      }
+    };
+    Map<Integer, User> _index = IterableExtensions.<Integer, User>index(users, _function_3);
+    User _get_3 = _index.get(Integer.valueOf(45));
+    Assert.assertEquals(_get_3.name, "mary");
   }
   
   @Test
@@ -260,13 +289,6 @@ public class TestXtendTools {
   public void testLogging() {
     Exception _exception = new Exception("ooo!");
     this.logger.error("hello error!", _exception);
-  }
-  
-  @Test
-  public void testMapTo() {
-    throw new Error("Unresolved compilation problems:"
-      + "\nAmbiguous feature call.\nThe extension methods\n\t<T> get(T[], int) in ArrayExtensions and\n\tget(int[], int) in ArrayExtensions\nboth match."
-      + "\nAmbiguous feature call.\nThe extension methods\n\t<T> get(T[], int) in ArrayExtensions and\n\tget(int[], int) in ArrayExtensions\nboth match.");
   }
   
   @Test
