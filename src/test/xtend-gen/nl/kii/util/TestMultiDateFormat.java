@@ -20,7 +20,6 @@ public class TestMultiDateFormat {
   @Test
   public void textMultipleInputs() {
     final Procedure1<String> _function = new Procedure1<String>() {
-      @Override
       public void apply(final String it) {
         final Date date = TestMultiDateFormat.this.toDate(it, "EEE, d MMM yyyy HH:mm:ss z; EEE, d MMM yyyy HH:mm:ss X");
         InputOutput.<Date>println(date);

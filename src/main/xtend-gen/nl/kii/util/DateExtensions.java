@@ -63,7 +63,6 @@ public class DateExtensions {
   public static Calendar toCalendar(final Date date) {
     Calendar _instance = Calendar.getInstance();
     final Procedure1<Calendar> _function = new Procedure1<Calendar>() {
-      @Override
       public void apply(final Calendar it) {
         it.setTime(date);
       }
@@ -93,14 +92,12 @@ public class DateExtensions {
    */
   public static Date newest(final Date... dates) {
     final Function1<Date, Boolean> _function = new Function1<Date, Boolean>() {
-      @Override
       public Boolean apply(final Date it) {
         return Boolean.valueOf((!Objects.equal(it, null)));
       }
     };
     Iterable<Date> _filter = IterableExtensions.<Date>filter(((Iterable<Date>)Conversions.doWrapArray(dates)), _function);
     final Function1<Date, Long> _function_1 = new Function1<Date, Long>() {
-      @Override
       public Long apply(final Date it) {
         return Long.valueOf(it.getTime());
       }
@@ -115,14 +112,12 @@ public class DateExtensions {
    */
   public static Date oldest(final Date... dates) {
     final Function1<Date, Boolean> _function = new Function1<Date, Boolean>() {
-      @Override
       public Boolean apply(final Date it) {
         return Boolean.valueOf((!Objects.equal(it, null)));
       }
     };
     Iterable<Date> _filter = IterableExtensions.<Date>filter(((Iterable<Date>)Conversions.doWrapArray(dates)), _function);
     final Function1<Date, Long> _function_1 = new Function1<Date, Long>() {
-      @Override
       public Long apply(final Date it) {
         return Long.valueOf(it.getTime());
       }

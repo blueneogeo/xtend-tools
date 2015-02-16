@@ -46,7 +46,6 @@ public class TestXtendTools {
   @Test
   public void testAttempt() {
     final Function1<Object, None<Object>> _function = new Function1<Object, None<Object>>() {
-      @Override
       public None<Object> apply(final Object it) {
         return OptExtensions.<Object>none();
       }
@@ -54,7 +53,6 @@ public class TestXtendTools {
     Opt<None<Object>> _attempt = OptExtensions.<None<Object>>attempt(_function);
     OptExtensions.<None<Object>>assertNone(_attempt);
     final Function1<TestXtendTools, Object> _function_1 = new Function1<TestXtendTools, Object>() {
-      @Override
       public Object apply(final TestXtendTools it) {
         try {
           throw new Exception();
@@ -66,7 +64,6 @@ public class TestXtendTools {
     Opt<Object> _attempt_1 = OptExtensions.<TestXtendTools, Object>attempt(this, _function_1);
     OptExtensions.<Object>assertNone(_attempt_1);
     final Function1<Object, String> _function_2 = new Function1<Object, String>() {
-      @Override
       public String apply(final Object it) {
         return "hello";
       }
@@ -78,7 +75,6 @@ public class TestXtendTools {
   @Test
   public void testIfValue() {
     final Function1<Object, String> _function = new Function1<Object, String>() {
-      @Override
       public String apply(final Object it) {
         return "hello";
       }
@@ -86,7 +82,6 @@ public class TestXtendTools {
     Opt<String> _ifTrue = OptExtensions.<String, Object>ifTrue(true, _function);
     OptExtensions.<String>assertSome(_ifTrue, "hello");
     final Function1<Object, String> _function_1 = new Function1<Object, String>() {
-      @Override
       public String apply(final Object it) {
         return "hello";
       }
@@ -95,7 +90,6 @@ public class TestXtendTools {
     OptExtensions.<String>assertNone(_ifTrue_1);
     Some<String> _some = OptExtensions.<String>some("test");
     final Function1<String, String> _function_2 = new Function1<String, String>() {
-      @Override
       public String apply(final String it) {
         return "hello";
       }
@@ -104,7 +98,6 @@ public class TestXtendTools {
     OptExtensions.<String>assertSome(_ifSome, "hello");
     None<Object> _none = OptExtensions.<Object>none();
     final Function1<Object, String> _function_3 = new Function1<Object, String>() {
-      @Override
       public String apply(final Object it) {
         return "hello";
       }
@@ -123,7 +116,6 @@ public class TestXtendTools {
     Assert.assertEquals(_or_1, "hello");
     Some<String> _some_1 = OptExtensions.<String>some("hi");
     final Function1<Object, String> _function = new Function1<Object, String>() {
-      @Override
       public String apply(final Object it) {
         return ("a" + "b");
       }
@@ -132,7 +124,6 @@ public class TestXtendTools {
     Assert.assertEquals(_or_2, "hi");
     None<String> _none_1 = OptExtensions.<String>none();
     final Function1<Object, String> _function_1 = new Function1<Object, String>() {
-      @Override
       public String apply(final Object it) {
         return ("a" + "b");
       }
@@ -142,7 +133,6 @@ public class TestXtendTools {
     try {
       Some<String> _some_2 = OptExtensions.<String>some("hi");
       final Function1<Object, Throwable> _function_2 = new Function1<Object, Throwable>() {
-        @Override
         public Throwable apply(final Object it) {
           return new Exception();
         }
@@ -160,7 +150,6 @@ public class TestXtendTools {
     try {
       None<Object> _none_2 = new None<Object>();
       final Function1<Object, Throwable> _function_3 = new Function1<Object, Throwable>() {
-        @Override
         public Throwable apply(final Object it) {
           return new Exception();
         }
@@ -205,7 +194,6 @@ public class TestXtendTools {
     User _user_2 = new User("jim", 23);
     final List<User> users = Collections.<User>unmodifiableList(CollectionLiterals.<User>newArrayList(_user, _user_1, _user_2));
     final Function1<User, Integer> _function = new Function1<User, Integer>() {
-      @Override
       public Integer apply(final User it) {
         return Integer.valueOf(it.age);
       }
@@ -215,14 +203,12 @@ public class TestXtendTools {
     int _length = ((Object[])Conversions.unwrapArray(_get, Object.class)).length;
     Assert.assertEquals(_length, 2);
     final Function1<User, Integer> _function_1 = new Function1<User, Integer>() {
-      @Override
       public Integer apply(final User it) {
         return Integer.valueOf(it.age);
       }
     };
     Map<User, Integer> _countBy = IterableExtensions.<Integer, User>countBy(users, _function_1);
     final Function1<User, Boolean> _function_2 = new Function1<User, Boolean>() {
-      @Override
       public Boolean apply(final User it) {
         return Boolean.valueOf((it.age == 23));
       }
@@ -234,7 +220,6 @@ public class TestXtendTools {
     Integer _get_2 = _count.get(Integer.valueOf(3));
     Assert.assertEquals((_get_2).intValue(), 4);
     final Function1<User, Integer> _function_3 = new Function1<User, Integer>() {
-      @Override
       public Integer apply(final User it) {
         return Integer.valueOf(it.age);
       }
@@ -249,7 +234,6 @@ public class TestXtendTools {
     final Readable closeable = new Readable();
     closeable.open();
     final Function1<Readable, String> _function = new Function1<Readable, String>() {
-      @Override
       public String apply(final Readable it) {
         return it.hello();
       }
@@ -259,7 +243,6 @@ public class TestXtendTools {
     Assert.assertTrue(closeable.isClosed);
     closeable.open();
     final Function1<Readable, Object> _function_1 = new Function1<Readable, Object>() {
-      @Override
       public Object apply(final Readable it) {
         try {
           Assert.assertFalse(closeable.isClosed);

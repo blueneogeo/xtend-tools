@@ -77,7 +77,6 @@ public class Log {
     boolean _isErrorEnabled = this.logger.isErrorEnabled();
     if (_isErrorEnabled) {
       final Function1<Object, String> _function = new Function1<Object, String>() {
-        @Override
         public String apply(final Object it) {
           return message;
         }
@@ -89,7 +88,6 @@ public class Log {
   
   public <T extends Object> Procedure1<? super T> trace() {
     final Procedure1<T> _function = new Procedure1<T>() {
-      @Override
       public void apply(final T it) {
         String _string = it.toString();
         Log.this.logger.trace(_string);
@@ -100,7 +98,6 @@ public class Log {
   
   public <T extends Object> Procedure1<? super T> debug() {
     final Procedure1<T> _function = new Procedure1<T>() {
-      @Override
       public void apply(final T it) {
         String _string = it.toString();
         Log.this.logger.debug(_string);
@@ -111,7 +108,6 @@ public class Log {
   
   public <T extends Object> Procedure1<? super T> info() {
     final Procedure1<T> _function = new Procedure1<T>() {
-      @Override
       public void apply(final T it) {
         String _string = it.toString();
         Log.this.logger.info(_string);
@@ -122,7 +118,6 @@ public class Log {
   
   public <T extends Object> Procedure1<? super T> warn() {
     final Procedure1<T> _function = new Procedure1<T>() {
-      @Override
       public void apply(final T it) {
         String _string = it.toString();
         Log.this.logger.warn(_string);
@@ -133,7 +128,6 @@ public class Log {
   
   public <T extends Object> Procedure1<? super T> error() {
     final Procedure1<T> _function = new Procedure1<T>() {
-      @Override
       public void apply(final T it) {
         String _string = it.toString();
         Log.this.logger.error(_string);

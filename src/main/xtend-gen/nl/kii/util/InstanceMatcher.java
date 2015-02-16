@@ -13,7 +13,6 @@ public class InstanceMatcher<T extends Object> implements Matcher<Object, T> {
     this.types = types;
   }
   
-  @Override
   public Opt<T> match(final Object instance) {
     None<T> _xblockexpression = null;
     {
