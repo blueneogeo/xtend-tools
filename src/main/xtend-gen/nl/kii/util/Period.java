@@ -38,6 +38,7 @@ public class Period {
     return (((((this.time / 1000) / 60) / 60) / 24) / 356);
   }
   
+  @Override
   public String toString() {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append(this.time, "");
@@ -45,6 +46,7 @@ public class Period {
     return _builder.toString();
   }
   
+  @Override
   public boolean equals(final Object obj) {
     boolean _xifexpression = false;
     if ((obj instanceof Period)) {
@@ -55,6 +57,7 @@ public class Period {
     return _xifexpression;
   }
   
+  @Override
   public int hashCode() {
     Long _long = new Long(this.time);
     return _long.hashCode();

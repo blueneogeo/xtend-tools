@@ -38,6 +38,7 @@ public class ThrowableExtensions {
     {
       StackTraceElement[] _stackTrace = it.getStackTrace();
       final Function1<StackTraceElement, String> _function = new Function1<StackTraceElement, String>() {
+        @Override
         public String apply(final StackTraceElement it) {
           return it.toString();
         }
@@ -70,6 +71,7 @@ public class ThrowableExtensions {
           Throwable _cause_3 = it.getCause();
           StackTraceElement[] _stackTrace_1 = _cause_3.getStackTrace();
           final Function1<StackTraceElement, String> _function_1 = new Function1<StackTraceElement, String>() {
+            @Override
             public String apply(final StackTraceElement it) {
               return it.toString();
             }

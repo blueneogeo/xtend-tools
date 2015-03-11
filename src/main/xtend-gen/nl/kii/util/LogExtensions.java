@@ -22,6 +22,7 @@ public class LogExtensions {
   
   public static void print(final CharSequence... s) {
     final Procedure1<CharSequence> _function = new Procedure1<CharSequence>() {
+      @Override
       public void apply(final CharSequence it) {
         InputOutput.<CharSequence>println(it);
       }
@@ -41,6 +42,7 @@ public class LogExtensions {
   
   public static <T extends Object> Procedure1<? super T> printEach() {
     final Procedure1<T> _function = new Procedure1<T>() {
+      @Override
       public void apply(final T it) {
         InputOutput.<T>println(it);
       }
@@ -50,6 +52,7 @@ public class LogExtensions {
   
   public static <T extends Object> Procedure1<? super T> printEach(final String msg) {
     final Procedure1<T> _function = new Procedure1<T>() {
+      @Override
       public void apply(final T it) {
         InputOutput.<String>println((msg + it));
       }
@@ -63,6 +66,7 @@ public class LogExtensions {
       InputOutput.<String>println(msg);
     }
     final Procedure1<T> _function = new Procedure1<T>() {
+      @Override
       public void apply(final T it) {
         String _logEntry = LogExtensions.getLogEntry(it);
         InputOutput.<String>println(_logEntry);
@@ -77,6 +81,7 @@ public class LogExtensions {
       log.logger.trace(msg);
     }
     final Procedure1<T> _function = new Procedure1<T>() {
+      @Override
       public void apply(final T it) {
         Logger _logger = log.getLogger();
         String _logEntry = LogExtensions.getLogEntry(it);
@@ -92,6 +97,7 @@ public class LogExtensions {
       log.logger.debug(msg);
     }
     final Procedure1<T> _function = new Procedure1<T>() {
+      @Override
       public void apply(final T it) {
         Logger _logger = log.getLogger();
         String _logEntry = LogExtensions.getLogEntry(it);
@@ -107,6 +113,7 @@ public class LogExtensions {
       log.logger.info(msg);
     }
     final Procedure1<T> _function = new Procedure1<T>() {
+      @Override
       public void apply(final T it) {
         Logger _logger = log.getLogger();
         String _logEntry = LogExtensions.getLogEntry(it);
@@ -122,6 +129,7 @@ public class LogExtensions {
       log.logger.warn(msg);
     }
     final Procedure1<T> _function = new Procedure1<T>() {
+      @Override
       public void apply(final T it) {
         Logger _logger = log.getLogger();
         String _logEntry = LogExtensions.getLogEntry(it);
@@ -137,6 +145,7 @@ public class LogExtensions {
       log.logger.error(msg);
     }
     final Procedure1<T> _function = new Procedure1<T>() {
+      @Override
       public void apply(final T it) {
         Logger _logger = log.getLogger();
         String _logEntry = LogExtensions.getLogEntry(it);

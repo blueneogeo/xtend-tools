@@ -21,6 +21,7 @@ public class MultiDateFormat {
   public MultiDateFormat(final String dateFormat, final Locale locale) {
     String[] _split = dateFormat.split("\\;\\s");
     final Function1<String, DateFormat> _function = new Function1<String, DateFormat>() {
+      @Override
       public DateFormat apply(final String it) {
         return new SimpleDateFormat(it, Locale.ENGLISH);
       }
@@ -33,6 +34,7 @@ public class MultiDateFormat {
   public Date parse(final String string) {
     try {
       final Function1<DateFormat, Boolean> _function = new Function1<DateFormat, Boolean>() {
+        @Override
         public Boolean apply(final DateFormat it) {
           return Boolean.valueOf(MultiDateFormat.this.matches(string, it));
         }
@@ -46,6 +48,7 @@ public class MultiDateFormat {
   
   public String format(final Date date) {
     final Function1<DateFormat, Boolean> _function = new Function1<DateFormat, Boolean>() {
+      @Override
       public Boolean apply(final DateFormat it) {
         return Boolean.valueOf(MultiDateFormat.this.matches(date, it));
       }

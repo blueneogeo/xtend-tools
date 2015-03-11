@@ -98,6 +98,7 @@ public class MapExtensions {
     {
       Set<Map.Entry<K, V>> _entrySet = map.entrySet();
       final Function1<Map.Entry<K, V>, Pair<K, V>> _function = new Function1<Map.Entry<K, V>, Pair<K, V>>() {
+        @Override
         public Pair<K, V> apply(final Map.Entry<K, V> it) {
           K _key = it.getKey();
           V _value = it.getValue();
@@ -106,6 +107,7 @@ public class MapExtensions {
       };
       Iterable<Pair<K, V>> _map = IterableExtensions.<Map.Entry<K, V>, Pair<K, V>>map(_entrySet, _function);
       final Procedure1<Pair<K, V>> _function_1 = new Procedure1<Pair<K, V>>() {
+        @Override
         public void apply(final Pair<K, V> it) {
           K _key = it.getKey();
           V _value = it.getValue();
