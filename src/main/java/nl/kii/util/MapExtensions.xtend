@@ -52,5 +52,26 @@ class MapExtensions {
 		map.entrySet.map[key -> value].forEach[fn.apply(key, value)]
 		map
 	}
+	
+	// MAPPING ////////////////////////////////////////////////////////////////
+
+	/** 
+	 * Map both the keys and values of a map,
+	 * using a mapping function that returns a pair
+	 * <pre>
+	 * Example:
+	 * #{ 1->5, 2->6 }.map [ k, v | k+1->v+1 ]
+	 * Result:
+	 * #{ 2->6, 3->7 }
+	 * </pre>
+	 */	
+	def static <K, V, K2, V2> Map<K2, V2> map(Map<K, V> map, (K, V)=>Pair<K2, V2> mapFn) {
+		val newMap = newHashMap
+		for(key : map.keySet) {
+			val pair = mapFn.apply(key, map.get(key))
+			newMap.put(pair.key, pair.value)
+		}
+		newMap
+	}
 
 }

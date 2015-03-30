@@ -1,12 +1,14 @@
 package nl.kii.util;
 
 import com.google.common.base.Objects;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
+import org.eclipse.xtext.xbase.lib.Functions.Function2;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
@@ -116,6 +118,35 @@ public class MapExtensions {
       };
       IterableExtensions.<Pair<K, V>>forEach(_map, _function_1);
       _xblockexpression = map;
+    }
+    return _xblockexpression;
+  }
+  
+  /**
+   * Map both the keys and values of a map,
+   * using a mapping function that returns a pair
+   * <pre>
+   * Example:
+   * #{ 1->5, 2->6 }.map [ k, v | k+1->v+1 ]
+   * Result:
+   * #{ 2->6, 3->7 }
+   * </pre>
+   */
+  public static <K extends Object, V extends Object, K2 extends Object, V2 extends Object> Map<K2, V2> map(final Map<K, V> map, final Function2<? super K, ? super V, ? extends Pair<K2, V2>> mapFn) {
+    HashMap<K2, V2> _xblockexpression = null;
+    {
+      final HashMap<K2, V2> newMap = CollectionLiterals.<K2, V2>newHashMap();
+      Set<K> _keySet = map.keySet();
+      for (final K key : _keySet) {
+        {
+          V _get = map.get(key);
+          final Pair<K2, V2> pair = mapFn.apply(key, _get);
+          K2 _key = pair.getKey();
+          V2 _value = pair.getValue();
+          newMap.put(_key, _value);
+        }
+      }
+      _xblockexpression = newMap;
     }
     return _xblockexpression;
   }
