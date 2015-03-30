@@ -35,6 +35,7 @@ class PartialURL {
 		} else throw new MalformedURLException
 	}
 
+	/** get a map of all the parameters passed in the url */
 	def getParameters() {
 		query
 			?.split('&')
@@ -44,10 +45,17 @@ class PartialURL {
 			?.toMap
 	}
 	
+	/** combination of protocol, domain and path */
+	def getFullPath() {
+		protocol + '://'+ domain + path
+	}
+	
+	/** checks if the passed url is a valid url (adheres to standards) */
 	def static isValid(String url) {
 		validate.matcher(url).matches
 	}
 
+	/** checks if the partial url is complete enough to be valid */
 	def isValid() {
 		validate.matcher(toString).matches
 	}

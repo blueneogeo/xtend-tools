@@ -26,5 +26,11 @@ class TestPartialURL {
 		val url = new PartialURL('/twitter/timeline?telegraaf')
 		assertTrue(url.parameters.empty)
 	}
+	
+	@Test
+	def void testFullPath() {
+		val url = new PartialURL('https://api.twitter.com/1/statuses/update.json?include_entities=true')
+		assertEquals(url.fullPath, 'https://api.twitter.com/1/statuses/update.json')
+	}
 
 }

@@ -37,4 +37,11 @@ public class TestPartialURL {
     boolean _isEmpty = _parameters.isEmpty();
     Assert.assertTrue(_isEmpty);
   }
+  
+  @Test
+  public void testFullPath() {
+    final PartialURL url = new PartialURL("https://api.twitter.com/1/statuses/update.json?include_entities=true");
+    String _fullPath = url.getFullPath();
+    Assert.assertEquals(_fullPath, "https://api.twitter.com/1/statuses/update.json");
+  }
 }

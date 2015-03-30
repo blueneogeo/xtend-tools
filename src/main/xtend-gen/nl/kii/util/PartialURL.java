@@ -61,6 +61,9 @@ public class PartialURL {
     }
   }
   
+  /**
+   * get a map of all the parameters passed in the url
+   */
   public Map<String, String> getParameters() {
     String[] _split = null;
     if (this.query!=null) {
@@ -105,11 +108,24 @@ public class PartialURL {
     return _map_2;
   }
   
+  /**
+   * combination of protocol, domain and path
+   */
+  public String getFullPath() {
+    return (((this.protocol + "://") + this.domain) + this.path);
+  }
+  
+  /**
+   * checks if the passed url is a valid url (adheres to standards)
+   */
   public static boolean isValid(final String url) {
     Matcher _matcher = PartialURL.validate.matcher(url);
     return _matcher.matches();
   }
   
+  /**
+   * checks if the partial url is complete enough to be valid
+   */
   public boolean isValid() {
     String _string = this.toString();
     Matcher _matcher = PartialURL.validate.matcher(_string);
