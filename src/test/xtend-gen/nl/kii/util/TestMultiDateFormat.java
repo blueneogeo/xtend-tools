@@ -5,11 +5,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import nl.kii.util.MultiDateFormat;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.InputOutput;
-import org.eclipse.xtext.xbase.lib.IterableExtensions;
-import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,9 +18,9 @@ public class TestMultiDateFormat {
   
   @Test
   public void textMultipleInputs() {
-    final Procedure1<String> _function = new Procedure1<String>() {
+    final Consumer<String> _function = new Consumer<String>() {
       @Override
-      public void apply(final String it) {
+      public void accept(final String it) {
         final Date date = TestMultiDateFormat.this.toDate(it, "EEE, d MMM yyyy HH:mm:ss z; EEE, d MMM yyyy HH:mm:ss X");
         InputOutput.<Date>println(date);
         SimpleDateFormat _simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -29,7 +28,7 @@ public class TestMultiDateFormat {
         Assert.assertEquals(_format, "30-10-2014");
       }
     };
-    IterableExtensions.<String>forEach(this.someDateStrings, _function);
+    this.someDateStrings.forEach(_function);
   }
   
   @Test

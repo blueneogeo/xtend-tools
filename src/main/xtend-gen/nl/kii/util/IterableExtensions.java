@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Consumer;
 import nl.kii.util.Err;
 import nl.kii.util.None;
 import nl.kii.util.Opt;
@@ -462,15 +463,15 @@ public class IterableExtensions {
       final HashMap<K, V> map = CollectionLiterals.<K, V>newHashMap();
       boolean _defined = OptExtensions.<Object>defined(pairs);
       if (_defined) {
-        final Procedure1<Pair<K, V>> _function = new Procedure1<Pair<K, V>>() {
+        final Consumer<Pair<K, V>> _function = new Consumer<Pair<K, V>>() {
           @Override
-          public void apply(final Pair<K, V> it) {
+          public void accept(final Pair<K, V> it) {
             K _key = it.getKey();
             V _value = it.getValue();
             map.put(_key, _value);
           }
         };
-        org.eclipse.xtext.xbase.lib.IterableExtensions.<Pair<K, V>>forEach(pairs, _function);
+        pairs.forEach(_function);
       }
       _xblockexpression = map;
     }
@@ -486,9 +487,9 @@ public class IterableExtensions {
     HashMap<K, List<V>> _xblockexpression = null;
     {
       final HashMap<K, List<V>> map = new HashMap<K, List<V>>();
-      final Procedure1<V> _function = new Procedure1<V>() {
+      final Consumer<V> _function = new Consumer<V>() {
         @Override
-        public void apply(final V it) {
+        public void accept(final V it) {
           final K index = indexFn.apply(it);
           boolean _containsKey = map.containsKey(index);
           if (_containsKey) {
@@ -500,7 +501,7 @@ public class IterableExtensions {
           }
         }
       };
-      org.eclipse.xtext.xbase.lib.IterableExtensions.forEach(list, _function);
+      list.forEach(_function);
       _xblockexpression = map;
     }
     return _xblockexpression;
@@ -542,24 +543,24 @@ public class IterableExtensions {
     LinkedList<Pair<K, V>> _xblockexpression = null;
     {
       final LinkedList<Pair<K, V>> newList = CollectionLiterals.<Pair<K, V>>newLinkedList();
-      final Procedure1<Pair<K, List<V>>> _function = new Procedure1<Pair<K, List<V>>>() {
+      final Consumer<Pair<K, List<V>>> _function = new Consumer<Pair<K, List<V>>>() {
         @Override
-        public void apply(final Pair<K, List<V>> pair) {
+        public void accept(final Pair<K, List<V>> pair) {
           List<V> _value = pair.getValue();
           if (_value!=null) {
-            final Procedure1<V> _function = new Procedure1<V>() {
+            final Consumer<V> _function = new Consumer<V>() {
               @Override
-              public void apply(final V it) {
+              public void accept(final V it) {
                 K _key = pair.getKey();
                 Pair<K, V> _mappedTo = Pair.<K, V>of(_key, it);
                 newList.add(_mappedTo);
               }
             };
-            org.eclipse.xtext.xbase.lib.IterableExtensions.<V>forEach(_value, _function);
+            _value.forEach(_function);
           }
         }
       };
-      org.eclipse.xtext.xbase.lib.IterableExtensions.<Pair<K, List<V>>>forEach(pairs, _function);
+      pairs.forEach(_function);
       _xblockexpression = newList;
     }
     return _xblockexpression;

@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.Functions.Function2;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure2;
 
 @SuppressWarnings("all")
@@ -108,15 +108,15 @@ public class MapExtensions {
         }
       };
       Iterable<Pair<K, V>> _map = IterableExtensions.<Map.Entry<K, V>, Pair<K, V>>map(_entrySet, _function);
-      final Procedure1<Pair<K, V>> _function_1 = new Procedure1<Pair<K, V>>() {
+      final Consumer<Pair<K, V>> _function_1 = new Consumer<Pair<K, V>>() {
         @Override
-        public void apply(final Pair<K, V> it) {
+        public void accept(final Pair<K, V> it) {
           K _key = it.getKey();
           V _value = it.getValue();
           fn.apply(_key, _value);
         }
       };
-      IterableExtensions.<Pair<K, V>>forEach(_map, _function_1);
+      _map.forEach(_function_1);
       _xblockexpression = map;
     }
     return _xblockexpression;
