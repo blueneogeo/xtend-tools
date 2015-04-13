@@ -16,7 +16,7 @@ class DateExtensions {
 	/** Convert a date to UTC timezone */
 	def static toUTC(Date date) {
 		val cal = date.toCalendar
-		date - new Period(cal.get(DST_OFFSET) + cal.get(ZONE_OFFSET))
+		date - new Period(cal.get(DST_OFFSET) + cal.get(ZONE_OFFSET) - cal.get(DST_OFFSET))
 	}
 
 	def static toTimeZone(Date date, String zone) {

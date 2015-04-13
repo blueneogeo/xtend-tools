@@ -41,7 +41,9 @@ public class DateExtensions {
       int _get = cal.get(Calendar.DST_OFFSET);
       int _get_1 = cal.get(Calendar.ZONE_OFFSET);
       int _plus = (_get + _get_1);
-      Period _period = new Period(_plus);
+      int _get_2 = cal.get(Calendar.DST_OFFSET);
+      int _minus = (_plus - _get_2);
+      Period _period = new Period(_minus);
       _xblockexpression = DateExtensions.operator_minus(date, _period);
     }
     return _xblockexpression;
