@@ -23,6 +23,14 @@ class DateExtensions {
 		date.toUTC + new Period(zone.timeZone.rawOffset)
 	}
 
+	def static getCurrentMinute(Date date) {
+		date.toCalendar.get(MINUTE)
+	}
+
+	def static getCurrentSecond(Date date) {
+		date.toCalendar.get(SECOND)
+	}
+	
 	def static getHourOfDay(Date date) {
 		date.toCalendar.get(HOUR_OF_DAY)
 	}

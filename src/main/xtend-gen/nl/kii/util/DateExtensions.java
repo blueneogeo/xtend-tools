@@ -57,6 +57,16 @@ public class DateExtensions {
     return DateExtensions.operator_plus(_uTC, _period);
   }
   
+  public static int getCurrentMinute(final Date date) {
+    Calendar _calendar = DateExtensions.toCalendar(date);
+    return _calendar.get(Calendar.MINUTE);
+  }
+  
+  public static int getCurrentSecond(final Date date) {
+    Calendar _calendar = DateExtensions.toCalendar(date);
+    return _calendar.get(Calendar.SECOND);
+  }
+  
   public static int getHourOfDay(final Date date) {
     Calendar _calendar = DateExtensions.toCalendar(date);
     return _calendar.get(Calendar.HOUR_OF_DAY);
@@ -65,7 +75,6 @@ public class DateExtensions {
   public static Calendar toCalendar(final Date date) {
     Calendar _instance = Calendar.getInstance();
     final Procedure1<Calendar> _function = new Procedure1<Calendar>() {
-      @Override
       public void apply(final Calendar it) {
         it.setTime(date);
       }
