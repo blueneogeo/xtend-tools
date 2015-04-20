@@ -88,4 +88,32 @@ public class ThrowableExtensions {
     }
     return _builder.toString();
   }
+  
+  /**
+   * returns true if the error is of the type or the cause of the error is of the type.
+   */
+  public static boolean matches(final Throwable err, final Class<? extends Throwable> type) {
+    boolean _or = false;
+    Class<? extends Throwable> _class = err.getClass();
+    boolean _isAssignableFrom = type.isAssignableFrom(_class);
+    if (_isAssignableFrom) {
+      _or = true;
+    } else {
+      boolean _xifexpression = false;
+      Throwable _cause = err.getCause();
+      boolean _notEquals = (!Objects.equal(_cause, null));
+      if (_notEquals) {
+        Throwable _cause_1 = err.getCause();
+        Class<? extends Throwable> _class_1 = null;
+        if (_cause_1!=null) {
+          _class_1=_cause_1.getClass();
+        }
+        _xifexpression = type.isAssignableFrom(_class_1);
+      } else {
+        _xifexpression = false;
+      }
+      _or = _xifexpression;
+    }
+    return _or;
+  }
 }

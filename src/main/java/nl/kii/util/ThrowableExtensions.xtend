@@ -21,5 +21,10 @@ class ThrowableExtensions {
 				«ENDFOR»
 		«ENDIF»
 	'''		
+
+	/** returns true if the error is of the type or the cause of the error is of the type. */	
+	def static matches(Throwable err, Class<? extends Throwable> type) {
+		type.isAssignableFrom(err.class) || (if(err.cause != null) type.isAssignableFrom(err.cause?.class) else false)
+	}
 	
 }
