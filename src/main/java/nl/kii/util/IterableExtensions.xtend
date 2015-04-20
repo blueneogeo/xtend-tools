@@ -281,6 +281,16 @@ class IterableExtensions {
 	def static <T extends Number> average(Iterable<? extends T> values) {
 		values.sum / values.length
 	}
+	
+	def static <T extends Double> median(Iterable<? extends T> values) {
+		val sortedValues = values.sort
+		switch length : sortedValues.length {
+			case 0: throw new IllegalArgumentException('an empty list does not have a median')
+			case 1: sortedValues.head
+			case length % 2 == 0: (sortedValues.get(length/2 - 1) + sortedValues.get(length/2)) / 2
+			default: sortedValues.get(length/2)
+		}
+	}
 
 	// IN CHECKS //////////////////////////////////////////////////////////////
 

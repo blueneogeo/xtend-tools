@@ -156,7 +156,14 @@ class TestXtendTools {
 	@Test def void testAvg() {
 		#[1, 2, 3, 4].average.assertEquals(2.5, 0)
 	}
-		
+	
+	@Test def void testMedian() {
+		#[1D, 2D, 3D, 4D].median.assertEquals(2.5, 0)
+		#[1D, 2D, 3D].median.assertEquals(2D, 0)
+		#[1D, 2D, 3D, 3.5D, 4D, 4D, 300D].median.assertEquals(3.5, 0)
+		#[3D, 21D, 1D].median.assertEquals(3D, 0)
+	}
+			
 	@Test def void testLogging() {
 		error('hello error!', new Exception('ooo!'))
 	}
