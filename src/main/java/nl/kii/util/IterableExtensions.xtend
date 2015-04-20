@@ -58,7 +58,7 @@ class IterableExtensions {
 	/** Always returns an immutable list, even if a null result is passed. handy when chaining, eliminates null checks
 	 * <pre>example: getUsers.filter[age>20].list</pre>
 	 */
-	def static <T> List<T> toList(Iterable<T> iterable) {
+	def static <T> List<T> toList(Iterable<? extends T> iterable) {
 		if(!iterable.defined) newImmutableList else iterable.iterator.toList.immutableCopy
 	}
 
