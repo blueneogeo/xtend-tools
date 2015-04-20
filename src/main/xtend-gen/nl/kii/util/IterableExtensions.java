@@ -95,14 +95,14 @@ public class IterableExtensions {
    * Always returns an immutable list, even if a null result is passed. handy when chaining, eliminates null checks
    * <pre>example: getUsers.filter[age>20].list</pre>
    */
-  public static <T extends Object> List<T> toList(final Iterable<T> iterable) {
+  public static <T extends Object> List<T> toList(final Iterable<? extends T> iterable) {
     List<T> _xifexpression = null;
     boolean _defined = OptExtensions.<Object>defined(iterable);
     boolean _not = (!_defined);
     if (_not) {
       _xifexpression = CollectionLiterals.<T>newImmutableList();
     } else {
-      Iterator<T> _iterator = iterable.iterator();
+      Iterator<? extends T> _iterator = iterable.iterator();
       List<T> _list = IteratorExtensions.<T>toList(_iterator);
       _xifexpression = ImmutableList.<T>copyOf(_list);
     }
@@ -123,7 +123,7 @@ public class IterableExtensions {
       Set<T> _xblockexpression = null;
       {
         List<T> _distinct = IterableExtensions.<T>distinct(iterable);
-        final List<T> uniques = IterableExtensions.<T>toList(_distinct);
+        final List<T> uniques = org.eclipse.xtext.xbase.lib.IterableExtensions.<T>toList(_distinct);
         HashSet<T> _hashSet = new HashSet<T>(uniques);
         _xblockexpression = ImmutableSet.<T>copyOf(_hashSet);
       }
@@ -304,7 +304,7 @@ public class IterableExtensions {
   }
   
   public static <T extends Object> T last(final Iterable<? extends T> values) {
-    List<? extends T> _list = IterableExtensions.toList(values);
+    List<? extends T> _list = org.eclipse.xtext.xbase.lib.IterableExtensions.toList(values);
     List<? extends T> _reverse = ListExtensions.reverse(_list);
     return org.eclipse.xtext.xbase.lib.IterableExtensions.head(_reverse);
   }
@@ -323,7 +323,7 @@ public class IterableExtensions {
       Random _random = new Random();
       int _size_1 = org.eclipse.xtext.xbase.lib.IterableExtensions.size(values);
       final int rand = _random.nextInt(_size_1);
-      List<? extends T> _list = IterableExtensions.toList(values);
+      List<? extends T> _list = org.eclipse.xtext.xbase.lib.IterableExtensions.toList(values);
       _xblockexpression = _list.get(rand);
     }
     return _xblockexpression;
@@ -437,7 +437,7 @@ public class IterableExtensions {
       }
     };
     Iterable<Pair<K, V>> _map = org.eclipse.xtext.xbase.lib.IterableExtensions.<Map.Entry<K, V>, Pair<K, V>>map(_entrySet, _function);
-    return IterableExtensions.<Pair<K, V>>toList(_map);
+    return org.eclipse.xtext.xbase.lib.IterableExtensions.<Pair<K, V>>toList(_map);
   }
   
   /**
@@ -657,7 +657,7 @@ public class IterableExtensions {
   }
   
   public static <T extends Object> boolean in(final T instance, final Iterable<? extends T> objects) {
-    List<? extends T> _list = IterableExtensions.toList(objects);
+    List<? extends T> _list = org.eclipse.xtext.xbase.lib.IterableExtensions.toList(objects);
     return _list.contains(instance);
   }
   
