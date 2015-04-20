@@ -18,9 +18,8 @@ class MultiDateFormat {
 	}
 
 	def parse(String string) {
-		dateFormats
-			.findFirst [ string.matches(it) ]
-			.parse(string)
+		val possibleValidFormat = dateFormats.findFirst [ string.matches(it) ]
+		(possibleValidFormat ?: dateFormats.head).parse(string)
 	}
 	
 	def format(Date date) {
