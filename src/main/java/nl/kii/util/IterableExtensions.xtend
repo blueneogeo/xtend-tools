@@ -284,7 +284,7 @@ class IterableExtensions {
 	
 	def static <T extends Double> median(Iterable<? extends T> values) {
 		val sortedValues = values.sort
-		switch length : sortedValues.length {
+		switch length : sortedValues.size {
 			case 0: throw new IllegalArgumentException('an empty list does not have a median')
 			case 1: sortedValues.head
 			case length % 2 == 0: (sortedValues.get(length/2 - 1) + sortedValues.get(length/2)) / 2

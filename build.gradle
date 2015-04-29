@@ -1,37 +1,39 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply from: 'gradle/xtend.gradle'
- 
-repositories {
-	mavenLocal()
-    mavenCentral()
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.xtend:xtend-gradle-plugin:0.4.+"
+    }
 }
 
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.xtend.xtend'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+} 
+ 
 dependencies {
 	compile 'commons-lang:commons-lang:+'
-    // compile 'ch.qos.logback:logback-classic:+'
-    // compile 'org.slf4j:slf4j-api:1.7.7'
-	compile 'org.slf4j:slf4j-log4j12:1.7.7'
-    compile 'junit:junit:4.+'
+	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.7.+'
+  	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.7.+'
+    compile 'org.slf4j:slf4j-log4j12:1.7.+'
+    compile 'junit:junit:4.+'  	
 }
 
 tasks.jar.dependsOn javadoc
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-    /*
-    repositories {
-        url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-        credentials {
-            username = sona_username
-            password = sona_password
-        }
-    }
-    */
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
 }
