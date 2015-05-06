@@ -11,6 +11,7 @@ import java.util.Random
 import java.util.Set
 
 import static extension nl.kii.util.OptExtensions.*
+import static extension nl.kii.util.OptExtensions.*
 
 class IterableExtensions {
 
@@ -150,12 +151,11 @@ class IterableExtensions {
 	}
 
 	/** Returns a random entry of the {@code Iterable} it is performed on. In case of an empty list, {@code null} is returned.  */
-	def static <T> T any(Iterable<? extends T> values) {
+	def static <T> T random(Iterable<? extends T> values) {
 		if (values.size == 0) return null
 		val rand = new Random().nextInt(values.size)
 		values.toList.get(rand)
 	}
-
 
 	/** Convert a list of options into actual values, filtering out the none and error values.
 		Like filterNull, but then for a list of Options */
@@ -291,6 +291,32 @@ class IterableExtensions {
 			default: sortedValues.get(length/2)
 		}
 	}
+	
+	// BOOLEAN CHECKS /////////////////////////////////////////////////////////
+
+	/** Checks if any of the values is truthy */
+	def static <T> boolean any(Iterable<? extends T> values) {
+		for(value : values) {
+			if(value.truthy) return true
+		}
+		false
+	}
+
+	/** Checks if all of the values are truthy */
+	def static <T> boolean all(Iterable<? extends T> values) {
+		for(value : values) {
+			if(!value.truthy) return false
+		}
+		true
+	}
+	
+	/** Checks if none of the values are truthy */
+	def static <T> boolean none(Iterable<? extends T> values) {
+		for(value : values) {
+			if(value.truthy) return false
+		}
+		true
+	}
 
 	// IN CHECKS //////////////////////////////////////////////////////////////
 
@@ -309,7 +335,7 @@ class IterableExtensions {
 		instance.defined && objects.defined && objects.toList.contains(instance)
 	}
 
-	// OPERATORS //////////////////////////////////////////////////////////////
+	// LIST OPERATORS /////////////////////////////////////////////////////////
 
 	/** Create a new immutable list from this list that does not contain the value */
 	def static <T> - (List<? extends T> list, T value) {
@@ -326,17 +352,8 @@ class IterableExtensions {
 		list.uncat(list2)
 	}
 
-	/** Create a new immutable list from a value and a list */
-//	def static <T> + (T value, Iterable<T> list) {
-//		value.concat(list)
-//	}
+	// FUNCTION OPERATORS /////////////////////////////////////////////////////
 
-	// iterating through items using >> closure
-	//    def static <T> operator_doubleGreaterThan(Iterable<T> iterable, (T)=>void fn) {
-	//            iterable.forEach(fn)
-	//            iterable
-	//    }
-	// mapping, filtering
 	// map with ->
 	def static <T, R> -> (Iterable<? extends T> original, Functions.Function1<? super T, ? extends R> transformation) {
 		original.map(transformation)

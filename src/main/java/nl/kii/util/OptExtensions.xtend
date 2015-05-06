@@ -10,12 +10,20 @@ class OptExtensions {
 	 * Checks if an object is defined, meaning here that it is not empty or faulty
 	 */
 	def static <T> defined(Object o) {
-		switch(o) {
+		switch o {
 			case null: false
 			None<T>: false
 			Err<T>: false
 			default: true
 		}		
+	}
+	
+	/** Checks if an object is truthy, meaning it is not false and it is defined. */
+	def static <T> truthy(Object o) {
+		switch o {
+			Boolean: o
+			default: o.defined
+		}
 	}
 
 	/**
