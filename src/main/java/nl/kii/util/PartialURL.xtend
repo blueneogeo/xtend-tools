@@ -40,7 +40,13 @@ class PartialURL {
 		query
 			?.split('&')
 			?.map [ split('=') ]
-			?.map [ if(length==2) get(0)->get(1) ]
+			?.map [
+				switch length {
+					case 1: get(0)->''
+					case 2: get(0)->get(1)
+					default: null
+				} 
+			]
 			?.filterNull
 			?.toMap
 	}
