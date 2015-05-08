@@ -10,11 +10,11 @@ class ThrowableExtensions {
 	 */
 	def static Iterable<StackTraceElement> clean(StackTraceElement[] stacktrace, String... filtered) {
 		if(filtered == null) return stacktrace
-		stacktrace.filter [ trace | none( filtered.map [
-			trace.className.matches(it)
-		] ) ]
+		// allow only those traces whose classname match none of the filtered items 
+		stacktrace.filter [ trace | 
+			none( filtered.map [ trace.className.matches(it) ] ) 
+		]
 	}
-	
 	
 	/** 
 	 * Removes stacktrace elements from any Throwable and its cause tree. 
