@@ -1,8 +1,13 @@
 package nl.kii.util
 
 import static extension nl.kii.util.IterableExtensions.*
+import com.google.common.base.Throwables
 
 class ThrowableExtensions {
+	
+	def static getRootCause(Throwable t) {
+		Throwables.getRootCause(t)
+	}
 	
 	/** 
 	 * Removes stacktrace elements from a stacktrace. 
@@ -35,19 +40,16 @@ class ThrowableExtensions {
 	
 	/** Formats a throwable into a nicely formatted string, with an optional message. */
 	def static String format(Throwable it, String message) '''
-		«IF message != null»Thrown: «message»«ENDIF»
-		Thrown «class.simpleName» - «message»:
+		«IF message != null»«message»«ENDIF»
+		«class.simpleName» «it.message»:
 			«it.message»
 			«FOR trace : stackTrace»
-			- «trace»
+			at «trace»
 			«ENDFOR»
-		«IF cause != null»
-			Caused by «cause.class.simpleName»:
-				«cause.message»
-				«FOR trace : cause.stackTrace»
-				- «trace»
-				«ENDFOR»
-		«ENDIF»
+			«val root = rootCause»
+			«IF root != it»
+				Caused by: «root.format»
+			«ENDIF»
 	'''
 
 	/** returns true if the error is of the type or the cause of the error is of the type. */	
