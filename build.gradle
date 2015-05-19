@@ -22,10 +22,11 @@ repositories {
  
 dependencies {
 	compile 'commons-lang:commons-lang:+'
-	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.7.+'
-  	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.7.+'
-    compile 'org.slf4j:slf4j-log4j12:1.7.+'
-    compile 'junit:junit:4.+'  	
+	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.8.2'
+  	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.8.2'
+    compile 'ch.qos.logback:logback-classic:1.1.3'
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'junit:junit:4.12'  	
 }
 
 tasks.jar.dependsOn javadoc
