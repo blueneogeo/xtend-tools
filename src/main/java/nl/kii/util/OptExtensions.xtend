@@ -34,6 +34,10 @@ class OptExtensions {
 		if(condition) fn.apply(null).option
 		else none
 	}
+	
+	def static <T, I> Opt<T> => (Opt<I> o, (I)=>T fn) {
+		ifSome(o, fn)
+	}
 
 	/**
 	 * Only perform the function if something was set. Returns an optional result.
@@ -44,6 +48,10 @@ class OptExtensions {
 		else none
 	}
 
+	def static <T, I> Opt<I> => (Opt<I> o, (I)=>void fn) {
+		ifSome(o, fn)
+	}
+	
 	/**
 	 * Only perform the function if something was set. Returns the result of the function for chaining
 	 */
