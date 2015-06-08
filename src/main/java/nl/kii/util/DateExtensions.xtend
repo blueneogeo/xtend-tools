@@ -14,14 +14,25 @@ class DateExtensions {
 	def static now() { new Date }
 
 	/** Create a date for a specific calendar moment */
-	def static date(int year, int month, int day, int hour, int min, int sec) {
-		new Date().withCalendar[
+	def static moment(int year, int month, int day) {
+		moment(year, month, day, 0, 0, 0, 0)
+	}
+
+	/** Create a date for a specific calendar moment */
+	def static moment(int year, int month, int day, int hour, int min, int sec) {
+		moment(year, month, day, hour, min, sec, 0)
+	}
+	
+	/** Create a date for a specific calendar moment */
+	def static moment(int year, int month, int day, int hour, int min, int sec, int ms) {
+		new Date().withCalendar [
 			set(YEAR, year)
 			set(MONTH, month)
 			set(DAY_OF_MONTH, month)
 			set(HOUR_OF_DAY, hour)
 			set(MINUTE, min)
 			set(SECOND, sec)
+			set(MILLISECOND, ms)
 		]
 	}
 
