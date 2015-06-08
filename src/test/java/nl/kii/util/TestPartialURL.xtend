@@ -22,9 +22,10 @@ class TestPartialURL {
 	}
 	
 	@Test
-	def void testNoParametersGiveEmptyQueryParameters() {
+	def void testSupportsNoValueParameters() {
 		val url = new PartialURL('/twitter/timeline?telegraaf')
-		assertTrue(url.parameters.empty)
+		assertFalse(url.parameters.empty)
+		assertEquals('telegraaf', url.parameters.keySet.head)
 	}
 	
 	@Test
