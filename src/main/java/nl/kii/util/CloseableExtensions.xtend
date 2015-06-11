@@ -34,4 +34,12 @@ class CloseableExtensions {
 		}
 	}
 	
+	def static <I extends AutoCloseable, T> using(I closeable, (I)=>T fn) {
+        try {
+            fn.apply(closeable)
+        } finally {
+            closeable?.close
+        }
+    }
+	
 }
