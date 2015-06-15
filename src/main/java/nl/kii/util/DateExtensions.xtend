@@ -1,9 +1,11 @@
 package nl.kii.util
 
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Calendar
+import java.util.Date
+
 import static java.util.Calendar.*
+
 import static extension java.util.TimeZone.*
 
 class DateExtensions {
@@ -170,7 +172,18 @@ class Period {
 	def getDays() { time / 1000 / 60 / 60 / 24 }
 	def getYears() { time / 1000 / 60 / 60 / 24 / 356 }
 	
-	override toString() '''«time» milliseconds'''
+	override toString() {
+		val t = switch time {
+			case years > 1: new Years(years)
+			case days > 1: new Days(days)
+			case hours > 1: new Hours(hours)
+			case mins > 1: new Minutes(mins)
+			case secs > 1: new Seconds(secs)
+			default: new MilliSeconds(ms)
+		}
+		val remainingMs = ms - t.ms
+		'''«t»«IF remainingMs > 0», «new Period(remainingMs)»«ENDIF»'''
+	}
 	
 	override equals(Object obj) {
 		if(obj instanceof Period) obj.time == time else false
@@ -181,25 +194,30 @@ class Period {
 
 class MilliSeconds extends Period { 
 	new(long ms) { super(ms) }
+	override toString() '''«ms» milliseconds'''
 }
 
 class Seconds extends Period { 
 	new(long secs) { super(secs * 1000) }
+	override toString() '''«secs» seconds'''
 }
 
 class Minutes extends Period { 
 	new(long mins) { super(mins * 1000 * 60) }
+	override toString() '''«mins» minutes'''
 }
 
 class Hours extends Period { 
 	new(long hrs) { super(hrs * 1000 * 60 * 60) }
+	override toString() '''«hours» hours'''
 }
 
 class Days extends Period { 
 	new(long days) { super(days * 1000 * 60 * 60 * 24) }
+	override toString() '''«days» days'''
 }
 
 class Years extends Period { 
 	new(long years) { super(years * 1000 * 60 * 60 * 24 * 365) }
+	override toString() '''«years» years'''
 }
-

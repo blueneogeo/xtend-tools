@@ -20,4 +20,10 @@ class TestDateExtensions {
 		assertEquals(0, (now - now.toTimeZone('GMT+1')).hours)
 	}
 	
+	@Test
+	def void testPeriodToString() {
+		val period = 3.years + 2.days + 7.hours + 9.mins + 20.secs + 1.ms
+		assertEquals('3 years, 2 days, 7 hours, 9 minutes, 20 seconds, 1 milliseconds', period.toString)
+	}
+	
 }
