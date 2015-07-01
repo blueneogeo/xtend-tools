@@ -1,7 +1,5 @@
 package nl.kii.util
 
-import static extension org.junit.Assert.*
-
 class OptExtensions {
 	
 	// BOOLEAN DEFINED CHECK //////////////////////////////////////////////////
@@ -281,21 +279,6 @@ class OptExtensions {
 	// example: val user = api.getUser(12).orThrow [ new UserNotFoundException ] // getUser returns an option
 	def static <T> T orThrow(Opt<T> o, (Object)=>Throwable exceptionFn) {
 		if(o.defined) o.value else throw exceptionFn.apply(null)
-	}
-	
-	// ASSERTIONS /////////////////////////////////////////////////////////////
-	
-	def static <T> void assertNone(Opt<T> option) {
-		option.hasSome.assertFalse
-	}
-	
-	def static <T> void assertSome(Opt<T> option) {
-		option.hasSome.assertTrue
-	}
-
-	def static <T> void assertSome(Opt<T> option, T value) {
-		option.assertSome
-		value.assertEquals(option.value)
 	}
 	
 }

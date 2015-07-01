@@ -12,6 +12,7 @@ import static extension nl.kii.util.LogExtensions.*
 import static extension nl.kii.util.OptExtensions.*
 import static extension org.junit.Assert.*
 import static extension org.slf4j.LoggerFactory.*
+import static extension nl.kii.util.JUnitExtensions.*
 
 interface Greeter {
     def void sayGreeting(String name)

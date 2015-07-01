@@ -1,40 +1,141 @@
+// SETUP BUILDSCRIPT ///////////////////////////////////////////////////////////
+
 buildscript {
     repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
+        maven { url "https://plugins.gradle.org/m2/" }
+        jcenter()
     }
     dependencies {
-        classpath "org.xtend:xtend-gradle-plugin:0.4.+"
+        classpath "org.xtend:xtend-gradle-plugin:0.4.7"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.1.1"
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.xtend.xtend'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-} 
- 
-dependencies {
-	compile 'commons-lang:commons-lang:+'
-	compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.8.2'
-  	compile 'org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.8.2'
-    compile 'ch.qos.logback:logback-classic:1.1.3'
-    compile 'org.slf4j:slf4j-api:1.7.12'
-    compile 'junit:junit:4.12'  	
+configurations {
+    published
 }
 
-tasks.jar.dependsOn javadoc
+// CONFIGURE ALL SUBPROJECTS ///////////////////////////////////////////////////
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
+subprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'java'
+    apply plugin: 'org.xtend.xtend'
+    apply plugin: 'maven-publish'
+    apply plugin: "com.jfrog.artifactory"
+
+    sourceCompatibility=javaVersion
+    targetCompatibility=javaVersion
+
+    configurations {
+        // published
+        all*.exclude group: 'log4j', module: 'log4j'
+        provided {
+            dependencies.all { dep ->
+                configurations.default.exclude group: dep.group, module: dep.name
+            }
+        }
+        compile.extendsFrom provided
+        testCompile.extendsFrom provided
+    }
+    
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url "${artifactory_url}/${artifactory_release_repo}"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }        
+    }
+    
+    eclipse.project.name = "${parent.name}-${name}"
+
+    task install( dependsOn: publishToMavenLocal )
+    task export( dependsOn: artifactoryPublish)
+    
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
+    
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+    
+    artifactoryPublish {
+        dependsOn sourceJar, javadocJar
+    }
+
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
 }
+
+// SETUP PROJECT SPECIFIC SETTINGS /////////////////////////////////////////////
+
+project( 'core' ) {
+    dependencies {
+        compile "org.eclipse.xtend:org.eclipse.xtend.lib:$xtendVersion"
+	    compile "org.eclipse.xtext:org.eclipse.xtext.xbase.lib:$xtendVersion"
+	    compile 'commons-lang:commons-lang:+'
+	    compile 'ch.qos.logback:logback-classic:1.1.3'
+	    compile 'org.slf4j:slf4j-api:1.7.12'
+        testCompile "junit:junit:${junitVersion}"
+    }
+    eclipse.project.name = "${parent.name}"
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId "${parent.name}"
+                artifact sourceJar
+                artifact javadocJar
+                from components.java
+            }
+        }
+    }
+}
+
+project( 'test' ) {
+    dependencies {
+        compile project(":core")
+        compile "junit:junit:$junitVersion"
+    }
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId "${parent.name}-test"
+                artifact sourceJar
+                artifact javadocJar
+                from components.java
+            }
+        }
+    }
+}
+
+// CONFIGURE ARTIFACTORY ///////////////////////////////////////////////////////
+
+artifactory {
+    contextUrl = "${artifactory_url}"
+    publish {
+        defaults {
+            publications ('mavenJava')
+        }
+        repository {
+            repoKey = "${artifactory_release_repo}"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }
+    resolve {  
+        repository {
+            repoKey = 'repo'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }
+}    
