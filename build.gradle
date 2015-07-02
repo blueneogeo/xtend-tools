@@ -38,6 +38,11 @@ subprojects {
         compile.extendsFrom provided
         testCompile.extendsFrom provided
     }
+
+    dependencies {
+        compile "org.eclipse.xtend:org.eclipse.xtend.lib:${xtendVersion}"
+	    compile "org.eclipse.xtext:org.eclipse.xtext.xbase.lib:${xtendVersion}"
+    }
     
     repositories {
         mavenCentral()
@@ -71,7 +76,9 @@ subprojects {
     }
 
     tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
+        if (JavaVersion.current().isJava8Compatible()) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
     }
 
 }
@@ -80,8 +87,6 @@ subprojects {
 
 project( 'core' ) {
     dependencies {
-        compile "org.eclipse.xtend:org.eclipse.xtend.lib:$xtendVersion"
-	    compile "org.eclipse.xtext:org.eclipse.xtext.xbase.lib:$xtendVersion"
 	    compile 'commons-lang:commons-lang:+'
 	    compile 'ch.qos.logback:logback-classic:1.1.3'
 	    compile 'org.slf4j:slf4j-api:1.7.12'
