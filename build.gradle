@@ -45,8 +45,8 @@ subprojects {
     }
     
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
         maven {
             url "${artifactory_url}/${artifactory_release_repo}"
             credentials {
