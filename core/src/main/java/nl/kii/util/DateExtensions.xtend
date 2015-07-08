@@ -30,7 +30,7 @@ class DateExtensions {
 		new Date().withCalendar [
 			set(YEAR, year)
 			set(MONTH, month)
-			set(DAY_OF_MONTH, month)
+			set(DAY_OF_MONTH, day)
 			set(HOUR_OF_DAY, hour)
 			set(MINUTE, min)
 			set(SECOND, sec)
