@@ -75,7 +75,7 @@ class DateExtensions {
 
 	// DATE MANIPULATION ///////////////////////////////////////////////////
 
-	/** Update a date using a calendar object. See the date(...) method for example usage. */	
+	/** Update a date using a calendar object. See the moment(...) methods for example usage. */	
 	def static Date withCalendar(Date date, (Calendar)=>void updateFn) {
 		val calendar = date.toCalendar
 		updateFn.apply(calendar)
@@ -85,7 +85,7 @@ class DateExtensions {
 	// DATE FORMATTING ////////////////////////////////////////////////////
 	
 	/** quickly format a date to the standard "yyyy-MM-dd'T'HH:mm:ss" format. */
-	def static format(Date date) { new SimpleDateFormat(standardDateFormat).format(date) }
+	def static format(Date date) { date.format(standardDateFormat) }
 	
 	/** 
 	 * quickly format a date to a specified format. see all formatting options at 
@@ -101,9 +101,6 @@ class DateExtensions {
 	/** Return the oldest date */
 	def static oldest(Date... dates) { dates.filter[it!=null].sortBy[time].head }
 
-	/** See if a date is older than a given period (since right now) */
-	def static isOlderThan(Date date, Period period) { now - date > period }
-	
 	/** the date is more than [period] old */	
 	def static > (Date date, Period period) { now - date > period }
 	
@@ -117,28 +114,28 @@ class DateExtensions {
 	def static <= (Date date, Period period) { now - date <= period }
 
 	/** Difference between dates, largest first */
-	def static diff(Date d1, Date d2) { new Period(d1.time - d2.time) }
-
-	def static - (Date d1, Date d2) { diff(d1, d2) }
+	def static - (Date d1, Date d2) { new Period(d1.time - d2.time) }
 
 	// PERIOD CREATION ////////////////////////////////////////////////////
 	
 	def static ms(long value) { new MilliSeconds(value) }
+	def static sec(long value) { new Seconds(value) }
 	def static secs(long value) { new Seconds(value) }
+	def static min(long value) { new Minutes(value) }
 	def static mins(long value) { new Minutes(value) }
+	def static hour(long value) { new Hours(value) }
 	def static hours(long value) { new Hours(value) }
+	def static day(long value) { new Days(value) }
 	def static days(long value) { new Days(value) }
+	def static year(long value) { new Years(value) }
 	def static years(long value) { new Years(value) }
 
 	// PERIOD MANIPULATION ////////////////////////////////////////////////
 
-	def static add(Period p1, Period p2) {	new Period(p1.time + p2.time) }
-	def static subtract(Period p1, Period p2) { new Period(p1.time - p2.time) }
-	def static + (Period p1, Period p2) { add(p1, p2) }
-	def static - (Period p1, Period p2) { subtract(p1, p2) }
+	def static + (Period p1, Period p2) { new Period(p1.time + p2.time) }
+	def static - (Period p1, Period p2) { new Period(p1.time - p2.time) }
 
-	def static divide(Period p1, int amount) { new Period(p1.time / amount) }
-	def static / (Period p1, int amount) { divide(p1, amount) }
+	def static / (Period p1, int amount) { new Period(p1.time / amount) }
 
 	// PERIOD COMPARISON //////////////////////////////////////////////////
 
