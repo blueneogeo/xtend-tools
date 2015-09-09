@@ -110,12 +110,12 @@ class OptExtensions {
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
 	
 	def static <T> T ?:(Opt<T> option, T fallback) {
-		if(option.hasSome) option.value
+		if(option.defined) option.value
 		else fallback
 	}
 	
 	def static <T> T ?:(Opt<T> option, (Void)=>T fallback) {
-		if(option.hasSome) option.value
+		if(option.defined) option.value
 		else fallback.apply(null)
 	}
 
