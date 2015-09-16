@@ -113,6 +113,11 @@ class OptExtensions {
 		if(option.defined) option.value
 		else fallback
 	}
+
+	def static <T> Opt<T> ?:(Opt<T> option, Opt<T> fallback) {
+		if(option.defined) option
+		else fallback
+	}
 	
 	def static <T> T ?:(Opt<T> option, (Void)=>T fallback) {
 		if(option.defined) option.value
