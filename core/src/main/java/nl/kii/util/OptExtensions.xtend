@@ -33,10 +33,6 @@ class OptExtensions {
 		else none
 	}
 	
-	def static <T, I> Opt<T> => (Opt<I> o, (I)=>T fn) {
-		ifSome(o, fn)
-	}
-
 	/**
 	 * Only perform the function if something was set. Returns an optional result.
 	 * <pre>val Opt<User> user = ifSome(userId) [ getUser(userId) ]</pre>
