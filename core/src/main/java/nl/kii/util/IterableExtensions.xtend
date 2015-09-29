@@ -197,6 +197,22 @@ class IterableExtensions {
 		]
 	}
 
+	/** Turns a flat iterable into iterable groups of size {@code groupSize}. 
+	 * 	Note: last entry size might be smaller than the specified {@code groupSize}.
+	 * @throws IllegalArgumentException if groupSize < 1
+	 */
+	def static <T> unflatten(Iterable<? extends T> iterable, int groupSize) {
+		if (groupSize < 1) throw new IllegalArgumentException('groupSize must be > 0')
+		
+		val List<List<T>> list = newLinkedList(newLinkedList)
+		
+		iterable.fold(list) [ total, incoming |
+			if (total.last.size == groupSize) total.add(newLinkedList(incoming))
+			else total.last.add(incoming)
+			total
+		]
+	}
+	
 	/** transforms a map into a list of pairs */
 	def static <K, V> toPairs(Map<K, V> map) {
 		map.entrySet.map[it.key -> it.value].toList
