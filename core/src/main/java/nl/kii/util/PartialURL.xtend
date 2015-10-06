@@ -18,11 +18,14 @@ class PartialURL {
 	val static pattern = compile("^(?=[^&])(?:(?<scheme>[^:/?#]+):)?(?://(?<authority>[^/?#]*))?(?<path>[^?#]*)(?:\\?(?<query>[^#]*))?(?:#(?<fragment>.*))?")
 	val static validate = compile('^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]')
 	
-	String protocol
+	String protocol = 'http'
 	String domain
 	String path
 	String query
 	String hash
+	
+	new() {
+	}
 	
 	new(String url) {
 		val matcher = pattern.matcher(url)
@@ -53,7 +56,7 @@ class PartialURL {
 	
 	/** combination of protocol, domain and path */
 	def getFullPath() {
-		protocol + '://'+ domain + path
+		protocol + '://'+ (domain?:'') + (path?:'')
 	}
 	
 	/** checks if the passed url is a valid url (adheres to standards) */

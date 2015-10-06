@@ -6,6 +6,19 @@ import static extension nl.kii.util.PartialURL.*
 class TestPartialURL {
 	
 	@Test
+	def void testURLBuilding() {
+		val url = new PartialURL => [
+			protocol = 'http'
+			assertFalse(valid)
+			domain = 'cnn.com'
+			assertTrue(valid)
+			path = '/index.html'
+			hash = 'test'
+		]
+		assertEquals('http://cnn.com/index.html#test', url.toString)
+	}
+	
+	@Test
 	def void testURLParsing() {
 		val text = 'http://www.test.com/somepath/to/nowhere?p1=10&p2=hello#somehash:somewhere'
 		val url = new PartialURL(text)
@@ -31,7 +44,7 @@ class TestPartialURL {
 	@Test
 	def void testFullPath() {
 		val url = new PartialURL('https://api.twitter.com/1/statuses/update.json?include_entities=true')
-		assertEquals(url.fullPath, 'https://api.twitter.com/1/statuses/update.json')
+		assertEquals('https://api.twitter.com/1/statuses/update.json', url.fullPath)
 	}
 
 }
