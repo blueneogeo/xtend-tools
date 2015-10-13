@@ -5,7 +5,7 @@ import java.util.Calendar
 import java.util.Date
 
 import static java.util.Calendar.*
-
+import static extension java.lang.Math.*
 import static extension java.util.TimeZone.*
 
 class DateExtensions {
@@ -101,6 +101,14 @@ class DateExtensions {
 	/** Return the oldest date */
 	def static oldest(Date... dates) { dates.filter[it!=null].sortBy[time].head }
 
+	/** Return the date nearest to the specified {@code target}, or {@code null} if the iterable is empty. */
+	def static nearest(Iterable<? extends Date> dates, Date target) { 
+		dates.filterNull.reduce [ leading, contestant | 
+			if (interval(target, contestant) < interval(target, leading)) contestant 
+			else leading
+		]
+	}
+	
 	/** the date is more than [period] old */	
 	def static > (Date date, Period period) { now - date > period }
 	
@@ -115,6 +123,9 @@ class DateExtensions {
 
 	/** Difference between dates, largest first */
 	def static - (Date d1, Date d2) { new Period(d1.time - d2.time) }
+	
+	/** Absolute difference between two dates. */
+	def static interval(Date d1, Date d2) { new Period((d1.time - d2.time).abs) }
 
 	// PERIOD CREATION ////////////////////////////////////////////////////
 	
@@ -138,6 +149,7 @@ class DateExtensions {
 	def static / (Period p1, int amount) { new Period(p1.time / amount) }
 	def static * (int n, Period p1) { new Period(n * p1.time) }
 	def static * (Period p1, int n) { n * p1 }
+	def static abs(Period p) { new Period(p.time.abs) }
 
 	// PERIOD COMPARISON //////////////////////////////////////////////////
 
@@ -145,6 +157,8 @@ class DateExtensions {
 	def static >= (Period p1, Period p2) { p1.time >= p2.time }
 	def static < (Period p1, Period p2) { p1.time < p2.time }
 	def static <= (Period p1, Period p2) { p1.time <= p2.time }
+	def static min(Period p1, Period p2) { new Period(min(p1.time, p2.time)) }
+	def static max(Period p1, Period p2) { new Period(max(p1.time, p2.time)) }
 
 	// DATE CHANGING USING PERIODS ////////////////////////////////////////
 	
@@ -160,7 +174,7 @@ class DateExtensions {
 class Period {
 	val long time
 	
-	new(long time) { this.time = time	} 
+	new(long time) { this.time = time } 
 	
 	def long time() { time }
 	

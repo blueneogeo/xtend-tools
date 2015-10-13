@@ -26,4 +26,23 @@ class TestDateExtensions {
 		assertEquals('3 years, 2 days, 7 hours, 9 minutes, 20 seconds, 1 milliseconds', period.toString)
 	}
 	
+	@Test
+	def void testNearest() {
+		val now = now
+		
+		val d1 = now
+		val d2 = now - 10.mins
+		val d3 = now - 20.mins
+		val d4 = now - 30.mins
+		val d5 = now - 40.mins
+		
+		val target = now - 22.mins
+		
+		val dates = #[ d1, d5, d2, d3, d4 ]
+		
+		assertEquals(dates.nearest(target), d3)
+		
+		
+		assertEquals(#[].nearest(target), null)
+	}
 }
