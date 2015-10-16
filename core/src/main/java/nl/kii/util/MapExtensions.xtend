@@ -3,9 +3,10 @@ package nl.kii.util
 import java.util.Map
 import java.util.Map.Entry
 import java.util.List
+import com.google.common.collect.ImmutableMap
 
 class MapExtensions {
-
+	
 	// OPERATOR OVERLOADING ///////////////////////////////////////////////////
 
 	def static <K, V> += (Map<K, V> map, Pair<K, V> pair) {
@@ -16,6 +17,16 @@ class MapExtensions {
 	def static <K, V> += (Map<K, V> map, Entry<K, V> entry) {
 		map.put(entry.key, entry.value)
 		map
+	}
+	
+	/** Immutable Pair-to-Map addition */
+	def static <K, V> + (Map<K, V> map, Pair<K, V> pair) {
+		ImmutableMap.builder.putAll(map).put(pair.key, pair.value).build
+	}
+	
+	/** Immutable Map.Entry-to-Map addition */
+	def static <K, V> + (Map<K, V> map, Entry<K, V> entry) {
+		ImmutableMap.builder.putAll(map).put(entry).build
 	}
 
 	// MAP<MAP> METHODS ///////////////////////////////////////////////////////
