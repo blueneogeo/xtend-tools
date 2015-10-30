@@ -123,6 +123,18 @@ class TestXtendTools {
 			.count
 			.get(3)
 			.assertEquals(4)
+		
+		// distinct
+		#[ 1,2,3,3,3,4 ]
+			.distinct
+			.assertEquals(#[ 1,2,3,4 ])
+
+		// distinctBy
+		users
+			.distinctBy [ age ]
+			.length
+			.assertEquals(2)
+
 		// index
 		users
 			.index [ age ]

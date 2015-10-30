@@ -166,10 +166,15 @@ class IterableExtensions {
 	def static <T> filterError(Iterable<? extends Opt<T>> iterable) {
 		iterable.filter[!hasError]
 	}
-
+	
 	/** Remove all double values in a list, turning it into a list of unique values */
 	def static <T> distinct(Iterable<? extends T> values) {
-		values.groupBy[it].toPairs.map[value.head]
+		values.distinctBy[it]
+	}
+
+	/** Returns a filtered list of unique values, distinguished by {@code distinction}, first-come first-served. */
+	def static <T, D> distinctBy(Iterable<? extends T> values, (T)=>D distinction) {
+		values.groupBy(distinction).toPairs.map[value.head]
 	}
 
 	/** Returns the position/index of the value in the iterable, starting at 0 */
