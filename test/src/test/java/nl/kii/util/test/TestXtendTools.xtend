@@ -1,18 +1,21 @@
-package nl.kii.util
+package nl.kii.util.test
 
 import java.io.Closeable
 import java.io.IOException
+import nl.kii.util.Log
+import nl.kii.util.None
+import nl.kii.util.Opt
 import org.eclipse.xtend.lib.annotations.Data
 import org.junit.Test
 
 import static nl.kii.util.CloseableExtensions.*
 
 import static extension nl.kii.util.IterableExtensions.*
+import static extension nl.kii.util.JUnitExtensions.*
 import static extension nl.kii.util.LogExtensions.*
 import static extension nl.kii.util.OptExtensions.*
 import static extension org.junit.Assert.*
 import static extension org.slf4j.LoggerFactory.*
-import static extension nl.kii.util.JUnitExtensions.*
 
 interface Greeter {
     def void sayGreeting(String name)
