@@ -2,13 +2,15 @@
 
 Some tools and Xtend extensions that make life with the Xtend programming language better:
 
+- @NamedParams: named and optional parameters
 - Options: helps avoid NullpointerExceptions
 - Easy date/time manipulation
 - List operations and shortcuts
 - SL4J Logging wrapper: allows more efficient and compact logging
 
-Note: Promising and Streaming have been moved to the xtend-stream. For more information about the Xtend language:
-http://www.eclipse.org/xtend/
+Note: Promises and Streams have been moved to the xtend-async project. 
+
+For more information about the Xtend language: http://www.eclipse.org/xtend/
 
 ## Getting Started
 
@@ -17,6 +19,100 @@ If you use maven or gradle, the dependency is the following:
 	com.kimengi.util:xtend-tools:3.1-SNAPSHOT
 
 Note: currently this library is not yet on MavenCentral.
+
+## NamedParams
+
+A drawback in both Java and Xtend is that constructors and methods can have a lot of parameters, which are then often replaced by setters. However that means a lot of new properties, and you lose immutability.
+
+By using the @NamedParams Active Annotation, you can set your parameters using a closure.
+
+### The Problem
+
+For example, you have this existing User constructor:
+
+	new(String name, String owner, int age, int duration, boolean isActive, boolean isAdmin) {
+		// some init code
+	}
+
+Calling it is a pain:
+
+	// what does each parameter mean?
+	new User(‘John’, ‘Mary’, 40, 235, true, false)
+
+So you may make a shortcut constructor:
+
+	// an extra constructor for most cases
+	new(String name, int age) {
+		this(name, null, age, 10, true, false)
+	}
+
+All a lot of work, especially if more that one parameter is optional. Also, the null is dangerous. You would prefer to use an Optional type here, but setting that is more work.
+
+### Using @NamedParams
+
+@NamedParams can be used for both methods and constructors. This is how you can implement the above long constructor:
+
+	@NamedParams
+	new(String name, Opt<String> owner, Integer age, @I(10) int duration, @B(true) boolean isActive, @B(false) boolean isAdmin) { 
+		// some init code
+	}
+
+In short, you annotate it with @NamedParams, and use annotations  for parameters to indicate if they have a default value or if they are options. Nothing may be null.
+
+The default annotations are:
+
+- @I(defaultValue) for int and Integer
+- @B(defaultValue) for boolean and Boolean
+- @L(defaultValue) for long and Long
+- @D(defaultValue) for double and Double
+- @S(defaultValue) for String
+
+The @NamedParams method creates some extra methods for you in the class, along with a parameters class.
+
+You can then use it like this:
+
+	new User [ 
+		name = ‘John’
+		admin = ‘Mary’
+		age = 40
+		duration = 235
+		active = true
+		admin = false
+	]
+
+Notice that you can set the admin property directly as a String, using a setter method on the closure. It will set the option for you.
+
+You can also call the constructor like this:
+
+	new User [
+		name = ‘John’
+		age = 40
+	]
+
+Now admin will be None<String>, duration will be 10, active will be true, and admin will be false.
+
+If you fail to set name or age, you will get a NullPointerException at runtime, before your constructor is called.
+
+#### Pinning a Parameter
+
+To use a method as an extension method, you need the first parameter to be fixed. For example:
+
+	def static save(Database db, String key, Role role, Security security) { … }
+
+Which can then be called like this:
+
+	db.save(key, role, security)
+
+If you were to add the @NamedParams method here, you would not be able to call it as an extension with the closure.
+
+What you want is to “pin” the first parameter to the method. You can do this with the @Pin annotation.
+
+	@NamedParams
+	def static save(@Pin Database db, String key, Role role, Security security) { … }
+
+Now you can use it like an extension:
+
+	db.save [ key = … role = … security = …	]
 
 ## Option Programming
 

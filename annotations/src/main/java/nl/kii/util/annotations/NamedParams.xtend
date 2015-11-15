@@ -11,6 +11,7 @@ import org.eclipse.xtend.lib.macro.declaration.ConstructorDeclaration
 import org.eclipse.xtend.lib.macro.declaration.ExecutableDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableConstructorDeclaration
+import org.eclipse.xtend.lib.macro.declaration.MutableExecutableDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableMethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableNamedElement
 import org.eclipse.xtend.lib.macro.declaration.NamedElement
@@ -25,7 +26,7 @@ annotation NamedParams {
 }
 
 @Target(PARAMETER)
-annotation Lock {
+annotation Pin {
 }
 
 @Target(PARAMETER)
@@ -94,23 +95,20 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 		registerClass(method.compilationUnit.packageName + '.' + method.parametersObjectName)
 	}
 
-	def doTransform(MutableConstructorDeclaration method, extension TransformationContext context) {
-	}
+	def doTransform(MutableExecutableDeclaration member, extension TransformationContext context) {
+		// method generics are not allowed, since Xtend 2.9.X does not expose that information yet.
+		if(!member.typeParameters.empty) member.addError('@NamedParam does not (yet) support generic type parameters for methods.')
+		val allParameterTypes = member.parameters.map[type.actualTypeArguments].flatten
+		if(!allParameterTypes.empty) member.addError('@NamedParam does not (yet) support generic type parameters in methods.')
 
-	def doTransform(MutableMethodDeclaration method, extension TransformationContext context) {
-		// generics are not allowed, since Xtend 2.9.X does not expose that information yet.
-		if(!method.typeParameters.empty) method.addError('@NamedParam does not (yet) support generic type parameters for methods.')
-		val allParameterTypes = method.parameters.map[type.actualTypeArguments].flatten
-		if(!allParameterTypes.empty) method.addError('@NamedParam does not (yet) support generic type parameters in methods.')
-		
 		// create the params class
-		val paramsClazz = findClass(method.compilationUnit.packageName + '.' + method.parametersObjectName) => [
+		val paramsClazz = findClass(member.compilationUnit.packageName + '.' + member.parametersObjectName) => [
 			implementedInterfaces = #[MethodParameters.newTypeReference]
 		]
 		// as fields, use all unlocked parameters of the method
 		val validationCode = new StringBuffer
 		// as fields, use all unlocked parameters of the method
-		for(parameter : method.parameters.filter [ !isLocked(context) ]) {
+		for(parameter : member.parameters.filter [ !isLocked(context) ]) {
 			// for each parameter in the method, create a field in the params class
 			paramsClazz.addField(parameter.simpleName) [
 				type = parameter.type
@@ -126,7 +124,6 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 				}
 				// if there is a default value annotation, write the default value into the params class field
 				if(annotation != null) {
-					docComment = annotation.typeName
 					val annotationType = annotation.newTypeReference
 					switch annotationType {
 						// strings need to be enclosed with " "
@@ -144,7 +141,7 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 				if(!parameter.nullAllowed(context)) {
 					validationCode.append('''
 						if(«parameter.simpleName» == null) 
-							throw new NullPointerException("«method.simpleName».«parameter.simpleName» may not be null. (annotate with @NULL if you want to allow null)");
+							throw new NullPointerException("«member.simpleName».«parameter.simpleName» may not be null. (annotate with @NULL if you want to allow null)");
 					''')
 				}
 			]
@@ -154,95 +151,117 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 		]
 		
 		// create a new method that takes just the parameters object
-		val clazz = method.declaringType
-		clazz.addMethod(method.simpleName) [
-			// copy all method properties
-			abstract = method.abstract
-			^default = method.^default
-			deprecated = method.deprecated
-			docComment = method.docComment
-			exceptions = method.exceptions
-			final = method.final
-			native = method.native
-			primarySourceElement = method
-			returnType = method.returnType
-			static = method.static
-			strictFloatingPoint = method.strictFloatingPoint
-			synchronized = method.synchronized
-			varArgs = method.varArgs
-			visibility = method.visibility
+		val clazz = member.declaringType
+		val Procedure1<MutableExecutableDeclaration> addParametersMethod = [
+			primarySourceElement = member
+			copyAllMethodProperties(member, it)
 			// add the locked parameters
-			for(param : method.parameters.filter [isLocked(context)]) {
+			for(param : member.parameters.filter [isLocked(context)]) {
 				addParameter(param.simpleName, param.type)
 			}
-			// add the closure parameter
+			// add the parameters paramer
 			val paramsType = paramsClazz.newTypeReference
 			addParameter('parameters', paramsType)
-			// check which parameters may not be null, which means they have no NULL annotation
 			// create the body which creates the params object, calls the closure with the params and then calls the original method
-			body = '''
-				«IF returnType.simpleName != 'void'»return «ENDIF»
-				«method.simpleName»(
-					«FOR param : method.parameters SEPARATOR ', '»
-						«IF !param.isLocked(context)»parameters.«ENDIF»«param.simpleName»
-					«ENDFOR»
-				);
-			'''
+			body = switch member {
+				MutableMethodDeclaration: '''
+					«IF member.returnType.simpleName != 'void'»return «ENDIF»
+					«member.simpleName»(
+						«FOR param : member.parameters SEPARATOR ', '»
+							«IF !param.isLocked(context)»parameters.«ENDIF»«param.simpleName»
+						«ENDFOR»
+					);
+				'''
+				MutableConstructorDeclaration: '''
+					this(
+						«FOR param : member.parameters SEPARATOR ', '»
+							«IF !param.isLocked(context)»parameters.«ENDIF»«param.simpleName»
+						«ENDFOR»
+					);
+				'''				 
+			}
 		]
 
 		// create the new method that calls the parameters object
-		clazz.addMethod(method.simpleName) [
-			// copy all method properties
-			abstract = method.abstract
-			^default = method.^default
-			deprecated = method.deprecated
-			docComment = method.docComment
-			exceptions = method.exceptions
-			final = method.final
-			native = method.native
-			primarySourceElement = method
-			returnType = method.returnType
-			static = method.static
-			strictFloatingPoint = method.strictFloatingPoint
-			synchronized = method.synchronized
-			varArgs = method.varArgs
-			visibility = method.visibility
+		val Procedure1<MutableExecutableDeclaration> addParametersFunctionMethod = [
+			primarySourceElement = member
+			copyAllMethodProperties(member, it)
 			// add the locked parameters
-			for(param : method.parameters.filter [isLocked(context)]) {
+			for(param : member.parameters.filter [isLocked(context)]) {
 				addParameter(param.simpleName, param.type)
 			}
 			// add the closure parameter
 			val paramsType = paramsClazz.newTypeReference
 			addParameter('parametersFn', MethodParameterSetter.newTypeReference(paramsType))
-			// check which parameters may not be null, which means they have no NULL annotation
 			// create the body which creates the params object, calls the closure with the params and then calls the original method
-			body = '''
-				«FOR param : method.parameters.filter [!nullAllowed(context) && isLocked(context)]»
-					if(«param.simpleName» == null) throw new NullPointerException("«method.simpleName».«param.simpleName» may not be null. (annotate with @NULL if you want to allow null)");
-				«ENDFOR»
-				«IF returnType.simpleName != 'void'»return «ENDIF»
-				«method.simpleName»(
-					«FOR param : method.parameters.filter[isLocked(context)] SEPARATOR ','»
-						«param.simpleName»
+			body = switch member {
+				MutableMethodDeclaration: '''
+					«FOR param : member.parameters.filter [!nullAllowed(context) && isLocked(context)]»
+						if(«param.simpleName» == null) throw new NullPointerException("«member.simpleName».«param.simpleName» may not be null. (annotate with @Null if you want to allow null)");
 					«ENDFOR»
-					, parametersFn.call(new «paramsType»())
-				);
-			'''
+					«IF member.returnType.simpleName != 'void'»return «ENDIF»
+					«member.simpleName»(
+						«FOR param : member.parameters.filter[isLocked(context)]»
+							«param.simpleName», 
+						«ENDFOR»
+						parametersFn.call(new «paramsType»())
+					);
+				'''
+				MutableConstructorDeclaration: '''
+					this(
+						«FOR param : member.parameters.filter[isLocked(context)]»
+							«param.simpleName», 
+						«ENDFOR»
+						parametersFn.call(new «paramsType»())
+					);				'''				 
+			}
 		]
 		
+		switch member {
+			MutableMethodDeclaration: {
+				clazz.addMethod(member.simpleName) [ addParametersMethod.apply(it) ]
+				clazz.addMethod(member.simpleName) [ addParametersFunctionMethod.apply(it) ]
+			}
+			MutableConstructorDeclaration: {
+				clazz.addConstructor [ addParametersMethod.apply(it) ]
+				clazz.addConstructor [ addParametersFunctionMethod.apply(it) ]
+			}
+		}
+	}
+	
+	def static copyAllMethodProperties(MutableExecutableDeclaration member, MutableExecutableDeclaration it) {
+		// copy all method properties
+		deprecated = member.deprecated
+		docComment = member.docComment
+		exceptions = member.exceptions
+		varArgs = member.varArgs
+		visibility = member.visibility
+		// these are only for methods, not for constructors
+		if(member instanceof MutableMethodDeclaration) {
+			if(it instanceof MutableMethodDeclaration) {
+				abstract = member.abstract
+				^default = member.^default
+				final = member.final
+				native = member.native
+				returnType = member.returnType
+				static = member.static
+				strictFloatingPoint = member.strictFloatingPoint
+				synchronized = member.synchronized
+			}
+		}
 	}
 
-	def getParametersObjectName(ExecutableDeclaration method) {
+	def static getParametersObjectName(ExecutableDeclaration method) {
 		// method.declaringType.simpleName + '_' + method.simpleName.toFirstUpper + 'Params'
 		method.declaringType.simpleName + '.' + method.simpleName.toFirstUpper + 'Params'
 	}
 
-	def nullAllowed(ParameterDeclaration param, extension TransformationContext context) {
+	def static nullAllowed(ParameterDeclaration param, extension TransformationContext context) {
 		param.type.primitive || param.findAnnotation(Null.newTypeReference.type) != null
 	}
 	
-	def isLocked(ParameterDeclaration param, extension TransformationContext context) {
-		param.findAnnotation(Lock.newTypeReference.type) != null
+	def static isLocked(ParameterDeclaration param, extension TransformationContext context) {
+		param.findAnnotation(Pin.newTypeReference.type) != null
 	}
 		
 }
