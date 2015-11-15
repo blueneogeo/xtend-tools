@@ -2,8 +2,13 @@
 
 buildscript {
     repositories {
-        jcenter()
-        maven { url "https://plugins.gradle.org/m2/" }
+        maven {
+            url "${artifactory_url}/plugins-release"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
     }
     dependencies {
         classpath 'org.xtend:xtend-gradle-plugin:0.4.7'
@@ -23,18 +28,6 @@ subprojects {
 
     sourceCompatibility=javaVersion
     targetCompatibility=javaVersion
-
-    repositories {
-        mavenLocal()
-        mavenCentral()        
-        maven {
-            url "${artifactory_url}/${artifactory_release_repo}"
-            credentials {
-                username="${artifactory_user}"
-                password="${artifactory_password}"
-            }
-        }
-    }
 
     configurations {
         all*.exclude group: 'log4j', module: 'log4j'
@@ -140,5 +133,13 @@ artifactory {
         defaults {
             publications ('mavenJava')
         }        
+    }
+    resolve {
+        repository {
+            repoKey = 'repos'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
     }
 }
