@@ -179,6 +179,13 @@ class TestXtendTools {
 		#[1D, 2D, 3D, 3.5D, 4D, 4D, 300D].median.assertEquals(3.5, 0)
 		#[3D, 21D, 1D].median.assertEquals(3D, 0)
 	}
+	
+	@Test def void testLastN() {
+		#[1, 2, 3, 4, 5].last(3).list.assertEquals(#[3, 4, 5])
+		#[1, 2, 3, 4].last(6).list.assertEquals(#[1, 2, 3, 4])
+		#[1, 2, 3].last(0).list.assertEquals(#[ ])
+		#[ ].last(1).list.assertEquals(#[ ])
+	}
 			
 	@Test def void testLogging() {
 		error('hello error!', new Exception('ooo!'))

@@ -150,6 +150,11 @@ class IterableExtensions {
 		values.toList.reverse.head
 	}
 
+	def static <T> Iterable<? extends T> last(Iterable<? extends T> iterable, int amount) {
+		if (iterable.size <= amount) iterable
+		else iterable.tail.last(amount)
+	}
+
 	/** Returns a random entry of the {@code Iterable} it is performed on. In case of an empty list, {@code null} is returned.  */
 	def static <T> T random(Iterable<? extends T> values) {
 		if (values.size == 0) return null
