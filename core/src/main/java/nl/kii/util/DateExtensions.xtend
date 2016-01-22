@@ -171,7 +171,7 @@ class DateExtensions {
 
 // PERIOD CLASSES //////////////////////////////////////////////////////////
 
-class Period {
+class Period implements Comparable<Period> {
 	val long time
 	
 	new(long time) { this.time = time } 
@@ -203,6 +203,8 @@ class Period {
 	}
 
 	override hashCode() { new Long(time).hashCode }
+	
+	override compareTo(Period o) { this.time.compareTo(o.time) }
 }
 
 class MilliSeconds extends Period { 

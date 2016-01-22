@@ -27,6 +27,16 @@ class TestDateExtensions {
 	}
 	
 	@Test
+	def void testComparability() {
+		val periods = #[ 1.day, 2.years, 10.ms, 100.secs, 1.min ]
+		
+		assertEquals(
+			#[ 10.ms, 1.min, 100.secs, 1.day, 2.years ],
+			periods.sort
+		)
+	}
+	
+	@Test
 	def void testNearest() {
 		val now = now
 		
