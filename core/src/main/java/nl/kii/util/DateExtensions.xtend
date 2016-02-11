@@ -145,8 +145,8 @@ class DateExtensions {
 
 	def static + (Period p1, Period p2) { new Period(p1.time + p2.time) }
 	def static - (Period p1, Period p2) { new Period(p1.time - p2.time) }
-
-	def static / (Period p1, int amount) { new Period(p1.time / amount) }
+	def static / (Period p1, Period p2) { p1.time.doubleValue / p2.time.doubleValue }
+	def static / (Period p1, int n) { new Period(p1.time / n) }
 	def static * (int n, Period p1) { new Period(n * p1.time) }
 	def static * (Period p1, int n) { n * p1 }
 	def static abs(Period p) { new Period(p.time.abs) }
