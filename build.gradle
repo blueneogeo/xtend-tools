@@ -27,7 +27,6 @@ subprojects {
   apply plugin: 'nebula.provided-base'
   apply plugin: 'java'
   apply plugin: 'org.xtext.xtend'
-  apply plugin: 'maven'
   apply plugin: 'maven-publish'
 
   sourceCompatibility = javaVersion
@@ -71,10 +70,21 @@ subprojects {
     from javadoc.destinationDir
   }
 
+  tasks.withType( Javadoc ) {
+    if ( JavaVersion.current().isJava8Compatible() ) {
+      options.addStringOption( 'Xdoclint:none', '-quiet' )
+    }
+  }
+
+  task install( dependsOn: publishToMavenLocal )
+
   publishing {
     publications {
-      mavenJava(MavenPublication) {
+      mavenJava( MavenPublication ) {
+        artifactId rootProject.name + '-' + project.name
         from components.java
+        artifact sourcesJar
+        artifact javadocJar
       }
     }
     repositories {
@@ -85,21 +95,6 @@ subprojects {
           password artifactory_password
         }
       }
-    }
-  }
-
-  artifacts {
-    archives sourcesJar
-    archives javadocJar
-  }
-
-  tasks.withType( Jar ) {
-    baseName = rootProject.name + '-' + project.name
-  }
-
-  tasks.withType(Javadoc) {
-    if ( JavaVersion.current().isJava8Compatible() ) {
-      options.addStringOption( 'Xdoclint:none', '-quiet' )
     }
   }
 }
