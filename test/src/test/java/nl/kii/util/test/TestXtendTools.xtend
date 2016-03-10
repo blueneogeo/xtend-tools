@@ -14,6 +14,7 @@ import static extension nl.kii.util.IterableExtensions.*
 import static extension nl.kii.util.JUnitExtensions.*
 import static extension nl.kii.util.LogExtensions.*
 import static extension nl.kii.util.OptExtensions.*
+import static extension nl.kii.util.SetOperationExtensions.*
 import static extension org.junit.Assert.*
 import static extension org.slf4j.LoggerFactory.*
 
@@ -149,6 +150,31 @@ class TestXtendTools {
 //			.filterEmpty // filter the empty result
 //			.length.assertEquals(2) // only two results left
 	}
+	
+	@Test
+	def void testSetOperations() {
+		val testingSet = #[ #[ 1, 2, 3 ], #[ 2, 3, 4 ] ]
+		
+		assertEquals(
+			#[ 1, 2, 3, 4 ], 
+			testingSet.union
+		)
+
+		assertEquals(
+			#[ 2, 3 ], 
+			testingSet.intersection
+		)
+
+		assertEquals(
+			#[ 1 ], 
+			testingSet.subtraction
+		)
+
+		assertEquals(
+			#[ 1, 4 ], 
+			testingSet.difference
+		)
+	}	
 	
 	@Test def void testUsing() {
 		val closeable = new Readable
