@@ -107,7 +107,7 @@ subprojects {
 project( 'core' ) {
   dependencies {
     compile project(":annotations")
-    compile 'commons-lang:commons-lang:2.6'
+    // compile 'commons-lang:commons-lang:2.6'
   }
 }
 
