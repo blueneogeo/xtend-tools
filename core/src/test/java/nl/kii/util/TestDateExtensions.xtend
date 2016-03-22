@@ -4,6 +4,7 @@ import org.junit.Test
 
 import static extension nl.kii.util.DateExtensions.*
 import static org.junit.Assert.*
+import java.util.TimeZone
 
 class TestDateExtensions {
 	
@@ -16,8 +17,13 @@ class TestDateExtensions {
 	
 	@Test
 	def void testUTCZone() {
-		assertEquals(1, (now - now.toUTC).hours)
-		assertEquals(0, (now - now.toTimeZone('GMT+1')).hours)
+		val originalTimeZone = TimeZone.^default
+		TimeZone.^default = TimeZone.getTimeZone( 'UTC' )
+		
+		assertEquals(0, (now - now.toUTC).hours)
+		assertEquals(-1, (now - now.toTimeZone('GMT+1')).hours)
+		
+		TimeZone.^default = originalTimeZone
 	}
 	
 	@Test
