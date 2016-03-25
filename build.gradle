@@ -27,6 +27,7 @@ subprojects {
   apply plugin: 'java'
   apply plugin: 'org.xtext.xtend'
   apply plugin: 'maven-publish'
+  apply plugin: 'jacoco'
 
   sourceCompatibility = javaVersion
   targetCompatibility = javaVersion
@@ -77,6 +78,16 @@ subprojects {
 
   task install( dependsOn: publishToMavenLocal )
 
+  jacoco {
+    toolVersion = '0.7.6.201602180812'
+  }
+
+  jacocoTestReport {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    reports.html.enabled true
+  }
+
   publishing {
     publications {
       mavenJava( MavenPublication ) {
@@ -104,8 +115,6 @@ subprojects {
 }
 
 project( 'core' ) {
-  apply plugin: 'jacoco'
-
   dependencies {
     compile project(":annotations")
   }
