@@ -24,7 +24,6 @@ buildscript {
 // CONFIGURE PROJECTS ///////////////////////////////////////////////////
 subprojects {
   apply plugin: 'eclipse'
-  apply plugin: 'nebula.provided-base'
   apply plugin: 'java'
   apply plugin: 'org.xtext.xtend'
   apply plugin: 'maven-publish'
@@ -105,6 +104,8 @@ subprojects {
 }
 
 project( 'core' ) {
+  apply plugin: 'jacoco'
+
   dependencies {
     compile project(":annotations")
   }
