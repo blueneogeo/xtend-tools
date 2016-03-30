@@ -16,7 +16,7 @@ class JUnitExtensions {
 		assertEquals(expected, value)
 	}
 
-	def static <T> <=> (List<T> value, List<T> expected) {
+	def static <T> <=> (List<? extends T> value, List<? extends T> expected) {
 		assertArrayEquals(expected, value)
 	}
 
