@@ -68,8 +68,6 @@ abstract class MethodParameterSetter<T extends MethodParameters> implements Proc
 
 }
 
-// class NamedParamsProcessor extends AbstractMethodProcessor {
-
 class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, TransformationParticipant<MutableNamedElement> {
 
 	override doRegisterGlobals(List<? extends NamedElement> elements, RegisterGlobalsContext context) {
