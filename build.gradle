@@ -38,14 +38,7 @@ subprojects {
     mavenLocal()
     mavenCentral()
     maven {
-      url "${artifactory_url}/libs-release"
-      credentials {
-        username artifactory_user
-        password artifactory_password
-      }
-    }
-    maven {
-      url "${artifactory_url}/libs-snapshot"
+      url "${artifactory_url}/main"
       credentials {
         username artifactory_user
         password artifactory_password
@@ -104,7 +97,7 @@ subprojects {
     }
     repositories {
       maven {
-        url "${artifactory_url}/libs-${project.version.endsWith('-SNAPSHOT') ? 'snapshot' : 'release'}-local"
+        url "${artifactory_url}/main-local"
         credentials {
           username artifactory_user
           password artifactory_password
