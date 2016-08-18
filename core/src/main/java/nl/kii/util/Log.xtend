@@ -19,11 +19,11 @@ import org.eclipse.xtend.lib.annotations.Data
 	
 	// deferred logging functions
 	
-	def trace((Object)=>String message) {
+	def trace(=>String message) {
 		if(logger.traceEnabled) logger.trace(message.entry)
 	}
 	
-	def debug((Object)=>String message) {
+	def debug(=>String message) {
 		if(logger.debugEnabled) logger.debug(message.entry)
 	}
 
@@ -31,7 +31,7 @@ import org.eclipse.xtend.lib.annotations.Data
 		if(logger.infoEnabled) logger.info(message.entry)
 	}
 
-	def info((Object)=>String message) {
+	def info(=>String message) {
 		if(logger.infoEnabled) logger.info(message.entry)
 	}
 
@@ -39,12 +39,12 @@ import org.eclipse.xtend.lib.annotations.Data
 		if(logger.warnEnabled) logger.warn(message.entry)
 	}
 
-	def warn((Object)=>String message) {
+	def warn(=>String message) {
 		if(logger.warnEnabled) logger.warn(message.entry)
 	}
 	
 	def error(String message, Throwable t) {
-		if(logger.errorEnabled) logger.error([message].entry, t) 
+		if(logger.errorEnabled) logger.error(message.entry, t) 
 	}	
 	
 	// logging function functions
@@ -66,8 +66,8 @@ import org.eclipse.xtend.lib.annotations.Data
 		else message
 	}
 
-	def protected getEntry((Object)=>String message) {
-		message.apply(null).entry
+	def protected getEntry(=>String message) {
+		message.apply.entry
 	}
 	
 }

@@ -154,24 +154,18 @@ class OptExtensions {
 	 * wrap a call as an option (exception or null generates none)<p>
 	 * example: val userOption = attempt [ api.getUser(userId) ] // if API throws exception, return None
 	 */
-	def static <T> Opt<T> attempt((Object)=> T fn) {
-		try {
-			fn.apply(null).option
-		} catch (Exception e) {
-			err(e)
-		}
+	def static <T> Opt<T> attempt(=>T function) {
+		try function.apply.option
+		catch(Exception e) err(e)
 	}
 	
 	/**
 	 * wrap a call as an option (exception or null generates none)<p>
 	 * example: val userOption = attempt [ api.getUser(userId) ] // if API throws exception, return None
 	 */
-	def static <P, T> Opt<T> attempt(P parm, (P)=> T fn) {
-		try {
-			fn.apply(parm).option
-		} catch (Exception e) {
-			err(e)
-		}
+	def static <P, T> Opt<T> attempt(P param, (P)=>T function) {
+		try function.apply(param).option
+		catch(Exception e) err(e)
 	}
 
 	/** 
