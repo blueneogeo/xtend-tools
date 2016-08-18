@@ -7,10 +7,10 @@ import java.util.HashSet
 import java.util.Iterator
 import java.util.List
 import java.util.Map
+import java.util.NoSuchElementException
 import java.util.Random
 import java.util.Set
 
-import static extension nl.kii.util.OptExtensions.*
 import static extension nl.kii.util.OptExtensions.*
 
 class IterableExtensions {
@@ -401,6 +401,14 @@ class IterableExtensions {
 	def static <T> Functions.Function1<? super T, Boolean> ! (
 		Functions.Function1<? super T, Boolean> predicate) {
 		[!predicate.apply(it)]
+	}
+	
+	def static <T extends Comparable<? super T>> minSafe(T... values) { 
+		try org.eclipse.xtext.xbase.lib.IterableExtensions.min(values) catch(NoSuchElementException it) null
+	}
+	
+	def static <T extends Comparable<? super T>> maxSafe(T... values) { 
+		try org.eclipse.xtext.xbase.lib.IterableExtensions.max(values) catch(NoSuchElementException it) null
 	}
 
 }
