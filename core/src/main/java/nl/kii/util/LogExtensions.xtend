@@ -28,17 +28,16 @@ class LogExtensions {
 	}
 	
 	// print the result of a function
-	// example: print [| new User() ]
+	// example: print [ new User() ]
 	def static <T> print(=>T s) {
 		println(s.apply)
 	}
 	
-	// loses the | requirement in the function
-	// example: print [ new User() ]
-	def static <T> print((Object)=>T o) {
-		print(o.apply(null))
+	/** Chainable println */	
+	def static <T> print(T object) {
+		println(object)
 	}
-	
+				
 	// PRINTING FUNCTION //////////////////////////////////////////////////////
 	
 	def static <T> (T)=>void printEach() {
