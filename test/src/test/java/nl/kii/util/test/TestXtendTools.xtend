@@ -41,8 +41,6 @@ class TestXtendTools {
 		// if that returns an optional value
 		ifTrue(true) ['hello'].assertSome('hello')
 		ifTrue(false) ['hello'].assertNone
-		ifSome(some('test')) [return 'hello'].assertSome('hello')
-		ifSome(none) [return 'hello'].assertNone
 	}
 	
 	@Test def void testOr() {
