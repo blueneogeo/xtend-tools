@@ -28,19 +28,19 @@ class OptExtensions {
 	 * Only perform the function for a given condition. Returns an optional result.
 	 * <pre>val Opt<User> user = ifTrue(isMale) [ getUser ]</pre>
 	 */
-	def static <T, I> Opt<T> ifTrue(boolean condition, (Object)=>T fn) {
+	def static <T> Opt<T> ifTrue(boolean condition, (Object)=>T fn) {
 		if(condition) fn.apply(null).option
 		else none
 	}
 	
-	def static <T, I> Opt<I> => (Opt<I> o, (I)=>void fn) {
+	def static <T> Opt<T> => (Opt<T> o, (T)=>void fn) {
 		ifSome(o, fn)
 	}
 	
 	/**
 	 * Only perform the function if something was set. Returns the result of the function for chaining
 	 */
-	def static <T, I> Opt<I> ifSome(Opt<I> o, (I)=>void fn) {
+	def static <T> Opt<T> ifSome(Opt<T> o, (T)=>void fn) {
 		if(o.defined) fn.apply(o.value)
 		o
 	}
@@ -48,7 +48,7 @@ class OptExtensions {
 	/**
 	 * Only perform the function if o is a None. Returns the result of the function for chaining
 	 */
-	def static <T, I> Opt<I> ifNone(Opt<I> o, =>void fn) {
+	def static <T> Opt<T> ifNone(Opt<T> o, =>void fn) {
 		if(o.hasNone) fn.apply
 		o
 	}
@@ -58,7 +58,7 @@ class OptExtensions {
 	 * meaning null or empty or an error. Returns an optional result.
 	 * <pre>val Opt<User> user = ifEmpty(userId) [ getDefaultUser ]</pre>
 	 */
-	def static <T, I> Opt<T> ifEmpty(Opt<T> o, =>void fn) {
+	def static <T> Opt<T> ifEmpty(Opt<T> o, =>void fn) {
 		if(!o.defined) fn.apply
 		o
 	}
@@ -66,8 +66,8 @@ class OptExtensions {
 	/**
 	 * Only perform the function if o is an Err. Returns the result of the function for chaining
 	 */
-	def static <T, I> Opt<I> ifErr(Opt<I> o, (Throwable)=>void fn) {
-		switch(o) {	Err<I>: fn.apply(o.exception) }
+	def static <T> Opt<T> ifErr(Opt<T> o, (Throwable)=>void fn) {
+		switch(o) {	Err<T>: fn.apply(o.exception) }
 		o
 	}
 	
