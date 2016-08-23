@@ -93,3 +93,10 @@ hs_err_pid*
 ## Xtend
 
 build/
+
+## Gradle
+
+gradle/
+gradlew
+gradlew.bat
+
