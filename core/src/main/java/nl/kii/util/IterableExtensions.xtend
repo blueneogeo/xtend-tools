@@ -114,6 +114,14 @@ class IterableExtensions {
 		ImmutableList.builder.addAll(filtered).build
 	}
 
+	def static <T> removeLast(Iterable<T> items) {
+		items.take(items.size - 1)
+	}
+
+	def static <T> removeLast(Iterable<T> items, int amount) {
+		items.take(items.size - amount)
+	}
+	
 	// SIDEEFFECTS ////////////////////////////////////////////////////////////
 	
 	def static <T> effect(Iterable<? extends T> iterable, (T)=>void fn) {
