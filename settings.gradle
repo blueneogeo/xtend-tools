@@ -1,3 +1,5 @@
-include 'annotations'
 include 'core'
 include 'test'
+include 'annotations'
+include 'annotations-test'
+

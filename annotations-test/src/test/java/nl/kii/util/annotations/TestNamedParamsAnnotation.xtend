@@ -1,10 +1,10 @@
-package nl.kii.util.test
+package nl.kii.util.annotations
 
-import nl.kii.util.annotations.B
-import nl.kii.util.annotations.I
-import nl.kii.util.annotations.NamedParams
-import nl.kii.util.annotations.Pin
-import nl.kii.util.annotations.S
+import nl.kii.util.annotation.Default
+import nl.kii.util.annotation.DefaultTrue
+import nl.kii.util.annotation.DefaultValue
+import nl.kii.util.annotation.Locked
+import nl.kii.util.annotation.NamedParams
 import org.junit.Test
 
 import static org.junit.Assert.*
@@ -13,7 +13,7 @@ class TestNamedParamsAnnotation {
 	
 	/** A more mundane test */
 	@NamedParams
-	final def getGreeting(@Pin String user, @I(12) Integer age, @B(true) boolean happy) {
+	final def getGreeting(@Locked String user, @DefaultValue(12) Integer age, @DefaultTrue boolean happy) {
 		'hello I am ' + user + ' and I am ' + age + ' years old and ' + if(happy) 'happy' else 'sad'
 	}
 
@@ -42,7 +42,7 @@ class Tester {
 	boolean happy
 	
 	@NamedParams
-	new(@S('christian') String name, @I(12) int age, @B(true) boolean happy) {
+	new(@Default('christian') String name, @DefaultValue(12) int age, @DefaultTrue boolean happy) {
 		this.name = name
 		this.age = age
 		this.happy = happy

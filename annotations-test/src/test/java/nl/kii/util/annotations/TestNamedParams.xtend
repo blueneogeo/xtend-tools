@@ -1,8 +1,8 @@
-package nl.kii.util
+package nl.kii.util.annotations
 
 import static extension org.junit.Assert.*
 import org.junit.Test
-import nl.kii.util.annotations.NamedParams
+import nl.kii.util.annotation.NamedParams
 
 class TestNamedParams {
 	

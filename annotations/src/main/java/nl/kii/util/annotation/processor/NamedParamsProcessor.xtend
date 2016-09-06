@@ -1,8 +1,8 @@
-package nl.kii.util.annotations
+package nl.kii.util.annotation.processor
 
-import java.lang.annotation.Target
 import java.util.List
-import org.eclipse.xtend.lib.macro.Active
+import nl.kii.util.annotation.MethodParameterSetter
+import nl.kii.util.annotation.MethodParameters
 import org.eclipse.xtend.lib.macro.RegisterGlobalsContext
 import org.eclipse.xtend.lib.macro.RegisterGlobalsParticipant
 import org.eclipse.xtend.lib.macro.TransformationContext
@@ -19,54 +19,12 @@ import org.eclipse.xtend.lib.macro.declaration.ParameterDeclaration
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1
 
 import static org.eclipse.xtend.lib.macro.declaration.Visibility.*
-
-@Active(NamedParamsProcessor)
-@Target(METHOD, CONSTRUCTOR)
-annotation NamedParams {
-}
-
-@Target(PARAMETER)
-annotation Pin {
-}
-
-@Target(PARAMETER)
-annotation Null {
-}
-
-@Target(PARAMETER)
-annotation S {
-	String value
-}
-
-@Target(PARAMETER)
-annotation I {
-	int value
-}
-
-@Target(PARAMETER)
-annotation L {
-	long value
-}
-
-@Target(PARAMETER)
-annotation D {
-	double value
-}
-
-@Target(PARAMETER)
-annotation B {
-	boolean value
-}
-
-abstract class MethodParameterSetter<T extends MethodParameters> implements Procedure1<T> {
-	
-	def T call(T parameters) {
-		apply(parameters)
-		parameters.validate
-		parameters
-	}
-
-}
+import nl.kii.util.annotation.Default
+import nl.kii.util.annotation.DefaultValue
+import nl.kii.util.annotation.Nullable
+import nl.kii.util.annotation.Locked
+import nl.kii.util.annotation.DefaultTrue
+import nl.kii.util.annotation.DefaultFalse
 
 class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, TransformationParticipant<MutableNamedElement> {
 
@@ -111,30 +69,70 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 			paramsClazz.addField(parameter.simpleName) [
 				type = parameter.type
 				visibility = PUBLIC
-				// find a default value annotation of the correct type on the parameter
-				val annotation = switch type {
-					case String.newTypeReference: S
-					case int.newTypeReference, case Integer.newTypeReference: I
-					case long.newTypeReference, case Long.newTypeReference: L
-					case double.newTypeReference, case Double.newTypeReference: D
-					case boolean.newTypeReference, case Boolean.newTypeReference: B
-					default: null
-				}
-				// if there is a default value annotation, write the default value into the params class field
-				if(annotation != null) {
-					val annotationType = annotation.newTypeReference
-					switch annotationType {
-						// strings need to be enclosed with " "
-						case S.newTypeReference: {
-							val value = parameter.findAnnotation(annotationType.type)?.getStringValue('value')
-							if(value != null) initializer = '''"«value»"'''
-						}
-						default: {
-							val value = parameter.findAnnotation(annotationType.type)?.getValue('value')
-							if(value != null) initializer = '''«value»'''
+				
+				switch type {
+					case string: {
+						val value = parameter.findAnnotation(Default.newTypeReference.type)?.getStringValue('value')
+						if(value != null) initializer = '''"«value»"'''
+					}
+					case int.newTypeReference, case Integer.newTypeReference: {
+						val value = parameter.findAnnotation(DefaultValue.newTypeReference.type)?.getDoubleValue('value')
+						initializer = '''new Double(«value»).intValue()'''
+					}
+					case long.newTypeReference, case Long.newTypeReference: {
+						val value = parameter.findAnnotation(DefaultValue.newTypeReference.type)?.getDoubleValue('value')
+						initializer = '''new Double(«value»).longValue()'''
+					}
+					case double.newTypeReference, case Double.newTypeReference: {
+						val value = parameter.findAnnotation(DefaultValue.newTypeReference.type)?.getDoubleValue('value')
+						initializer = '''«value»'''
+					}
+					case boolean.newTypeReference, case Boolean.newTypeReference: {
+						if(parameter.findAnnotation(DefaultTrue.newTypeReference.type) != null) {
+							initializer = '''true'''
+						} else if(parameter.findAnnotation(DefaultFalse.newTypeReference.type) != null) {
+							initializer = '''false'''
 						}
 					}
 				}
+//				
+//				
+//				// find a default value annotation of the correct type on the parameter
+//				val annotation = switch type {
+//					case String.newTypeReference: Default
+//					case int.newTypeReference, 
+//					case Integer.newTypeReference, 
+//					case long.newTypeReference, 
+//					case Long.newTypeReference,
+//					case double.newTypeReference, 
+//					case Double.newTypeReference: DefaultValue
+//					case boolean.newTypeReference, 
+//					case Boolean.newTypeReference: DefaultTrue
+//					default: null
+//				}
+//				// if there is a default value annotation, write the default value into the params class field
+//				if(annotation != null) {
+//					val annotationType = annotation.newTypeReference
+//					switch annotationType {
+//						// strings need to be enclosed with " "
+//						case Default.newTypeReference: {
+//							val value = parameter.findAnnotation(annotationType.type)?.getStringValue('value')
+//							if(value != null) initializer = '''"«value»"'''
+//						}
+//						case DefaultTrue.newTypeReference: {
+//							if(parameter.findAnnotation(DefaultTrue.newTypeReference.type) != null) {
+//								initializer = '''true'''
+//							}
+//							if(parameter.findAnnotation(DefaultFalse.newTypeReference.type) != null) {
+//								initializer = '''false'''
+//							}
+//						}
+//						default: {
+//							val value = parameter.findAnnotation(annotationType.type)?.getValue('value')
+//							if(value != null) initializer = '''«value»'''
+//						}
+//					}
+//				}
 				// add the field to the validation code
 				if(!parameter.nullAllowed(context)) {
 					validationCode.append('''
@@ -195,7 +193,7 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 			body = switch member {
 				MutableMethodDeclaration: '''
 					«FOR param : member.parameters.filter [!nullAllowed(context) && isLocked(context)]»
-						if(«param.simpleName» == null) throw new NullPointerException("«member.simpleName».«param.simpleName» may not be null. (annotate with @Null if you want to allow null)");
+						if(«param.simpleName» == null) throw new NullPointerException("«member.simpleName».«param.simpleName» may not be null. (annotate with @Nullable if you want to allow null)");
 					«ENDFOR»
 					«IF member.returnType.simpleName != 'void'»return «ENDIF»
 					«member.simpleName»(
@@ -255,11 +253,11 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 	}
 
 	def static nullAllowed(ParameterDeclaration param, extension TransformationContext context) {
-		param.type.primitive || param.findAnnotation(Null.newTypeReference.type) != null
+		param.type.primitive || param.findAnnotation(Nullable.newTypeReference.type) != null
 	}
 	
 	def static isLocked(ParameterDeclaration param, extension TransformationContext context) {
-		param.findAnnotation(Pin.newTypeReference.type) != null
+		param.findAnnotation(Locked.newTypeReference.type) != null
 	}
 		
 }
