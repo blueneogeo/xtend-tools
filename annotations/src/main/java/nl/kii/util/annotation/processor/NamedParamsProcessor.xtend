@@ -69,7 +69,7 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 			paramsClazz.addField(parameter.simpleName) [
 				type = parameter.type
 				visibility = PUBLIC
-				
+				// set the initializer based on default annotations
 				switch type {
 					case string: {
 						val value = parameter.findAnnotation(Default.newTypeReference.type)?.getStringValue('value')
@@ -95,44 +95,6 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 						}
 					}
 				}
-//				
-//				
-//				// find a default value annotation of the correct type on the parameter
-//				val annotation = switch type {
-//					case String.newTypeReference: Default
-//					case int.newTypeReference, 
-//					case Integer.newTypeReference, 
-//					case long.newTypeReference, 
-//					case Long.newTypeReference,
-//					case double.newTypeReference, 
-//					case Double.newTypeReference: DefaultValue
-//					case boolean.newTypeReference, 
-//					case Boolean.newTypeReference: DefaultTrue
-//					default: null
-//				}
-//				// if there is a default value annotation, write the default value into the params class field
-//				if(annotation != null) {
-//					val annotationType = annotation.newTypeReference
-//					switch annotationType {
-//						// strings need to be enclosed with " "
-//						case Default.newTypeReference: {
-//							val value = parameter.findAnnotation(annotationType.type)?.getStringValue('value')
-//							if(value != null) initializer = '''"«value»"'''
-//						}
-//						case DefaultTrue.newTypeReference: {
-//							if(parameter.findAnnotation(DefaultTrue.newTypeReference.type) != null) {
-//								initializer = '''true'''
-//							}
-//							if(parameter.findAnnotation(DefaultFalse.newTypeReference.type) != null) {
-//								initializer = '''false'''
-//							}
-//						}
-//						default: {
-//							val value = parameter.findAnnotation(annotationType.type)?.getValue('value')
-//							if(value != null) initializer = '''«value»'''
-//						}
-//					}
-//				}
 				// add the field to the validation code
 				if(!parameter.nullAllowed(context)) {
 					validationCode.append('''
