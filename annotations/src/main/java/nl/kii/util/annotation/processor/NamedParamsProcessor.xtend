@@ -1,8 +1,15 @@
 package nl.kii.util.annotation.processor
 
 import java.util.List
+import nl.kii.util.annotation.ActiveAnnotationTools
+import nl.kii.util.annotation.Default
+import nl.kii.util.annotation.DefaultFalse
+import nl.kii.util.annotation.DefaultTrue
+import nl.kii.util.annotation.DefaultValue
+import nl.kii.util.annotation.Locked
 import nl.kii.util.annotation.MethodParameterSetter
 import nl.kii.util.annotation.MethodParameters
+import nl.kii.util.annotation.Nullable
 import org.eclipse.xtend.lib.macro.RegisterGlobalsContext
 import org.eclipse.xtend.lib.macro.RegisterGlobalsParticipant
 import org.eclipse.xtend.lib.macro.TransformationContext
@@ -19,12 +26,6 @@ import org.eclipse.xtend.lib.macro.declaration.ParameterDeclaration
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1
 
 import static org.eclipse.xtend.lib.macro.declaration.Visibility.*
-import nl.kii.util.annotation.Default
-import nl.kii.util.annotation.DefaultValue
-import nl.kii.util.annotation.Nullable
-import nl.kii.util.annotation.Locked
-import nl.kii.util.annotation.DefaultTrue
-import nl.kii.util.annotation.DefaultFalse
 
 class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, TransformationParticipant<MutableNamedElement> {
 
@@ -52,6 +53,8 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 	}
 
 	def doTransform(MutableExecutableDeclaration member, extension TransformationContext context) {
+		val extension tools = new ActiveAnnotationTools(context)
+		
 		// method generics are not allowed, since Xtend 2.9.X does not expose that information yet.
 		if(!member.typeParameters.empty) member.addError('@NamedParam does not (yet) support generic type parameters for methods.')
 		val allParameterTypes = member.parameters.map[type.actualTypeArguments].flatten
@@ -59,7 +62,7 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 
 		// create the params class
 		val paramsClazz = findClass(member.compilationUnit.packageName + '.' + member.parametersObjectName) => [
-			implementedInterfaces = #[MethodParameters.newTypeReference]
+			implementedInterfaces = #[MethodParameters.ref]
 		]
 		// as fields, use all unlocked parameters of the method
 		val validationCode = new StringBuffer
@@ -72,25 +75,25 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 				// set the initializer based on default annotations
 				switch type {
 					case string: {
-						val value = parameter.findAnnotation(Default.newTypeReference.type)?.getStringValue('value')
+						val value = parameter.findAnnotation(Default.ref.type)?.getStringValue('value')
 						if(value != null) initializer = '''"«value»"'''
 					}
-					case int.newTypeReference, case Integer.newTypeReference: {
-						val value = parameter.findAnnotation(DefaultValue.newTypeReference.type)?.getDoubleValue('value')
+					case int.ref, case Integer.ref: {
+						val value = parameter.findAnnotation(DefaultValue.ref.type)?.getDoubleValue('value')
 						initializer = '''new Double(«value»).intValue()'''
 					}
-					case long.newTypeReference, case Long.newTypeReference: {
-						val value = parameter.findAnnotation(DefaultValue.newTypeReference.type)?.getDoubleValue('value')
+					case long.ref, case Long.ref: {
+						val value = parameter.findAnnotation(DefaultValue.ref.type)?.getDoubleValue('value')
 						initializer = '''new Double(«value»).longValue()'''
 					}
-					case double.newTypeReference, case Double.newTypeReference: {
-						val value = parameter.findAnnotation(DefaultValue.newTypeReference.type)?.getDoubleValue('value')
+					case double.ref, case Double.ref: {
+						val value = parameter.findAnnotation(DefaultValue.ref.type)?.getDoubleValue('value')
 						initializer = '''«value»'''
 					}
-					case boolean.newTypeReference, case Boolean.newTypeReference: {
-						if(parameter.findAnnotation(DefaultTrue.newTypeReference.type) != null) {
+					case boolean.ref, case Boolean.ref: {
+						if(parameter.findAnnotation(DefaultTrue.ref.type) != null) {
 							initializer = '''true'''
-						} else if(parameter.findAnnotation(DefaultFalse.newTypeReference.type) != null) {
+						} else if(parameter.findAnnotation(DefaultFalse.ref.type) != null) {
 							initializer = '''false'''
 						}
 					}
@@ -150,7 +153,7 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 			}
 			// add the closure parameter
 			val paramsType = paramsClazz.newTypeReference
-			addParameter('parametersFn', MethodParameterSetter.newTypeReference(paramsType))
+			addParameter('parametersFn', MethodParameterSetter.ref(paramsType))
 			// create the body which creates the params object, calls the closure with the params and then calls the original method
 			body = switch member {
 				MutableMethodDeclaration: '''

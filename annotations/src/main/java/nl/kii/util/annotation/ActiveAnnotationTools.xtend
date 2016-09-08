@@ -123,6 +123,11 @@ class ActiveAnnotationTools {
 	
 	// STATIC METHODS /////////////////////////////////////////////////////////	
 
+	/** Tests if the type is the same or extends another type */
+	def static extendsType(TypeReference type, TypeReference sameOrSuperType) {
+		sameOrSuperType.isAssignableFrom(type)
+	}
+	
 	/** Find all method type parameters being references that we could not find in the method declaration. Only use when creating extension methods. */
 	private def extractTypeParameterNamesFromSignature(MethodDeclaration originalMethod) {
 		val extractedParameterTypeNames = originalMethod.parameters.map [ type.extractTypeParameterNames ].flatten
