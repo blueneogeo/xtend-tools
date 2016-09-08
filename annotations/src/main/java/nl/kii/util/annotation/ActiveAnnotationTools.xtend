@@ -1,7 +1,6 @@
 package nl.kii.util.annotation
 
 import java.util.List
-import nl.kii.util.Opt
 import org.eclipse.xtend.lib.macro.TransformationContext
 import org.eclipse.xtend.lib.macro.declaration.MethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableClassDeclaration
@@ -9,9 +8,6 @@ import org.eclipse.xtend.lib.macro.declaration.MutableMethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableTypeParameterDeclaration
 import org.eclipse.xtend.lib.macro.declaration.TypeParameterDeclaration
 import org.eclipse.xtend.lib.macro.declaration.TypeReference
-
-import static nl.kii.util.OptExtensions.*
-import static extension nl.kii.util.IterableExtensions.*
 
 /**
  * Tools for creating Active Annotations.
@@ -55,7 +51,7 @@ class ActiveAnnotationTools {
 	 * @param copyParameters: if true, also copy all parameters (including generic types) from the original method
 	 * @param transformationFn: closure that takes the new method and method type parameters and can modify it before adding to the targetCls 
 	 */
-	def Opt<MutableMethodDeclaration> addMethodCopy(MutableClassDeclaration targetCls, TypeReference sourceCls, MethodDeclaration sourceMethod, String alternativeName, boolean copyAnnotations, boolean copyParameters, (MutableMethodDeclaration, List<? extends MutableTypeParameterDeclaration>)=>void methodTransformerFn) {
+	def MutableMethodDeclaration addMethodCopy(MutableClassDeclaration targetCls, TypeReference sourceCls, MethodDeclaration sourceMethod, String alternativeName, boolean copyAnnotations, boolean copyParameters, (MutableMethodDeclaration, List<? extends MutableTypeParameterDeclaration>)=>void methodTransformerFn) {
 		// make sure we don't create a double copy
 		targetCls.addMethodSafely(sourceMethod.simpleName) [
 			val newMethod = it
@@ -85,9 +81,10 @@ class ActiveAnnotationTools {
 			// in the class from the used parameters and add them to the method
 			// bit of a hack... but no way found yet to extract type parameters from a class typereference
 			if(!sourceMethod.static) {
+				val methodTypeParameterNames = sourceMethod.extractTypeParameterNamesFromSignature
 				val existingTypeParameterNames = sourceMethod.typeParameters.map [ simpleName ].toList
-				val missingTypeParameterNames = sourceMethod.extractTypeParameterNamesFromSignature - existingTypeParameterNames 
-				for(typeParamName : missingTypeParameterNames) {
+				methodTypeParameterNames.removeAll(existingTypeParameterNames)
+				for(typeParamName : methodTypeParameterNames) {
 					newMethod.addTypeParameter(typeParamName)
 				}
 			}
@@ -114,13 +111,13 @@ class ActiveAnnotationTools {
 	}
 	
 	/** Only add a new method if it does not already exist */	
-	def Opt<MutableMethodDeclaration> addMethodSafely(MutableClassDeclaration cls, String simpleName, (MutableMethodDeclaration)=>void initializer) {
+	def MutableMethodDeclaration addMethodSafely(MutableClassDeclaration cls, String simpleName, (MutableMethodDeclaration)=>void initializer) {
 		val newMethod = cls.addMethod(simpleName, initializer)
 		if(cls.newTypeReference.hasDuplicateMethod(newMethod, false)) {
 			newMethod.remove
-			none
+			null
 		} else {
-			some(newMethod)
+			newMethod
 		}
 	}
 	
@@ -131,7 +128,7 @@ class ActiveAnnotationTools {
 		val extractedParameterTypeNames = originalMethod.parameters.map [ type.extractTypeParameterNames ].flatten
 		val extractedReturnTypeNames = originalMethod.returnType.extractTypeParameterNames
 		val allExtracted = extractedParameterTypeNames + extractedReturnTypeNames
-		allExtracted.toList.distinct
+		allExtracted.toSet
 	}
 
 	/** 

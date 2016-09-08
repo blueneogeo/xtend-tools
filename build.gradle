@@ -107,8 +107,20 @@ subprojects {
   }
 }
 
+project( 'annotations' ) {
+  dependencies {
+  }
+}
+
+project( 'annotations-test' ) {
+  dependencies {
+    compile project(":annotations")
+  }
+}
+
 project( 'core' ) {
   dependencies {
+    compile project(":annotations")
   }
 }
 
@@ -116,17 +128,5 @@ project( 'test' ) {
   dependencies {
     compile project( ':core' )
     compile "junit:junit:${junitVersion}"
-  }
-}
-
-project( 'annotations' ) {
-  dependencies {
-    compile project(":core")
-  }
-}
-
-project( 'annotations-test' ) {
-  dependencies {
-    compile project(":annotations")
   }
 }
