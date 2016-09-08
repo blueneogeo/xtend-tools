@@ -14,10 +14,10 @@ import static extension nl.kii.util.annotation.ActiveAnnotationTools.*
 class CopyMethodsProcessor extends AbstractClassProcessor {
 
 	/** The annotation to search for */
-	def getAnnotationType() { CopyMethods }
+	def Class<?> getAnnotationType() { CopyMethods }
 
 	override doTransform(MutableClassDeclaration cls, extension TransformationContext context) {
-		val annotations = cls.annotations.filter [ annotationTypeDeclaration.qualifiedName == CopyMethods.name ]
+		val annotations = cls.annotations.filter [ annotationTypeDeclaration.qualifiedName == annotationType.name ]
 		for(annotation : annotations) {
 			val ignoredMethods = annotation.getStringArrayValue('ignoredMethods')
 			val includeSuperTypes = annotation.getBooleanValue('includeSuperTypes')

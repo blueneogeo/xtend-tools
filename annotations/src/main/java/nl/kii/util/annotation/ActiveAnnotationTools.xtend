@@ -51,9 +51,9 @@ class ActiveAnnotationTools {
 	 * @param copyParameters: if true, also copy all parameters (including generic types) from the original method
 	 * @param transformationFn: closure that takes the new method and method type parameters and can modify it before adding to the targetCls 
 	 */
-	def MutableMethodDeclaration addMethodCopy(MutableClassDeclaration targetCls, TypeReference sourceCls, MethodDeclaration sourceMethod, String alternativeName, boolean copyAnnotations, boolean copyParameters, (MutableMethodDeclaration, List<? extends MutableTypeParameterDeclaration>)=>void methodTransformerFn) {
+	def MutableMethodDeclaration addMethodCopy(MutableClassDeclaration targetCls, TypeReference sourceCls, MethodDeclaration sourceMethod, String methodName, boolean copyAnnotations, boolean copyParameters, (MutableMethodDeclaration, List<? extends MutableTypeParameterDeclaration>)=>void methodTransformerFn) {
 		// make sure we don't create a double copy
-		targetCls.addMethodSafely(sourceMethod.simpleName) [
+		targetCls.addMethodSafely(if(methodName != null) methodName else sourceMethod.simpleName) [
 			val newMethod = it
 			// set the basic properties of the new method
 			primarySourceElement = sourceMethod
