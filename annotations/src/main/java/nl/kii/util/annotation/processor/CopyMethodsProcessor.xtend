@@ -9,14 +9,13 @@ import org.eclipse.xtend.lib.macro.declaration.MethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableClassDeclaration
 import org.eclipse.xtend.lib.macro.declaration.TypeReference
 
-import static extension nl.kii.util.annotation.ActiveAnnotationTools.*
-
 class CopyMethodsProcessor extends AbstractClassProcessor {
 
 	/** The annotation to search for */
 	def Class<?> getAnnotationType() { CopyMethods }
 
 	override doTransform(MutableClassDeclaration cls, extension TransformationContext context) {
+		val extension tools = new ActiveAnnotationTools(context)
 		val annotations = cls.annotations.filter [ annotationTypeDeclaration.qualifiedName == annotationType.name ]
 		for(annotation : annotations) {
 			val ignoredMethods = annotation.getStringArrayValue('ignoredMethods')

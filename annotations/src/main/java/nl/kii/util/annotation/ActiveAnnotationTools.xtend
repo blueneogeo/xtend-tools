@@ -25,6 +25,16 @@ class ActiveAnnotationTools {
 		cls.newTypeReference(types)
 	}
 
+	/** Shortcut for context.newTypeReference(clsDeclaration) */
+	def TypeReference ref(MutableClassDeclaration clsDeclaration, TypeReference... types) {
+		clsDeclaration.newTypeReference(types)
+	}
+
+	/** Shortcut for context.newAnnotationReference(annotationClass) */
+	def annotationRef(Class<?> annotationClass) {
+		this.context.newAnnotationReference(annotationClass)
+	}
+
 	/**
 	 * Create a copy of a typereference that adds references to any used types by name.
 	 * Solves the issue of copying the type parameters from one method to another.
@@ -121,10 +131,8 @@ class ActiveAnnotationTools {
 		}
 	}
 	
-	// STATIC METHODS /////////////////////////////////////////////////////////	
-
 	/** Tests if the type is the same or extends another type */
-	def static extendsType(TypeReference type, TypeReference sameOrSuperType) {
+	def boolean extendsType(TypeReference type, TypeReference sameOrSuperType) {
 		sameOrSuperType.isAssignableFrom(type)
 	}
 	
@@ -143,7 +151,7 @@ class ActiveAnnotationTools {
 	 * Cheats, tries to identify type parameters by being uppercase only...
 	 * However, it is impossible to extract them from a class typereference.
 	 */
-	def static Iterable<String> extractTypeParameterNames(TypeReference type) {
+	def Iterable<String> extractTypeParameterNames(TypeReference type) {
 		if(type.actualTypeArguments.empty) {
 			if(type.simpleName == type.simpleName.toUpperCase) #[ type.simpleName ] else #[]
 		}
@@ -156,7 +164,7 @@ class ActiveAnnotationTools {
 	 * @param method the method we use to check the signature from
 	 * @param includeSuperClasses if true, also include superclasses of cls for matching method signatures
 	 */
-	def static boolean hasDuplicateMethod(TypeReference cls, MethodDeclaration method, boolean includeSuperClasses) {
+	def boolean hasDuplicateMethod(TypeReference cls, MethodDeclaration method, boolean includeSuperClasses) {
 		val clsMethods = if(includeSuperClasses) cls.allResolvedMethods else cls.declaredResolvedMethods
 		val matchingMethods = clsMethods.filter [ declaration.hasSameSignatureAs(method) ]
 		matchingMethods.size > 1
@@ -165,7 +173,7 @@ class ActiveAnnotationTools {
 	/**
 	 * Check if method1 and method2 have the same signature (name and parameter types)
 	 */
-	def static hasSameSignatureAs(MethodDeclaration method1, MethodDeclaration method2) {
+	def hasSameSignatureAs(MethodDeclaration method1, MethodDeclaration method2) {
 		if(method1.simpleName != method2.simpleName) return false
 		if(method1.parameters.size != method2.parameters.size) return false
 		if(method1.parameters.empty) return true
@@ -178,7 +186,7 @@ class ActiveAnnotationTools {
 	}
 
 	/** Print out the signature of a method: <pre>name(param-type,param-type,...)<pre> */
-	def static String signature(MethodDeclaration method) {
+	def String signature(MethodDeclaration method) {
 		'''«method.simpleName»(«FOR param : method.parameters SEPARATOR ','»«param.type.simpleName»«ENDFOR»)'''
 	}
 	
