@@ -4,6 +4,7 @@ import java.util.List
 import org.eclipse.xtend.lib.macro.TransformationContext
 import org.eclipse.xtend.lib.macro.declaration.MethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableClassDeclaration
+import org.eclipse.xtend.lib.macro.declaration.MutableInterfaceDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableMethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableTypeParameterDeclaration
 import org.eclipse.xtend.lib.macro.declaration.TypeParameterDeclaration
@@ -120,8 +121,88 @@ class ActiveAnnotationTools {
 		]
 	}
 	
+	/** 
+	 * Create a copy of an existing method signature, but without the body.
+	 * Provides you with a closure that allows you to alter the new method and create the body.
+	 * @param targetCls: the class to create the copy on
+	 * @param sourceCls: the class that contains the source method
+	 * @param newName: if not null, if the existing class method is not static and contains the same signature, rename the method
+	 * @param copyAnnotations : if true, also copy all annotations from the original method
+	 * @param copyParameters: if true, also copy all parameters (including generic types) from the original method
+	 * @param transformationFn: closure that takes the new method and method type parameters and can modify it before adding to the targetCls 
+	 */
+	def MutableMethodDeclaration addMethodCopy(MutableInterfaceDeclaration targetCls, TypeReference sourceCls, MethodDeclaration sourceMethod, String methodName, boolean copyAnnotations, boolean copyParameters, (MutableMethodDeclaration, List<? extends MutableTypeParameterDeclaration>)=>void methodTransformerFn) {
+		// make sure we don't create a double copy
+		targetCls.addMethodSafely(if(methodName != null) methodName else sourceMethod.simpleName) [
+			val newMethod = it
+			// set the basic properties of the new method
+			primarySourceElement = sourceMethod
+			static = sourceMethod.static
+			final = sourceMethod.final
+			varArgs = sourceMethod.varArgs
+			visibility = sourceMethod.visibility
+			deprecated = sourceMethod.deprecated
+			docComment = '''
+				«sourceMethod.docComment»
+				Original class types: «sourceMethod.parameters.map [ type.extractTypeParameterNames ].flatten»
+				Generated extension method of  «sourceMethod.signature»
+				@see «sourceCls»#«sourceMethod.simpleName»(«FOR p : sourceMethod.parameters SEPARATOR ','»«p.simpleName»«ENDFOR») «sourceMethod.simpleName»
+			''' 
+			exceptions = sourceMethod.exceptions
+			synchronized = sourceMethod.synchronized
+			// add all types from the original method to the new method
+			for(type : sourceCls.actualTypeArguments) {
+				newMethod.addTypeParameter(type.simpleName)
+			}
+			for(type : sourceMethod.typeParameters) {
+				newMethod.addTypeParameter(type.simpleName)
+			}
+			// if this is a static extension method, also detect the types being used 
+			// in the class from the used parameters and add them to the method
+			// bit of a hack... but no way found yet to extract type parameters from a class typereference
+			if(!sourceMethod.static) {
+				val methodTypeParameterNames = sourceMethod.extractTypeParameterNamesFromSignature
+				val existingTypeParameterNames = sourceMethod.typeParameters.map [ simpleName ].toList
+				methodTypeParameterNames.removeAll(existingTypeParameterNames)
+				for(typeParamName : methodTypeParameterNames) {
+					newMethod.addTypeParameter(typeParamName)
+				}
+			}
+			// copy annotations 
+			if(copyAnnotations) {
+				for(annotation : sourceMethod.annotations) {
+					addAnnotation(annotation)
+				}
+			}
+			// copy parameters
+			if(copyParameters) {
+				if(!sourceMethod.static) {
+					static = true
+					val instanceName = sourceCls.simpleName.toFirstLower
+					addParameter(instanceName + 'Instance', sourceCls)					
+				}
+				for(parameter : sourceMethod.parameters) {
+					addParameter(parameter.simpleName, parameter.type.add(newMethod.typeParameters))
+				}
+			}
+			returnType = sourceMethod.returnType.add(newMethod.typeParameters)
+			methodTransformerFn.apply(it, newMethod.typeParameters.toList)
+		]
+	}
+	
 	/** Only add a new method if it does not already exist */	
 	def MutableMethodDeclaration addMethodSafely(MutableClassDeclaration cls, String simpleName, (MutableMethodDeclaration)=>void initializer) {
+		val newMethod = cls.addMethod(simpleName, initializer)
+		if(cls.newTypeReference.hasDuplicateMethod(newMethod, false)) {
+			newMethod.remove
+			null
+		} else {
+			newMethod
+		}
+	}
+
+	/** Only add a new method if it does not already exist */	
+	def MutableMethodDeclaration addMethodSafely(MutableInterfaceDeclaration cls, String simpleName, (MutableMethodDeclaration)=>void initializer) {
 		val newMethod = cls.addMethod(simpleName, initializer)
 		if(cls.newTypeReference.hasDuplicateMethod(newMethod, false)) {
 			newMethod.remove
