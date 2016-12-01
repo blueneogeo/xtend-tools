@@ -13,6 +13,14 @@ class TemporalExtensions {
 
 	/** The current date */
 	def static now() { Instant.now }
+	
+	def static epoch(Duration epoch) {
+		Instant.ofEpochMilli(epoch.ms)
+	}
+
+	def static epoch(Instant instant) {
+		instant.epochSecond.secs + instant.nano.longValue.nanos
+	}
 
 //	def static toLegacyDate(Instant instant) {
 //		Date.from(instant)
@@ -125,13 +133,14 @@ class TemporalExtensions {
 	def static <= (Instant instant, Duration duration) { now - instant <= duration }
 
 	/** Difference between dates, largest first */
-	def static - (Instant i1, Instant i2) { Duration.between(i1, i2) }
+	def static - (Instant i1, Instant i2) { Duration.between(i2, i1) }
 	
 	/** Absolute difference between two dates. */
 	def static interval(Instant i1, Instant i2) { Duration.between(i1, i2).abs }
 
 	// DURATION CREATION ////////////////////////////////////////////////////
 	
+	def static nanos(long value) { Duration.ofNanos(value) }
 	def static ms(long value) { Duration.ofMillis(value) }
 	def static secs(long value) { Duration.ofSeconds(value) }
 	def static sec(long value) { value.secs }
@@ -141,9 +150,20 @@ class TemporalExtensions {
 	def static hour(long value) { value.hours }
 	def static days(long value) { Duration.ofDays(value) }
 	def static day(long value) { value.days }
-	//def static years(long value) { Duration.of(value, ChronoUnit.YEARS) }
+	
+	def static nanos(Long value) { Duration.ofNanos(value) }
+	def static ms(Long value) { Duration.ofMillis(value) }
+	def static secs(Long value) { Duration.ofSeconds(value) }
+	def static sec(Long value) { value.secs }
+	def static mins(Long value) { Duration.ofMinutes(value) }
+	def static min(Long value) { value.mins }
+	def static hours(Long value) { Duration.ofHours(value) }
+	def static hour(Long value) { value.hours }
+	def static days(Long value) { Duration.ofDays(value) }
+	def static day(Long value) { value.days }	//def static years(long value) { Duration.of(value, ChronoUnit.YEARS) }
 	//def static year(long value) { value.years }
-
+	
+	def static nanos(Duration duration) { duration.toNanos }
 	def static ms(Duration duration) { duration.toMillis }
 	def static secs(Duration duration) { duration.toMillis / 1000 }
 	def static mins(Duration duration) { duration.toMinutes }
@@ -169,7 +189,7 @@ class TemporalExtensions {
 	def static min(Duration d1, Duration d2) { minSafe(d1, d2) }
 	def static max(Duration d1, Duration d2) { maxSafe(d1, d2) }
 
-	// DATE CHANGING USING DurationS ////////////////////////////////////////
+	// DATE CHANGING USING DURATIONS ////////////////////////////////////////
 	
 	def static add(Instant instant, TemporalAmount amount) { instant.plus(amount) }
 	def static subtract(Instant instant, TemporalAmount amount) { instant.minus(amount) }
@@ -177,5 +197,3 @@ class TemporalExtensions {
 	def static - (Instant instant, TemporalAmount amount) { subtract(instant, amount) }
 
 }
-
-// DURATION CLASSES //////////////////////////////////////////////////////////
