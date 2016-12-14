@@ -12,7 +12,8 @@ class NumericExtensions {
 	def static b(int n) { n.billion }
 	
 	def static times(int n, (int)=>void action) {
-		(1..n).forEach(action)
+		if (n > 0) 
+			(1..n).forEach(action)
 	}
 	
 	/** 

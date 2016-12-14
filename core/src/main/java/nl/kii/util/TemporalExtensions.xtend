@@ -4,24 +4,30 @@ import java.time.Duration
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAmount
+import java.util.Date
 
 import static extension nl.kii.util.IterableExtensions.*
 
 class TemporalExtensions {
 
 	val static standardDateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-
+	
 	/** The current date */
 	def static now() { Instant.now }
+	
+	/** Convert to old {@code java.util.Date} */
+	def static toDate(Instant instant) {
+		Date.from(instant)
+	}
 	
 	def static epoch(Duration epoch) {
 		Instant.ofEpochMilli(epoch.ms)
 	}
-
+	
 	def static epoch(Instant instant) {
 		instant.epochSecond.secs + instant.nano.longValue.nanos
 	}
-
+	
 //	def static toLegacyDate(Instant instant) {
 //		Date.from(instant)
 //	}
@@ -103,15 +109,15 @@ class TemporalExtensions {
 	 * http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 	 */
 	def static format(Instant instant, String format) { DateTimeFormatter.ofPattern(format).format(instant) } 
-
+	
 	// DATE COMPARISONS ///////////////////////////////////////////////////
 	
 	/** Return the most recent date */
 	def static newest(Instant... instants) { instants.maxSafe }
-
+	
 	/** Return the oldest date */
 	def static oldest(Instant... instants) { instants.minSafe }
-
+	
 	/** Return the date nearest to the specified {@code target}, or {@code null} if the iterable is empty. */
 	def static nearest(Iterable<? extends Instant> instants, Instant target) { 
 		instants.filterNull.reduce [ leading, contestant | 
@@ -131,7 +137,7 @@ class TemporalExtensions {
 	
 	/** the date is less or equals than [Duration] old */	
 	def static <= (Instant instant, Duration duration) { now - instant <= duration }
-
+	
 	/** Difference between dates, largest first */
 	def static - (Instant i1, Instant i2) { Duration.between(i2, i1) }
 	
