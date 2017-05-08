@@ -76,7 +76,7 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 				switch type {
 					case string: {
 						val value = parameter.findAnnotation(Default.ref.type)?.getStringValue('value')
-						if(value != null) initializer = '''"«value»"'''
+						if(value !== null) initializer = '''"«value»"'''
 					}
 					case int.ref, case Integer.ref: {
 						val value = parameter.findAnnotation(DefaultValue.ref.type)?.getDoubleValue('value')
@@ -91,9 +91,9 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 						initializer = '''«value»'''
 					}
 					case boolean.ref, case Boolean.ref: {
-						if(parameter.findAnnotation(DefaultTrue.ref.type) != null) {
+						if(parameter.findAnnotation(DefaultTrue.ref.type) !== null) {
 							initializer = '''true'''
-						} else if(parameter.findAnnotation(DefaultFalse.ref.type) != null) {
+						} else if(parameter.findAnnotation(DefaultFalse.ref.type) !== null) {
 							initializer = '''false'''
 						}
 					}
@@ -218,11 +218,11 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 	}
 
 	def static nullAllowed(ParameterDeclaration param, extension TransformationContext context) {
-		param.type.primitive || param.findAnnotation(Nullable.newTypeReference.type) != null
+		param.type.primitive || param.findAnnotation(Nullable.newTypeReference.type) !== null
 	}
 	
 	def static isLocked(ParameterDeclaration param, extension TransformationContext context) {
-		param.findAnnotation(Locked.newTypeReference.type) != null
+		param.findAnnotation(Locked.newTypeReference.type) !== null
 	}
 		
 }

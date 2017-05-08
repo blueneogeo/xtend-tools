@@ -46,7 +46,7 @@ class ActiveAnnotationTools {
 		if(originalType.isWildCard) return originalType
 		// is it a direct type reference?
 		val t = newMethodTypeParams.findFirst [ simpleName == originalType.simpleName ]
-		if(t != null) return t.newTypeReference
+		if(t !== null) return t.newTypeReference
 		// try subtype reference
 		val subtypes = originalType.actualTypeArguments.map [ add(newMethodTypeParams) ]
 		originalType.type.newTypeReference(subtypes)
@@ -64,7 +64,7 @@ class ActiveAnnotationTools {
 	 */
 	def MutableMethodDeclaration addMethodCopy(MutableClassDeclaration targetCls, TypeReference sourceCls, MethodDeclaration sourceMethod, String methodName, boolean copyAnnotations, boolean copyParameters, (MutableMethodDeclaration, List<? extends MutableTypeParameterDeclaration>)=>void methodTransformerFn) {
 		// make sure we don't create a double copy
-		targetCls.addMethodSafely(if(methodName != null) methodName else sourceMethod.simpleName) [
+		targetCls.addMethodSafely(if(methodName !== null) methodName else sourceMethod.simpleName) [
 			val newMethod = it
 			// set the basic properties of the new method
 			primarySourceElement = sourceMethod
@@ -133,7 +133,7 @@ class ActiveAnnotationTools {
 	 */
 	def MutableMethodDeclaration addMethodCopy(MutableInterfaceDeclaration targetCls, TypeReference sourceCls, MethodDeclaration sourceMethod, String methodName, boolean copyAnnotations, boolean copyParameters, (MutableMethodDeclaration, List<? extends MutableTypeParameterDeclaration>)=>void methodTransformerFn) {
 		// make sure we don't create a double copy
-		targetCls.addMethodSafely(if(methodName != null) methodName else sourceMethod.simpleName) [
+		targetCls.addMethodSafely(if(methodName !== null) methodName else sourceMethod.simpleName) [
 			val newMethod = it
 			// set the basic properties of the new method
 			primarySourceElement = sourceMethod
