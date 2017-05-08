@@ -5,7 +5,7 @@ import nl.kii.util.annotation.processor.ConstructorProcessor
 import org.eclipse.xtend.lib.macro.Active
 
 /** 
- * Create a constructor based on all the final fields in the class.
+ * Create a constructor based on all the non-static, uninitialised final fields in the class.
  * <p>
  * For example, these are the same:
  * <p>

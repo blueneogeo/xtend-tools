@@ -2,8 +2,10 @@ package nl.kii.util.annotation
 
 import java.util.List
 import org.eclipse.xtend.lib.macro.TransformationContext
+import org.eclipse.xtend.lib.macro.declaration.ConstructorDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableClassDeclaration
+import org.eclipse.xtend.lib.macro.declaration.MutableConstructorDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableInterfaceDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableMethodDeclaration
 import org.eclipse.xtend.lib.macro.declaration.MutableTypeParameterDeclaration
@@ -211,6 +213,17 @@ class ActiveAnnotationTools {
 			newMethod
 		}
 	}
+
+	/** Only add a new constructor if it does not already exist */	
+	def MutableConstructorDeclaration addConstructorSafely(MutableClassDeclaration cls, (MutableConstructorDeclaration)=>void initializer) {
+		val newConstructor = cls.addConstructor(initializer)
+		if(cls.newTypeReference.hasDuplicateConstructor(newConstructor)) {
+			newConstructor.remove
+			null
+		} else {
+			newConstructor
+		}
+	}
 	
 	/** Tests if the type is the same or extends another type */
 	def boolean extendsType(TypeReference type, TypeReference sameOrSuperType) {
@@ -251,6 +264,17 @@ class ActiveAnnotationTools {
 		matchingMethods.size > 1
 	}
 
+	/** 
+	 * Check if the cls has a duplicate signature of the method being passed.
+	 * @param cls the class to check
+	 * @param method the method we use to check the signature from
+	 * @param includeSuperClasses if true, also include superclasses of cls for matching method signatures
+	 */
+	def boolean hasDuplicateConstructor(TypeReference cls, ConstructorDeclaration constructor) {
+		val matchingMethods = cls.declaredResolvedConstructors.filter [ declaration.hasSameSignatureAs(constructor) ]
+		matchingMethods.size > 1
+	}
+
 	/**
 	 * Check if method1 and method2 have the same signature (name and parameter types)
 	 */
@@ -266,9 +290,29 @@ class ActiveAnnotationTools {
 		true
 	}
 
+	/**
+	 * Check if method1 and method2 have the same signature (name and parameter types)
+	 */
+	def hasSameSignatureAs(ConstructorDeclaration constructor1, ConstructorDeclaration constructor2) {
+		if(constructor1.simpleName != constructor2.simpleName) return false
+		if(constructor1.parameters.size != constructor2.parameters.size) return false
+		if(constructor1.parameters.empty) return true
+		for(var i = 0; i < constructor1.parameters.size; i++) {
+			val p1 = constructor1.parameters.get(i)
+			val p2 = constructor2.parameters.get(i)
+			if(p1.type.name != p2.type.name) return false
+		}
+		true
+	}
+
 	/** Print out the signature of a method: <pre>name(param-type,param-type,...)<pre> */
 	def String signature(MethodDeclaration method) {
 		'''«method.simpleName»(«FOR param : method.parameters SEPARATOR ','»«param.type.simpleName»«ENDFOR»)'''
+	}
+
+	/** Print out the signature of a method: <pre>name(param-type,param-type,...)<pre> */
+	def String signature(ConstructorDeclaration constructor) {
+		'''«constructor.simpleName»(«FOR param : constructor.parameters SEPARATOR ','»«param.type.simpleName»«ENDFOR»)'''
 	}
 	
 }
