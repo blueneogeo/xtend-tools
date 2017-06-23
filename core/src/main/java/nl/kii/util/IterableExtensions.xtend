@@ -29,7 +29,7 @@ class IterableExtensions {
 	
 	/** 
 	 * Returns if a list is of a certain value type by looking at the first value. 
-	 * @returns true if the list is not empty and the type matches
+	 * @return true if the list is not empty and the type matches
 	 * <pre>
 	 * #[1, 2, 3].isListOf(Integer) // true
 	 * #[1, 2, 3].isListOf(String) // false
@@ -42,7 +42,7 @@ class IterableExtensions {
 
 	/** 
 	 * Returns if a map is of a certain key and value type by looking at the first value. 
-	 * @returns true if the map is not empty and the types match
+	 * @return true if the map is not empty and the types match
 	 * <pre>
 	 * #{1->'A', 5->'C'}.isMapOf(Integer, String) // true
 	 * #{1->'A', 5->'C'}.isMapOf(Integer, Integer) // false
