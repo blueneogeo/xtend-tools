@@ -24,8 +24,8 @@ class Adder {
 	val int a
 	val int b
 	
-	val int c = 2 // not added to the constructor, has a value
-	val static int x = 1 // not added to the constructor, is static
+//	val int c = 2 // not added to the constructor, has a value
+//	val static int x = 1 // not added to the constructor, is static
 	
 	def sum() {
 		a + b
