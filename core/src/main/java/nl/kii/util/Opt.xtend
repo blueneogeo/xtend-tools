@@ -44,7 +44,7 @@ class Some<T> extends Opt<T> implements Function0<T> {
 	var T value
 	
 	new(T value) {
-		if(value == null) throw new NullPointerException('cannot create new Some(null)')
+		if(value === null) throw new NullPointerException('cannot create new Some(null)')
 		this.value = value
 	}
 	override value() { value }

@@ -14,7 +14,7 @@ class ThrowableExtensions {
 	 * Only tracktrace elements that do not match the filtered regexps pass.
 	 */
 	def static Iterable<StackTraceElement> clean(StackTraceElement[] stacktrace, String... filtered) {
-		if(filtered == null) return stacktrace
+		if(filtered === null) return stacktrace
 		// allow only those traces whose classname match none of the filtered items 
 		stacktrace.filter [ trace |
 			none( filtered.map[trace.className.matches(it)])
@@ -28,7 +28,7 @@ class ThrowableExtensions {
 	 */
 	def static Throwable clean(Throwable t, String... filtered) {
 		t.stackTrace = t.stackTrace.clean(filtered)
-		if(t.cause != null) t.cause.clean(filtered)
+		if(t.cause !== null) t.cause.clean(filtered)
 		t
 	}
 
@@ -53,7 +53,7 @@ class ThrowableExtensions {
 
 	/** returns true if the error is of the type or the cause of the error is of the type. */
 	def static matches(Throwable err, Class<? extends Throwable> type) {
-		type.isAssignableFrom(err.class) || (if(err.cause != null) type.isAssignableFrom(err.cause?.class) else false)
+		type.isAssignableFrom(err.class) || (if(err.cause !== null) type.isAssignableFrom(err.cause?.class) else false)
 	}
 
 }

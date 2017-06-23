@@ -62,7 +62,7 @@ import org.eclipse.xtend.lib.annotations.Data
 	// protected helper methods
 
 	def protected getEntry(String message) {
-		if(name != null) '''«name»: «message»'''.toString
+		if(name !== null) '''«name»: «message»'''.toString
 		else message
 	}
 

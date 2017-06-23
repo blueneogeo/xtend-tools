@@ -9,7 +9,7 @@ class StringExtensions {
 	}
 	
 	def static limit(String string, int maxLength) {
-		if(string == null || string.length <= maxLength) return string
+		if(string === null || string.length <= maxLength) return string
 		string.substring(0, maxLength)
 	}
 

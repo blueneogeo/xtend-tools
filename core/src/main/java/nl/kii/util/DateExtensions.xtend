@@ -102,10 +102,10 @@ final class DateExtensions {
 	// DATE COMPARISONS ///////////////////////////////////////////////////
 	
 	/** Return the most recent date */
-	def static newest(Date... dates) { dates.filter[it!=null].sortBy[time].reverse.head }
+	def static newest(Date... dates) { dates.filter[it!==null].sortBy[time].reverse.head }
 
 	/** Return the oldest date */
-	def static oldest(Date... dates) { dates.filter[it!=null].sortBy[time].head }
+	def static oldest(Date... dates) { dates.filter[it!==null].sortBy[time].head }
 
 	/** Return the date nearest to the specified {@code target}, or {@code null} if the iterable is empty. */
 	def static nearest(Iterable<? extends Date> dates, Date target) { 

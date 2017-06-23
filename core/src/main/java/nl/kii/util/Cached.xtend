@@ -22,7 +22,7 @@ class Cached<T> implements Function0<T> {
 	def get() { apply }
 	
 	override T apply() {
-		if(data == null || lastFetched == null || now - lastFetched > retainTime) {
+		if(data === null || lastFetched === null || now - lastFetched > retainTime) {
 			data = fetchFn.apply
 			lastFetched = now
 			data

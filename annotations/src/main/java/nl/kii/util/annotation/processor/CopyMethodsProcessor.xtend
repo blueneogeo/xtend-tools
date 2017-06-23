@@ -29,7 +29,7 @@ class CopyMethodsProcessor extends AbstractClassProcessor {
 				.map [ declaration ]
 				.filter [ !returnType.inferred ]
 				.filter [ static || createExtensionMethods ]
-				.filter [ method | !ignoredMethods?.contains(method.signature) ]
+				.filter [ method | !ignoredMethods.contains(method.signature) ]
 			
 			for(method : copyMethods) {
 				doCopyMethod(cls, sourceCls, method, annotation, context)

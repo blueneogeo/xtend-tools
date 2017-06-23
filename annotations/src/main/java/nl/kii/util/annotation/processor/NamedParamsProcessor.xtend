@@ -75,25 +75,31 @@ class NamedParamsProcessor implements RegisterGlobalsParticipant<NamedElement>, 
 				// set the initializer based on default annotations
 				switch type {
 					case string: {
-						val value = parameter.findAnnotation(Default.ref.type)?.getStringValue('value')
+						val annotation = parameter.findAnnotation(Default.ref.type)
+						val value = if(annotation !== null) annotation.getStringValue('value')
 						if(value !== null) initializer = '''"«value»"'''
 					}
 					case int.ref, case Integer.ref: {
-						val value = parameter.findAnnotation(DefaultValue.ref.type)?.getDoubleValue('value')
+						val annotation = parameter.findAnnotation(DefaultValue.ref.type)
+						val value = if(annotation !== null) annotation.getDoubleValue('value')
 						initializer = '''new Double(«value»).intValue()'''
 					}
 					case long.ref, case Long.ref: {
-						val value = parameter.findAnnotation(DefaultValue.ref.type)?.getDoubleValue('value')
+						val annotation = parameter.findAnnotation(DefaultValue.ref.type)
+						val value = if(annotation !== null) annotation.getDoubleValue('value')
 						initializer = '''new Double(«value»).longValue()'''
 					}
 					case double.ref, case Double.ref: {
-						val value = parameter.findAnnotation(DefaultValue.ref.type)?.getDoubleValue('value')
+						val annotation = parameter.findAnnotation(DefaultValue.ref.type)
+						val value = if(annotation !== null) annotation.getDoubleValue('value')
 						initializer = '''«value»'''
 					}
 					case boolean.ref, case Boolean.ref: {
-						if(parameter.findAnnotation(DefaultTrue.ref.type) !== null) {
+						val trueAnnotation = parameter.findAnnotation(DefaultTrue.ref.type)
+						val falseAnnotation = parameter.findAnnotation(DefaultFalse.ref.type)
+						if(trueAnnotation !== null) {
 							initializer = '''true'''
-						} else if(parameter.findAnnotation(DefaultFalse.ref.type) !== null) {
+						} else if(falseAnnotation !== null) {
 							initializer = '''false'''
 						}
 					}

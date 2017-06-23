@@ -70,6 +70,6 @@ class PartialURL {
 	}
 
 	override toString()
-	'''«IF protocol!=null»«protocol»://«ENDIF»«IF domain!=null»«domain»«ENDIF»«IF path!=null»«path»«ENDIF»«IF query!=null»?«query»«ENDIF»«IF hash!=null»#«hash»«ENDIF»'''
+	'''«IF protocol!==null»«protocol»://«ENDIF»«IF domain!==null»«domain»«ENDIF»«IF path!==null»«path»«ENDIF»«IF query!==null»?«query»«ENDIF»«IF hash!==null»#«hash»«ENDIF»'''
 		
 }

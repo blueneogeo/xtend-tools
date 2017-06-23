@@ -42,7 +42,7 @@ class MapExtensions {
 	
 	def static <K, K2, V> remove(Map<K, Map<K2, V>> map, K key1, K2 key2) {
 		val valueMap = map.get(key1)
-		if(valueMap != null) valueMap.remove(key2)
+		if(valueMap !== null) valueMap.remove(key2)
 	}
 	
 	// MAP<LIST> METHODS //////////////////////////////////////////////////////

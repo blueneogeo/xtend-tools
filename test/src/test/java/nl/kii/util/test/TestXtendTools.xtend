@@ -2,9 +2,11 @@ package nl.kii.util.test
 
 import java.io.Closeable
 import java.io.IOException
+import java.util.Date
 import nl.kii.util.Log
 import nl.kii.util.None
 import nl.kii.util.Opt
+import nl.kii.util.annotation.NamedParams
 import org.eclipse.xtend.lib.annotations.Data
 import org.junit.Test
 
@@ -17,6 +19,7 @@ import static extension nl.kii.util.OptExtensions.*
 import static extension nl.kii.util.SetOperationExtensions.*
 import static extension org.junit.Assert.*
 import static extension org.slf4j.LoggerFactory.*
+import nl.kii.util.annotation.Default
 
 interface Greeter {
     def void sayGreeting(String name)
@@ -226,7 +229,20 @@ class TestXtendTools {
 		e.flatten.hasError.assertTrue
 	}
 
-	
+	@NamedParams
+	def String addSomeThings(String username, @Default('Hey') String message, int age, Date birthday) '''
+		hello «username», «message». You are «age» years old and your birthday is at «birthday».
+	'''
+
+	@Test
+	def void testNamedParams() {
+		val message = addSomeThings [
+			username = 'Johnny'
+			age = 30
+			birthday = new Date
+		]
+		println(message)
+	}
 	
 }
 

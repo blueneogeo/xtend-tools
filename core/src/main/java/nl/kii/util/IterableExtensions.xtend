@@ -78,27 +78,27 @@ class IterableExtensions {
 	// ADDING (immutable) /////////////////////////////////////////////////////
 	
 	def static <T> concat(Iterable<? extends T> list, Iterable<? extends T> values) {
-		if(values != null) ImmutableList.builder.addAll(list).addAll(values).build
+		if(values !== null) ImmutableList.builder.addAll(list).addAll(values).build
 		else throw new NullPointerException('concat: passed values are null')
 	}
 
 	def static <T> concat(T value, Iterable<T> list) {
-		if(list != null) ImmutableList.builder.add(value).addAll(list).build
+		if(list !== null) ImmutableList.builder.add(value).addAll(list).build
 		else throw new NullPointerException('concat: passed list is null')
 	}
 
 	def static <T> concat(Iterable<? extends T> list, T value) {
-		if(value != null) ImmutableList.builder.addAll(list).add(value).build
+		if(value !== null) ImmutableList.builder.addAll(list).add(value).build
 		else throw new NullPointerException('concat: passed value is null')
 	}
 
 	def static <T> concat(Set<T> set, T value) {
-		if(value != null) ImmutableSet.builder.addAll(set).add(value).build
+		if(value !== null) ImmutableSet.builder.addAll(set).add(value).build
 		else throw new NullPointerException('concat: passed value is null')
 	}
 
 	def static <T> concat(T value, Set<T> set) {
-		if(set != null) ImmutableSet.builder.add(value).addAll(set).build
+		if(set !== null) ImmutableSet.builder.add(value).addAll(set).build
 		else throw new NullPointerException('concat: passed set is null')
 	}
 	
