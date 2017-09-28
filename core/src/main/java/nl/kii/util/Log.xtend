@@ -2,17 +2,49 @@ package nl.kii.util
 
 import org.slf4j.Logger
 import org.eclipse.xtend.lib.annotations.Data
+import org.slf4j.LoggerFactory
 
 /**
- * Better logging for Xtend. Usage:
+ * Deferred logging for Xtend. Wraps a org.slf4j.Logger.
+ * <p> 
+ * This loggers lowers the performance penalty of logging a lot
+ * of trace or debug statements.
+ * <p>
+ * <pre>
+ * val logger = LoggerFactory.getLogger(this.class)
+ * 
+ * // this can become expensive:
+ * logger.trace('my message ' + someValue + 'blabla' + calculate())
+ * 
+ * // so you would do this instead every time:
+ * if(logger.traceEnabled) {
+ * 	// string is only built if we have trace enabled
+ * 	logger.trace('my message ' + someValue + 'blabla' + calculate())
+ * }
+ * 
+ * // but now you can do this, which does the same:
+ * val log = new Log(logger)
+ * log.trace [ 'my message ' + someValue + 'blabla' + calculate() ]
+ * </pre>
+ * <p>
+ * Usage:
  * <ul>
- * <li>import static extension nl.kii.tools.XtendTools.*
- * <li>import static extension org.slf4j.LoggerFactory.*
- * <li>Declaration: extension Log logger = class.logger.wrapper
+ * <li>Declaration: extension Log logger = Log.create(this, 'foo')
  * <li>Usage example: info ['''bulk shown «bulkShownUsers.size» out of the requested ''']
  * </ul>
  */
 @Data class Log {
+	
+	/** Create a org.slf4j.Logger */
+	static def create(Object instance) {
+		create(instance, null)
+	}
+
+	/** Create a org.slf4j.Logger that logs under a given name. */
+	static def create(Object instance, String name) {
+		val logger = LoggerFactory.getLogger(instance.class)
+		new Log(logger, name)
+	}
 
 	protected Logger logger
 	protected String name
