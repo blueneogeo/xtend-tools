@@ -281,13 +281,12 @@ Often you can also reverse the direction. For example, this has the same result:
 ## Logging
 
 	import static extension nl.kii.util.LogExtensions.*
-	import static extension org.slf4j.LoggerFactory.*
 	import nl.kii.util.Log
 
 You can use the logging wrapper like this:
 
 	class MyClass {
-		extension Log logger = class.logger.wrapper
+		extension Log log = Log.create(this)
 
 		def someFunction() {
 			debug['minor implementation detail']
@@ -303,7 +302,7 @@ The lambda expression/function will only be called if necessary, which helps per
 
 You can also add a name to the logger when you create it:
 
-	extension Log logger = class.logger.wrapper('somename')
+	extension Log log = Log.create(this, 'foo')
 
 When you do this, this message will be put in front of every log statement made by this logger. This can be handy when you want to distinguish easily between types of messages in your log.
 
