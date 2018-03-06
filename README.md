@@ -118,7 +118,7 @@ Which can then be called like this:
 
 If you were to add the @NamedParams method here, you would not be able to call it as an extension with the closure.
 
-What you want is to “pin” the first parameter to the method. You can do this with the @Pin annotation.
+What you want is to lock the first parameter to the method in place. You can do this with the @Locked annotation.
 
 	@NamedParams
 	def static save(@Locked Database db, String key, Role role, Security security) { … }
