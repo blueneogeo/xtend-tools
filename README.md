@@ -16,7 +16,7 @@ For more information about the Xtend language: http://www.eclipse.org/xtend/
 
 If you use maven or gradle, the dependency is the following:
 
-	com.kimengi.util:xtend-tools:3.1-SNAPSHOT
+	com.kimengi.util:xtend-tools:10.1.3
 
 Note: currently this library is not yet on MavenCentral.
 
@@ -24,14 +24,20 @@ Note: currently this library is not yet on MavenCentral.
 
 A drawback in both Java and Xtend is that constructors and methods can have a lot of parameters, which are then often replaced by setters. However that means a lot of new properties, and you lose immutability.
 
-By using the @NamedParams Active Annotation, you can set your parameters using a closure.
+By using the **@NamedParams** Active Annotation, you can set your parameters using a closure.
 
 ### The Problem
 
 For example, you have this existing User constructor:
 
-	new(String name, String owner, int age, int duration, boolean isActive, boolean isAdmin) {
-		// some init code
+	new(
+		String name, 
+		String owner, 
+		int age, 
+		int duration, 
+		boolean isActive, 
+		boolean isAdmin) {
+			// some init code
 	}
 
 Calling it is a pain:
@@ -53,19 +59,26 @@ All a lot of work, especially if more that one parameter is optional. Also, the 
 @NamedParams can be used for both methods and constructors. This is how you can implement the above long constructor:
 
 	@NamedParams
-	new(String name, Opt<String> owner, Integer age, @I(10) int duration, @B(true) boolean isActive, @B(false) boolean isAdmin) { 
-		// some init code
+	new(
+		String name, 
+		@Nullable String owner, 
+		Integer age, 
+		@DefaultValue(10) int duration, 
+		@DefaultTrue boolean isActive, 
+		@DefaultFalse boolean isAdmin) { 
+			// some init code
 	}
 
-In short, you annotate it with @NamedParams, and use annotations  for parameters to indicate if they have a default value or if they are options. Nothing may be null.
+In short, you annotate it with @NamedParams, and use annotations for parameters to indicate if they have a default value or if they are options. Nothing may be null, except if it is annotated with @Nullable
 
 The default annotations are:
 
-- @I(defaultValue) for int and Integer
-- @B(defaultValue) for boolean and Boolean
-- @L(defaultValue) for long and Long
-- @D(defaultValue) for double and Double
-- @S(defaultValue) for String
+- @Default(String value) for default string value
+- @DefaultValue(double value) for default number values
+- @DefaultTrue for default boolean true
+- @DefaultFalse for default boolean false
+- @Nullable if the value may be null (runtime exception otherwise if not passed and no default)
+- @Locked to keep a parameter in the method call parameters
 
 The @NamedParams method creates some extra methods for you in the class, along with a parameters class.
 
@@ -93,7 +106,7 @@ Now admin will be None<String>, duration will be 10, active will be true, and ad
 
 If you fail to set name or age, you will get a NullPointerException at runtime, before your constructor is called.
 
-#### Pinning a Parameter
+#### Locking a Parameter
 
 To use a method as an extension method, you need the first parameter to be fixed. For example:
 
@@ -108,7 +121,7 @@ If you were to add the @NamedParams method here, you would not be able to call i
 What you want is to “pin” the first parameter to the method. You can do this with the @Pin annotation.
 
 	@NamedParams
-	def static save(@Pin Database db, String key, Role role, Security security) { … }
+	def static save(@Locked Database db, String key, Role role, Security security) { … }
 
 Now you can use it like an extension:
 
@@ -123,7 +136,7 @@ A problem in Java is catching NullPointerExceptions. You end up with a lot of Nu
 
 The interface of Opt<T> is very simple:
 
-https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/Opt.xtend
+https://github.com/blueneogeo/xtend-tools/blob/master/core/src/main/java/nl/kii/util/Opt.xtend
 
 #### Opt, Some, None, Err
 
@@ -188,7 +201,7 @@ To map a value that may not exist:
 
 This is just a selection. For more extensions, check the source of OptExtensions.xtend:
 
-https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/OptExtensions.xtend
+https://github.com/blueneogeo/xtend-tools/blob/master/core/src/main/java/nl/kii/util/OptExtensions.xtend
 
 ## Easy Date Manipulating
 
@@ -235,7 +248,7 @@ As you can see, the difference between the standard List.forEach in Xtend and Li
 
 See for more operations IterableExtensions.xtend:
 
-https://github.com/blueneogeo/xtend-tools/blob/master/src/main/java/nl/kii/util/IterableExtensions.xtend
+https://github.com/blueneogeo/xtend-tools/blob/master/core/src/main/java/nl/kii/util/IterableExtensions.xtend
 
 #### List Operator Overloading
 
