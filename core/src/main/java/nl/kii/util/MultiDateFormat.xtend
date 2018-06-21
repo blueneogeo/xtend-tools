@@ -10,11 +10,11 @@ import java.util.Locale
 class MultiDateFormat {
 	
 	val List<DateFormat> dateFormats
-	val Locale locale
+//	val Locale locale
 	
 	new (String dateFormat, Locale locale) {
 		this.dateFormats = dateFormat.split('\\;\\s').map [ new SimpleDateFormat(it, Locale.ENGLISH) ]
-		this.locale = locale
+//		this.locale = locale
 	}
 
 	def parse(String string) {

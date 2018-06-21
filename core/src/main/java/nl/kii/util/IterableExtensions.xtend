@@ -326,6 +326,47 @@ class IterableExtensions {
 		}
 	}
 	
+	def static <T> List<List<T>> groupByChange(Iterable<? extends T> items, (T, T, T)=>boolean isSameGroupFn) {
+		val result = newLinkedList
+		var currentGroup = newLinkedList
+		result.add(currentGroup)
+		var first = true
+		var T head = null
+		var T last = null
+		for(item : items) {
+			if(first) {
+				first = false
+				head = item
+				last = item
+			} else {
+				if(!isSameGroupFn.apply(head, last, item)) {
+					currentGroup = newLinkedList
+					result.add(currentGroup)
+					head = item
+				}
+			}
+			currentGroup.add(item)
+			last = item
+		}
+		return result
+	}
+
+	/**
+	 * Group by changes in the passed items. This only works on a list of items that are incrementally changing.
+	 * <p>
+	 * example: #[1, 2, 4, 6, 7].groupIncrementally [ a, b | b - a > 1 ] == #[[1, 2],[4],[6,7]]
+	 * <p>
+	 * @param items - the items to group by change
+	 * @param sameGroupFn - a function that takes the last item and the current item, 
+	 * 	and returns true if they should be grouped, or false if the current item should 
+	 * 	be seperated from the last one in a new group.
+	 */
+	def static <T> List<List<T>> groupByChange(Iterable<? extends T> items, (T, T)=>boolean isSameGroupFn) {
+		groupByChange(items) [ head, last, item |
+			isSameGroupFn.apply(last, item)
+		]
+	}
+	
 	// BOOLEAN CHECKS /////////////////////////////////////////////////////////
 
 	/** Checks if any of the values is truthy */
