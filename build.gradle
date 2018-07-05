@@ -15,11 +15,14 @@ buildscript {
   }
 
   dependencies {
-    classpath 'org.xtext:xtext-gradle-plugin:1.0.15'
+    classpath 'org.xtext:xtext-gradle-plugin:1.0.19'
     classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
   }
 }
 
+task wrapper(type: Wrapper) {
+	gradleVersion = '4.0'
+}
 
 // CONFIGURE PROJECTS ///////////////////////////////////////////////////
 subprojects {

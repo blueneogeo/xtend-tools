@@ -17,10 +17,12 @@ class IterableExtensions {
 
 	// CREATING (immutable) ///////////////////////////////////////////////////
 	
+	/** Create an immutable list of the given type */
 	def static <T> List<T> list(Class<T> cls) {
 		newImmutableList
 	}
 
+	/** Create an immutable list for the given objects */
 	def static <T> List<T> list(T... objects) {
 		newImmutableList(objects)
 	}
@@ -153,6 +155,49 @@ class IterableExtensions {
 	}
 
 	// FILTERING //////////////////////////////////////////////////////////////
+
+	/**
+	 * Let through all values that when mapped with the mappingfunction, are contained in the allowedValues list.
+	 * <p>
+	 * Use this to easily see if some collection has properties that are in another collection.
+	 * <p>
+	 * Example:
+	 * <pre>
+	 * val investors = users.filterAll(#['Koos', 'Henk']) [ name ]
+	 * </pre>
+	 * 
+	 * @param values The values to filter
+	 * @param checkValues the values that make a value pass the filter
+	 * @param mapToCheckedValueFn mapping function that transform a value to something to check
+	 * @return an iterable of values that when mapped, were in the checkValues.
+	 */	
+	def static <T, X> filterAll(Iterable<? extends T> values, List<X> checkValues, (T)=>X mapToCheckedValueFn) {
+		values.filter [ value |
+			val candidate = mapToCheckedValueFn.apply(value)
+			checkValues.contains(candidate)
+		]
+	}
+
+	/**
+	 * Let through all values that when mapped with the mappingfunction, are not contained in the disallowedValues list.
+	 * <p>
+	 * Use this to easily see if some collection has properties that are in another collection.
+	 * <p>
+	 * Example:
+	 * <pre>
+	 * val notInvestors = users.filterAll(#['Koos', 'Henk']) [ name ]
+	 * </pre>
+	 * 	 * @param values The values to filter
+	 * @param checkValues the values that make a value miss the filter
+	 * @param mapToCheckedValueFn mapping function that transform a value to something to check
+	 * @return an iterable of values that when mapped, were not in the checkValues.
+	 */	
+	def static <T, X> filterNone(Iterable<? extends T> values, List<X> checkValues, (T)=>X mapToCheckedValueFn) {
+		values.filter [ value |
+			val candidate = mapToCheckedValueFn.apply(value)
+			!checkValues.contains(candidate)
+		]
+	}
 	
 	def static <T> T last(Iterable<? extends T> values) {
 		values.toList.reverse.head
