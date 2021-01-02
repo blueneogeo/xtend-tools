@@ -5,13 +5,6 @@ buildscript {
     maven {
       url 'https://plugins.gradle.org/m2/'
     }
-    maven {
-      url "${artifactory_url}/plugins-release"
-      credentials {
-        username artifactory_user
-        password artifactory_password
-      }
-    }
   }
 
   dependencies {
@@ -40,13 +33,6 @@ subprojects {
   repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-      url "${artifactory_url}/main"
-      credentials {
-        username artifactory_user
-        password artifactory_password
-      }
-    }
   }
 
   dependencies {
@@ -95,15 +81,6 @@ subprojects {
           asNode().dependencies.'*'.each() {
             it.scope*.value = 'compile'
           }
-        }
-      }
-    }
-    repositories {
-      maven {
-        url "${artifactory_url}/main-local"
-        credentials {
-          username artifactory_user
-          password artifactory_password
         }
       }
     }
