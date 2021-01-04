@@ -16,7 +16,7 @@ For more information about the Xtend language: http://www.eclipse.org/xtend/
 
 If you use maven or gradle, the dependency is the following:
 
-	com.kimengi.util:xtend-tools:10.1.3
+	com.kimengi.util:xtend-tools:11.0.0
 
 Note: currently this library is not yet on MavenCentral.
 
