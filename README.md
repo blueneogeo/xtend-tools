@@ -8,7 +8,9 @@ Some tools and Xtend extensions that make life with the Xtend programming langua
 - List operations and shortcuts
 - SL4J Logging wrapper: allows more efficient and compact logging
 
-Note: Promises and Streams have been moved to the xtend-async project. 
+This library has many more handy tools that Kimengi gathered over time, that are not documented. However they are easy to use, as the tests are pretty self explanatory. [See them here](https://github.com/blueneogeo/xtend-tools/tree/master/core/src/test/java/nl/kii/util)
+
+Note: Promises and Streams have been moved to the [xtend-async](https://github.com/blueneogeo/xtend-async) project. 
 
 For more information about the Xtend language: http://www.eclipse.org/xtend/
 
@@ -18,7 +20,13 @@ If you use maven or gradle, the dependency is the following:
 
 	com.kimengi.util:xtend-tools:11.0.0
 
-Note: currently this library is not yet on MavenCentral.
+Note: currently this library is not yet on MavenCentral. However you can install it in your local maven repository:
+
+- install gradle if you do not already have it
+- clone this project
+- in a terminal, go into this project, and do `gradle install`
+
+This will install the library. To use it add the above dependency into your project, like any maven project.
 
 ## NamedParams
 
